@@ -1,0 +1,44 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "order_minion_melee.skn",
+      "source": "sru_orderminionmelee\\skins\\base\\order_minion_melee.skn",
+      "sha256": "9cb600f741532979226f0c02e57987acdf7286e816e115870d091ae303383ac2"
+    },
+    {
+      "file": "order_minion_melee.skl",
+      "source": "sru_orderminionmelee\\skins\\base\\order_minion_melee.skl",
+      "sha256": "b55a58eede1f852023b5e8c53e5ce2677b3c07b67c281602bf57d5a986a22e63"
+    },
+    {
+      "file": "orderminion_melee_tx_cm.tex",
+      "source": "sru_orderminionmelee\\skins\\base\\orderminion_melee_tx_cm.tex",
+      "sha256": "b6e450516b4f1586d32acae87e4a9de2571be51c67cd5cfbe9d0065353c86904"
+    },
+    {
+      "file": "animations/minion_melee_idle.anm",
+      "source": "sru_orderminionmelee\\skins\\base\\animations\\minion_melee_idle.anm",
+      "sha256": "1d8daf259fddd2109dbfeb42cb52fd183e3f75677b501ea14feecc5f8dbff0f8"
+    },
+    {
+      "file": "animations/minion_melee_run.anm",
+      "source": "sru_orderminionmelee\\skins\\base\\animations\\minion_melee_run.anm",
+      "sha256": "954b1afc41ceb383f923ce7200c144841a0c9a64fd3f3ad9212673eb52635308"
+    },
+    {
+      "file": "animations/minion_melee_attack.anm",
+      "source": "sru_orderminionmelee\\skins\\base\\animations\\minion_melee_attack.anm",
+      "sha256": "25648e112b3d672757523035141f56f3b1b31a453c47cd507a1d6c97b69d9f4b"
+    }
+  ],
+  "clips": {
+    "Idle": "minion_melee_idle",
+    "Run": "minion_melee_run",
+    "Attack": "minion_melee_attack"
+  },
+  "materials": [
+    "lambert1"
+  ],
+  "tower_intact_primitive": null
+}

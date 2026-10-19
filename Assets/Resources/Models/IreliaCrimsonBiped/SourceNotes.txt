@@ -1,0 +1,10 @@
+Paquete del usuario: C:\Users\rotte\Downloads\Meshy_AI_Crimson_Valkyrie_biped
+Walking.fbx: Meshy_AI_Crimson_Valkyrie_biped_Animation_Walking_withSkin.fbx original.
+Character.fbx: Meshy_AI_Crimson_Valkyrie_biped_Character_output.fbx original de referencia.
+Los cuatro mapas de textura son idénticos a los de IreliaCrimson y se reutilizan.
+
+Cuerpo animado separado de las cuatro espadas por conectividad de la malla;
+conserva pesos y bindposes. Las espadas flotantes y E continúan usando las
+mallas texturizadas del modelo Crimson estático, con sus animaciones existentes.
+El clip se muestrea manualmente, sin root motion, a la velocidad del personaje.
+Los FBX originales en Downloads no se modifican.

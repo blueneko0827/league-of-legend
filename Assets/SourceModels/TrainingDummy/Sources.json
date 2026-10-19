@@ -1,0 +1,15 @@
+{
+  "description": "User supplied training dummy rig. Idle file contains rest pose only; Hit contains the impact animation.",
+  "files": [
+    {
+      "file": "target_dummyIdle.glb",
+      "source": "C:\\Users\\rotte\\Downloads\\target_dummyIdle.glb",
+      "sha256": "b8ff46ef35665102d50c834cb1619560c5612d0a44d4efb2152c2aa3e0ea3443"
+    },
+    {
+      "file": "target_dummyHit.glb",
+      "source": "C:\\Users\\rotte\\Downloads\\target_dummyHit.glb",
+      "sha256": "adf42f9a852b326d916efb62a9910c1f16fed9395ed684b4ef695583e9e17dea"
+    }
+  ]
+}

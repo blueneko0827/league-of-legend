@@ -1,0 +1,23 @@
+{
+  "source": "User-provided GLB files from C:/Users/rotte/Downloads, imported 2026-10-15",
+  "format": "glTF 2.0; original embedded unlit materials and 145-joint rig",
+  "conversion": "Assets/Editor/IreliaGlbBake.cs; native Unity prefab, skinned meshes, three legacy clips, two textures and a blade mesh for E",
+  "specification": "https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html",
+  "files": [
+    {
+      "name": "ireliaAttack.glb",
+      "bytes": 15745748,
+      "sha256": "854dbba7c68277fa103c47bae71e64e1933591d0837c3b747ec6c1ccde70cd66"
+    },
+    {
+      "name": "ireliaIdle.glb",
+      "bytes": 15745756,
+      "sha256": "a8d80e3f4895b1e0a79669769b3f03f3e549208be627ae3af39ae5d167e4ead7"
+    },
+    {
+      "name": "ireliaRun.glb",
+      "bytes": 15745744,
+      "sha256": "10d771ea4aea5b81c60d2f58444d506d17ed367768eb0ed03fac1f3343e3a4dc"
+    }
+  ]
+}

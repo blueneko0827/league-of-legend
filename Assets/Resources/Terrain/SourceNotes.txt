@@ -1,0 +1,1 @@
+MidLaneAlbedo.png: generated hand-painted terrain albedo using imagegen, inspired by the user-provided lolground.png. Not extracted from the League of Legends client. Straight overhead path along X, mirrored tiling U (continuous seams) and clamped V. Loaded locally with mipmaps, trilinear filtering and anisotropy; no runtime network calls.

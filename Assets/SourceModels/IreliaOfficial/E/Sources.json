@@ -1,0 +1,31 @@
+{
+  "source": "C:\\Users\\rotte\\Downloads\\LOL Data\\ireliaLOL\\base\\particles",
+  "assets": [
+    {
+      "file": "irelia_base_e_beam.scb",
+      "sha256": "035926fb3b4b9487fdfbe22472e810347186da3f68123a191b8824f0ee98100d"
+    },
+    {
+      "file": "irelia_base_e_beam_mult.tex",
+      "sha256": "072672fa88ef71b8cbaffacece9869ea08f25dd99bba990b1daef4768a07f7ed",
+      "decoded": "BeamMask.png"
+    },
+    {
+      "file": "irelia_base_e_mis.tex",
+      "sha256": "5a5eb38b356a2a95d9c45bc5ee8655c10c07e9b259a6b0a47964a224be6c715b",
+      "decoded": "Missile.png"
+    },
+    {
+      "file": "irelia_base_e_blade_stun_trail.tex",
+      "sha256": "fb868e35f17da0af5b567198b66c32daee9ea2de1cb7be61b326f65f358ed44b",
+      "decoded": "Trail.png"
+    },
+    {
+      "file": "irelia_base_e_stun_beam.tex",
+      "sha256": "fbfc17b87816a37eacfa8b157c2492c2c158fcafae03de8db96d9cee2bdfac71",
+      "decoded": "StunBeam.png"
+    }
+  ],
+  "presentation": "Original SCB beam mesh and TEX textures. Unity reconstructs the convergence, layering and fade synchronized to existing E gameplay timing. The supplied package has no original particle emitter definitions; this is not an exact import of the LoL particle system.",
+  "gameplay": "No changes to damage, collision width, stun, marks, or cast/convergence timing."
+}

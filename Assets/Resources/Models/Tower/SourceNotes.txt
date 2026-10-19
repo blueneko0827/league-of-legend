@@ -1,0 +1,11 @@
+TORRE MOBA LOW POLY - UNITY
+
+1. Descomprimí el ZIP.
+2. Copiá Assets/MOBATower a la carpeta Assets de tu proyecto Unity.
+3. Arrastrá Models/MOBATower.obj a la escena.
+4. Ajustá la escala si hace falta (altura aproximada: 4.53 unidades).
+5. Opcional: añadí el componente MOBATower al objeto y un collider.
+
+Orientación: frente hacia Z negativo. Modelo estático de geometría low poly.
+El script es una base de salud/rango: NO dispara automáticamente, no incluye proyectiles ni animaciones.
+Los materiales .mtl pueden requerir asignación manual en Unity según el render pipeline.

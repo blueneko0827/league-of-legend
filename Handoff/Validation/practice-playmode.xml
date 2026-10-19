@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:34Z" duration="5.6355498">
+  <test-suite type="TestSuite" id="1013" name="MidLane Practice Visual" fullname="MidLane Practice Visual" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:34Z" duration="5.635550" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1008" name="MidLane.PlayModeTests.dll" fullname="C:/Users/rotte/Downloads/MidLane Simulator/TestResults/PV/Library/ScriptAssemblies/MidLane.PlayModeTests.dll" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:34Z" duration="5.625564" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="9092" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1009" name="MidLane" fullname="MidLane" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:34Z" duration="5.624166" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1010" name="Tests" fullname="MidLane.Tests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:34Z" duration="5.623791" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="PracticeVisualHandoffTests" fullname="MidLane.Tests.PracticeVisualHandoffTests" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:34Z" duration="5.622237" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1004" name="ANewSessionIgnoresSavedPvpAndNormalplayModes" fullname="MidLane.Tests.PracticeVisualHandoffTests.ANewSessionIgnoresSavedPvpAndNormalplayModes" methodname="ANewSessionIgnoresSavedPvpAndNormalplayModes" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" seed="1116995665" result="Passed" start-time="2026-10-19 11:54:28Z" end-time="2026-10-19 11:54:30Z" duration="1.812307" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1007" name="CameraAndPatrolMatchTheCurrentPracticeAndCapturePreview" fullname="MidLane.Tests.PracticeVisualHandoffTests.CameraAndPatrolMatchTheCurrentPracticeAndCapturePreview" methodname="CameraAndPatrolMatchTheCurrentPracticeAndCapturePreview" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" seed="1501429212" result="Passed" start-time="2026-10-19 11:54:30Z" end-time="2026-10-19 11:54:32Z" duration="2.074263" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1005" name="ConvertedAssetsAndPrefabsLoadWithTheirCurrentMaterials" fullname="MidLane.Tests.PracticeVisualHandoffTests.ConvertedAssetsAndPrefabsLoadWithTheirCurrentMaterials" methodname="ConvertedAssetsAndPrefabsLoadWithTheirCurrentMaterials" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" seed="2016230365" result="Passed" start-time="2026-10-19 11:54:32Z" end-time="2026-10-19 11:54:32Z" duration="0.042055" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="OtherModesStayUnavailableAndRestartOverridesSavedOrChangedSettings" fullname="MidLane.Tests.PracticeVisualHandoffTests.OtherModesStayUnavailableAndRestartOverridesSavedOrChangedSettings" methodname="OtherModesStayUnavailableAndRestartOverridesSavedOrChangedSettings" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" seed="1449417269" result="Passed" start-time="2026-10-19 11:54:32Z" end-time="2026-10-19 11:54:32Z" duration="0.064226" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1006" name="QAndEStillWorkAndTheShopCanBuyOutsideTheFountain" fullname="MidLane.Tests.PracticeVisualHandoffTests.QAndEStillWorkAndTheShopCanBuyOutsideTheFountain" methodname="QAndEStillWorkAndTheShopCanBuyOutsideTheFountain" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" seed="1592344020" result="Passed" start-time="2026-10-19 11:54:32Z" end-time="2026-10-19 11:54:34Z" duration="1.570753" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="StartupKeepsTheCurrentPracticeLoadoutAndFiveDummies" fullname="MidLane.Tests.PracticeVisualHandoffTests.StartupKeepsTheCurrentPracticeLoadoutAndFiveDummies" methodname="StartupKeepsTheCurrentPracticeLoadoutAndFiveDummies" classname="MidLane.Tests.PracticeVisualHandoffTests" runstate="Runnable" seed="836693242" result="Passed" start-time="2026-10-19 11:54:34Z" end-time="2026-10-19 11:54:34Z" duration="0.041494" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/rotte/AppData/LocalLow/MidLane/MidLane Practice Visual\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

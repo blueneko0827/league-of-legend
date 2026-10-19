@@ -1,0 +1,373 @@
+{
+  "patch": "16.20.1",
+  "icons": [
+    {
+      "id": 1001,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1001.png"
+    },
+    {
+      "id": 1004,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1004.png"
+    },
+    {
+      "id": 1006,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1006.png"
+    },
+    {
+      "id": 1011,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1011.png"
+    },
+    {
+      "id": 1018,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1018.png"
+    },
+    {
+      "id": 1026,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1026.png"
+    },
+    {
+      "id": 1027,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1027.png"
+    },
+    {
+      "id": 1028,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1028.png"
+    },
+    {
+      "id": 1029,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1029.png"
+    },
+    {
+      "id": 1031,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1031.png"
+    },
+    {
+      "id": 1033,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1033.png"
+    },
+    {
+      "id": 1036,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1036.png"
+    },
+    {
+      "id": 1037,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1037.png"
+    },
+    {
+      "id": 1038,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1038.png"
+    },
+    {
+      "id": 1042,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1042.png"
+    },
+    {
+      "id": 1043,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1043.png"
+    },
+    {
+      "id": 1052,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1052.png"
+    },
+    {
+      "id": 1053,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1053.png"
+    },
+    {
+      "id": 1055,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1055.png"
+    },
+    {
+      "id": 1056,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1056.png"
+    },
+    {
+      "id": 1057,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1057.png"
+    },
+    {
+      "id": 1058,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1058.png"
+    },
+    {
+      "id": 1086,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/1086.png"
+    },
+    {
+      "id": 2003,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2003.png"
+    },
+    {
+      "id": 2019,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2019.png"
+    },
+    {
+      "id": 2020,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2020.png"
+    },
+    {
+      "id": 2021,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2021.png"
+    },
+    {
+      "id": 2022,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2022.png"
+    },
+    {
+      "id": 2031,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2031.png"
+    },
+    {
+      "id": 2051,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2051.png"
+    },
+    {
+      "id": 2420,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2420.png"
+    },
+    {
+      "id": 2421,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2421.png"
+    },
+    {
+      "id": 2501,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2501.png"
+    },
+    {
+      "id": 2503,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2503.png"
+    },
+    {
+      "id": 2508,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/2508.png"
+    },
+    {
+      "id": 3006,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3006.png"
+    },
+    {
+      "id": 3009,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3009.png"
+    },
+    {
+      "id": 3020,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3020.png"
+    },
+    {
+      "id": 3024,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3024.png"
+    },
+    {
+      "id": 3026,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3026.png"
+    },
+    {
+      "id": 3031,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3031.png"
+    },
+    {
+      "id": 3035,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3035.png"
+    },
+    {
+      "id": 3044,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3044.png"
+    },
+    {
+      "id": 3047,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3047.png"
+    },
+    {
+      "id": 3051,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3051.png"
+    },
+    {
+      "id": 3053,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3053.png"
+    },
+    {
+      "id": 3057,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3057.png"
+    },
+    {
+      "id": 3066,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3066.png"
+    },
+    {
+      "id": 3067,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3067.png"
+    },
+    {
+      "id": 3072,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3072.png"
+    },
+    {
+      "id": 3077,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3077.png"
+    },
+    {
+      "id": 3078,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3078.png"
+    },
+    {
+      "id": 3083,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3083.png"
+    },
+    {
+      "id": 3086,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3086.png"
+    },
+    {
+      "id": 3089,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3089.png"
+    },
+    {
+      "id": 3091,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3091.png"
+    },
+    {
+      "id": 3108,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3108.png"
+    },
+    {
+      "id": 3111,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3111.png"
+    },
+    {
+      "id": 3112,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3112.png"
+    },
+    {
+      "id": 3113,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3113.png"
+    },
+    {
+      "id": 3114,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3114.png"
+    },
+    {
+      "id": 3133,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3133.png"
+    },
+    {
+      "id": 3134,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3134.png"
+    },
+    {
+      "id": 3135,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3135.png"
+    },
+    {
+      "id": 3153,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3153.png"
+    },
+    {
+      "id": 3155,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3155.png"
+    },
+    {
+      "id": 3156,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3156.png"
+    },
+    {
+      "id": 3157,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3157.png"
+    },
+    {
+      "id": 3158,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3158.png"
+    },
+    {
+      "id": 3161,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3161.png"
+    },
+    {
+      "id": 3172,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3172.png"
+    },
+    {
+      "id": 3173,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3173.png"
+    },
+    {
+      "id": 3174,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3174.png"
+    },
+    {
+      "id": 3177,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3177.png"
+    },
+    {
+      "id": 3181,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3181.png"
+    },
+    {
+      "id": 3184,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3184.png"
+    },
+    {
+      "id": 3211,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3211.png"
+    },
+    {
+      "id": 3302,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3302.png"
+    },
+    {
+      "id": 3801,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3801.png"
+    },
+    {
+      "id": 3802,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3802.png"
+    },
+    {
+      "id": 3865,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/3865.png"
+    },
+    {
+      "id": 4628,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/4628.png"
+    },
+    {
+      "id": 4630,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/4630.png"
+    },
+    {
+      "id": 4642,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/4642.png"
+    },
+    {
+      "id": 4645,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/4645.png"
+    },
+    {
+      "id": 6333,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6333.png"
+    },
+    {
+      "id": 6631,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6631.png"
+    },
+    {
+      "id": 6670,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6670.png"
+    },
+    {
+      "id": 6672,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6672.png"
+    },
+    {
+      "id": 6690,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6690.png"
+    },
+    {
+      "id": 6692,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6692.png"
+    },
+    {
+      "id": 6695,
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/item/6695.png"
+    }
+  ]
+}

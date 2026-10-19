@@ -1,0 +1,36 @@
+{
+  "source_archive": "C:\\Riot Games\\League of Legends\\Game\\DATA\\FINAL\\Maps\\Shipping\\Common.wad.client",
+  "event": "Play_sfx_SummonerFlash_OnCast",
+  "event_id": 2903027397,
+  "event_bank_wad_hash": "3ffd417099f729bd",
+  "audio_bank_wad_hash": "4d073e473cae72c0",
+  "media_ids": [
+    1054156049,
+    867452517,
+    118465462
+  ],
+  "common_gain": 0.633241237682902,
+  "clips": [
+    {
+      "file": "Flash_1.wav",
+      "seconds": 2.478140589569161,
+      "sample_rate": 44100,
+      "channels": 2,
+      "sha256": "b30d142f9fa9b52b8d6b7cbf982df336ee336efa7bab39ed08469d8822160378"
+    },
+    {
+      "file": "Flash_2.wav",
+      "seconds": 2.411859410430839,
+      "sample_rate": 44100,
+      "channels": 2,
+      "sha256": "7bf076a3cfad40f4608f154dbf0ac7b56940d9cd6da44443d3226b34d0abb133"
+    },
+    {
+      "file": "Flash_3.wav",
+      "seconds": 2.714875283446712,
+      "sample_rate": 44100,
+      "channels": 2,
+      "sha256": "21790296a45735ce2bd067e367ef04e607b298e5722ea1aae0781cc077cd376a"
+    }
+  ]
+}

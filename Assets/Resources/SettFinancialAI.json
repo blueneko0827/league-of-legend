@@ -1,0 +1,18 @@
+{
+  "champion_kill_gold": 300,
+  "cannon_gold": 60,
+  "melee_gold": 21,
+  "caster_gold": 14,
+  "lasthit_priority_over_poke": 0.85,
+  "q_bait_attraction_gold": 100,
+  "trap_spacing_units": 150,
+  "all_in_roi_threshold": 1.4,
+  "estimated_death_loss_gold": 275,
+  "reaction_min_seconds": 0.12,
+  "reaction_max_seconds": 0.19,
+  "panic_health_threshold": 0.25,
+  "panic_reaction_multiplier": 1.25,
+  "neutral_spacing_units": 650,
+  "spacing_noise_units": 45,
+  "spacing_noise_interval_seconds": 0.2
+}

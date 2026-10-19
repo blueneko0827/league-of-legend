@@ -1,0 +1,94 @@
+{
+  "language": "en_US",
+  "event": "Play_vo_Irelia_IreliaR_cast3D",
+  "event_id": 1837586924,
+  "source": "C:\\Users\\rotte\\Downloads\\LOL Data\\ireliaLOL\\irelia voice\\assets\\sounds\\wwise2016\\vo\\en_us\\characters\\irelia\\skins\\base",
+  "variants": [
+    {
+      "file": "RCast_1.wav",
+      "media_id": 77220956,
+      "seconds": 1.2461451247165534,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "4171577af55036728f7ad75b8c67f184b19766fa7c2ddd4ffca1e6e4f0e458a2"
+    },
+    {
+      "file": "RCast_2.wav",
+      "media_id": 88141426,
+      "seconds": 0.7138095238095238,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "1286b137ce74e785e66c64a54aea0ff4bafcf813eb6d8ca133cc8ee5fe8a7a17"
+    },
+    {
+      "file": "RCast_3.wav",
+      "media_id": 1003653508,
+      "seconds": 1.1405895691609977,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "d211e8e1a3936fa073811d6038aa2a95d994ed1a489924f5c581c6eb95c22ce6"
+    },
+    {
+      "file": "RCast_4.wav",
+      "media_id": 214853661,
+      "seconds": 0.8835147392290249,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "272cab827ca37f81fa2ed5d13b5eab411decd22986a1a59e34c8ec19d1a0b52e"
+    },
+    {
+      "file": "RCast_5.wav",
+      "media_id": 614944177,
+      "seconds": 1.8124716553287983,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "dfc46a6516e2526515043ef3e13ceaaca58ba701e1d3670985a1c031f8d0e1d7"
+    },
+    {
+      "file": "RCast_6.wav",
+      "media_id": 101454924,
+      "seconds": 1.8087074829931973,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "102e01ffe4727e8b8ffc6cadce5dcb13d3f91ee186ef8957accce02aab8669f0"
+    },
+    {
+      "file": "RCast_7.wav",
+      "media_id": 312146367,
+      "seconds": 1.445532879818594,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "3ed774eb2f98ecb9f9d36c3a30b2bdb46e8b39038cf8f7f1285f801e10d5ee5d"
+    },
+    {
+      "file": "RCast_8.wav",
+      "media_id": 256866818,
+      "seconds": 1.6256462585034013,
+      "sample_rate": 44100,
+      "channels": 1,
+      "sha256": "55ed14c497d0c18540fbeccc65406d3e2d30b361a6f79ef214dc26e8d4bbcc40"
+    }
+  ],
+  "banks": [
+    {
+      "file": "irelia_base_vo_audio.bnk",
+      "sha256": "6ef4fc99847974c8bf16760cdb19bacffe6917d25c6955ae3c7b3cf88290aecd"
+    },
+    {
+      "file": "irelia_base_vo_audio.wpk",
+      "sha256": "03702019a805ea22900f80be3c9e7ad46c94cc421b36fddc529ff6d08ad095ac"
+    },
+    {
+      "file": "irelia_base_vo_events.bnk",
+      "sha256": "b547e12351a795c4bbe49aecfc3e24c1eeacabfa8a51c0b26afd512dfb9beb5f"
+    }
+  ],
+  "notes": [
+    "Eight children of the R cast voice event random/shuffle container.",
+    "Extracted only; gameplay playback is not connected by this importer."
+  ],
+  "pcm_conversion": {
+    "float_peak": 1.061966896057129,
+    "common_gain": 0.8945664912222409
+  }
+}

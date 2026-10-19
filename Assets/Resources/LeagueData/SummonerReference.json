@@ -1,0 +1,55 @@
+{
+  "patch": "16.20.1",
+  "sources": [
+    "https://ddragon.leagueoflegends.com/cdn/16.20.1/data/en_US/summoner.json",
+    "https://www.leagueoflegends.com/en-us/news/game-updates/patch-25-09-notes/",
+    "https://www.leagueoflegends.com/en-us/news/game-updates/patch-14-10-notes/",
+    "https://www.leagueoflegends.com/en-ph/news/game-updates/patch-14-22-notes/",
+    "https://www.leagueoflegends.com/en-au/news/game-updates/patch-12-14-notes/"
+  ],
+  "flash": {
+    "range": 400,
+    "cooldown": 300
+  },
+  "ignite": {
+    "range": 600,
+    "cooldown": 180,
+    "duration": 5,
+    "grievousWounds": 0.4,
+    "damageByLevel": [
+      70,
+      90,
+      110,
+      130,
+      150,
+      175,
+      200,
+      225,
+      250,
+      275,
+      300,
+      325,
+      350,
+      375,
+      400,
+      425,
+      450,
+      475
+    ]
+  },
+  "worldUnitsPerLeagueUnit": 0.01,
+  "barrier": {
+    "cooldown": 180,
+    "duration": 2.5,
+    "shieldMin": 100,
+    "shieldMax": 460
+  },
+  "exhaust": {
+    "cooldown": 240,
+    "range": 650,
+    "duration": 3,
+    "slow": 0.4,
+    "damageReduction": 0.35,
+    "excludesTrueDamage": true
+  }
+}

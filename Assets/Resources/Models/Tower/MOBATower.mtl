@@ -1,0 +1,30 @@
+newmtl Stone
+Kd 0.4 0.47 0.62
+Ka 0.1 0.1 0.1
+Ks 0.1 0.1 0.1
+illum 2
+
+newmtl StoneLight
+Kd 0.62 0.69 0.77
+Ka 0.1 0.1 0.1
+Ks 0.1 0.1 0.1
+illum 2
+
+newmtl StoneDark
+Kd 0.22 0.29 0.4
+Ka 0.1 0.1 0.1
+Ks 0.1 0.1 0.1
+illum 2
+
+newmtl Gold
+Kd 0.82 0.61 0.27
+Ka 0.1 0.1 0.1
+Ks 0.1 0.1 0.1
+illum 2
+
+newmtl Crystal
+Kd 0.12 0.78 1.0
+Ka 0.1 0.1 0.1
+Ks 0.1 0.1 0.1
+illum 2
+

@@ -1,0 +1,6 @@
+newmtl BladeMat
+Ka 0.20 0.20 0.20
+Kd 0.82 0.83 0.88
+Ks 0.14 0.14 0.14
+d 1.0
+illum 2

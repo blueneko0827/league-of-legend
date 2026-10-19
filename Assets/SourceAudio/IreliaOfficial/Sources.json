@@ -1,0 +1,929 @@
+{
+  "source": "C:\\Users\\rotte\\Downloads\\LOL Data\\ireliaLOL\\IreliaMore\\assets\\sounds\\wwise2016\\sfx\\characters\\irelia\\skins\\base",
+  "banks": [
+    {
+      "file": "irelia_base_sfx_audio.bnk",
+      "sha256": "7460c8dcada1d8125e959eb50604a46a8a6583d2300e5657b10aad9440aa9a9c"
+    },
+    {
+      "file": "irelia_base_sfx_events.bnk",
+      "sha256": "77475960c40eb4661a4f9c467dc8990f2af14919cfb83ad90958fe4e33b2fea7"
+    }
+  ],
+  "events": [
+    {
+      "group": "Attack1Cast",
+      "event": "Play_sfx_Irelia_IreliaBasicAttack_OnCast",
+      "default_switch": "711736988",
+      "clips": [
+        {
+          "file": "Attack1Cast_1.wav",
+          "seconds": 0.4166893424036281,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnCast [602999088=711736988] {r1} {d}.txtp",
+          "sha256": "3d64348bcbaaedfecc13fa032f38e38db12cfa4938d0dc558b8bf65e9dce6658"
+        },
+        {
+          "file": "Attack1Cast_2.wav",
+          "seconds": 0.4531519274376417,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnCast [602999088=711736988] {r2} {d}.txtp",
+          "sha256": "747042573e84fdd149f71438513cd62ce6f6371bc8a1be9c9dd90217918b9014"
+        },
+        {
+          "file": "Attack1Cast_3.wav",
+          "seconds": 0.36458049886621313,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnCast [602999088=711736988] {r3} {d}.txtp",
+          "sha256": "f40dcb135af6459fa71f5fcff5d55cb3779890a4c6b1b16bab8125a709611cb3"
+        },
+        {
+          "file": "Attack1Cast_4.wav",
+          "seconds": 0.5270748299319727,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnCast [602999088=711736988] {r4} {d}.txtp",
+          "sha256": "a12e18987455b6e3a68d0baae8290d5efcdb3fe734691a94bfe7917f8e9a7a06"
+        }
+      ]
+    },
+    {
+      "group": "Attack2Cast",
+      "event": "Play_sfx_Irelia_IreliaBasicAttack2_OnCast",
+      "default_switch": "711736988",
+      "clips": [
+        {
+          "file": "Attack2Cast_1.wav",
+          "seconds": 0.4166893424036281,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnCast [602999088=711736988] {r1} {d}.txtp",
+          "sha256": "3d64348bcbaaedfecc13fa032f38e38db12cfa4938d0dc558b8bf65e9dce6658"
+        },
+        {
+          "file": "Attack2Cast_2.wav",
+          "seconds": 0.4531519274376417,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnCast [602999088=711736988] {r2} {d}.txtp",
+          "sha256": "747042573e84fdd149f71438513cd62ce6f6371bc8a1be9c9dd90217918b9014"
+        },
+        {
+          "file": "Attack2Cast_3.wav",
+          "seconds": 0.36458049886621313,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnCast [602999088=711736988] {r3} {d}.txtp",
+          "sha256": "f40dcb135af6459fa71f5fcff5d55cb3779890a4c6b1b16bab8125a709611cb3"
+        },
+        {
+          "file": "Attack2Cast_4.wav",
+          "seconds": 0.5270748299319727,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnCast [602999088=711736988] {r4} {d}.txtp",
+          "sha256": "a12e18987455b6e3a68d0baae8290d5efcdb3fe734691a94bfe7917f8e9a7a06"
+        }
+      ]
+    },
+    {
+      "group": "Attack1Hit",
+      "event": "Play_sfx_Irelia_IreliaBasicAttack_OnHit",
+      "default_switch": "1153642577",
+      "clips": [
+        {
+          "file": "Attack1Hit_1.wav",
+          "seconds": 0.8880725623582767,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnHit [1559186049=1153642577] {r1}.txtp",
+          "sha256": "337d440e1f153e297bb3e9a8e612c8a9a97fb95b31d97f1246b2d3f088921ecf"
+        },
+        {
+          "file": "Attack1Hit_2.wav",
+          "seconds": 0.85859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnHit [1559186049=1153642577] {r2}.txtp",
+          "sha256": "4f7350fb2af0f25463e2ed7dd10319374ee0fe03381f9c9aa47928fc47bd0d8d"
+        },
+        {
+          "file": "Attack1Hit_3.wav",
+          "seconds": 0.9226984126984127,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnHit [1559186049=1153642577] {r3}.txtp",
+          "sha256": "2ceab0e43199f91e8092780198a4ffd2d8e697ffae0489c2cbe5b111160499a1"
+        },
+        {
+          "file": "Attack1Hit_4.wav",
+          "seconds": 0.9116099773242631,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnHit [1559186049=1153642577] {r4}.txtp",
+          "sha256": "785f21494c5b6135b8568e9fc37c24927ef4bee8f53f1a690a00ddf56cdcd1c6"
+        },
+        {
+          "file": "Attack1Hit_5.wav",
+          "seconds": 0.825374149659864,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack_OnHit [1559186049=1153642577] {r5}.txtp",
+          "sha256": "16a1a9ab06b401ac69126ce1ce9c01e7a86b56ff4618096ba2f9204ebf311807"
+        }
+      ]
+    },
+    {
+      "group": "Attack2Hit",
+      "event": "Play_sfx_Irelia_IreliaBasicAttack2_OnHit",
+      "default_switch": "1153642577",
+      "clips": [
+        {
+          "file": "Attack2Hit_1.wav",
+          "seconds": 0.8880725623582767,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnHit [1559186049=1153642577] {r1} {d}.txtp",
+          "sha256": "337d440e1f153e297bb3e9a8e612c8a9a97fb95b31d97f1246b2d3f088921ecf"
+        },
+        {
+          "file": "Attack2Hit_2.wav",
+          "seconds": 0.85859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnHit [1559186049=1153642577] {r2} {d}.txtp",
+          "sha256": "4f7350fb2af0f25463e2ed7dd10319374ee0fe03381f9c9aa47928fc47bd0d8d"
+        },
+        {
+          "file": "Attack2Hit_3.wav",
+          "seconds": 0.9226984126984127,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnHit [1559186049=1153642577] {r3} {d}.txtp",
+          "sha256": "2ceab0e43199f91e8092780198a4ffd2d8e697ffae0489c2cbe5b111160499a1"
+        },
+        {
+          "file": "Attack2Hit_4.wav",
+          "seconds": 0.9116099773242631,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnHit [1559186049=1153642577] {r4} {d}.txtp",
+          "sha256": "785f21494c5b6135b8568e9fc37c24927ef4bee8f53f1a690a00ddf56cdcd1c6"
+        },
+        {
+          "file": "Attack2Hit_5.wav",
+          "seconds": 0.825374149659864,
+          "recipe": "Play_sfx_Irelia_IreliaBasicAttack2_OnHit [1559186049=1153642577] {r5} {d}.txtp",
+          "sha256": "16a1a9ab06b401ac69126ce1ce9c01e7a86b56ff4618096ba2f9204ebf311807"
+        }
+      ]
+    },
+    {
+      "group": "QCast",
+      "event": "Play_sfx_Irelia_IreliaQ_OnCast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "QCast_1.wav",
+          "seconds": 1.0673242630385487,
+          "recipe": "QCastRendered1.txtp",
+          "sha256": "9fe500a6a30cbbadc0ef4121da460e9489000c0c2f31d5d8caf246a697429f98"
+        },
+        {
+          "file": "QCast_2.wav",
+          "seconds": 1.2714739229024943,
+          "recipe": "QCastRendered2.txtp",
+          "sha256": "f54ac20088262befc799d3a712e9afb41714c10e514319289501bf42f207ed0c"
+        },
+        {
+          "file": "QCast_3.wav",
+          "seconds": 1.2849433106575965,
+          "recipe": "QCastRendered3.txtp",
+          "sha256": "62bbde81c3c80857cfc17d855948db7773b9e14b261b7db47fa3fc019db49fc9"
+        },
+        {
+          "file": "QCast_4.wav",
+          "seconds": 0.9345351473922903,
+          "recipe": "QCastRendered4.txtp",
+          "sha256": "3d52c3ddf651b5cee99441bb29482cdc45ae3b01983969855dd439364f030b91"
+        },
+        {
+          "file": "QCast_5.wav",
+          "seconds": 0.8834920634920634,
+          "recipe": "QCastRendered5.txtp",
+          "sha256": "6af8204460d0d21e187c729e86018173dca3cd58029b946bddc3defda3a08359"
+        },
+        {
+          "file": "QCast_6.wav",
+          "seconds": 0.9526984126984127,
+          "recipe": "QCastRendered6.txtp",
+          "sha256": "4c48c736cdffbefed68ad3959c64128fd5a6f12dc5c3bb8d1de731471d60ef7e"
+        },
+        {
+          "file": "QCast_7.wav",
+          "seconds": 0.9538321995464852,
+          "recipe": "QCastRendered7.txtp",
+          "sha256": "cc1d74c8e0479b6332a85bbc23833409e025ec477bf2d5cb16e5dab862e4ae5a"
+        }
+      ]
+    },
+    {
+      "group": "QDash",
+      "event": "Play_sfx_Irelia_IreliaQ_missilelaunch",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "QDash_1.wav",
+          "seconds": 0.997233560090703,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r1}.txtp",
+          "sha256": "7f8286ea7ec6152a95e8c14d7583cbf104604efcfc1cd128420e66e03acf49f6"
+        },
+        {
+          "file": "QDash_2.wav",
+          "seconds": 0.7824036281179139,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r2}.txtp",
+          "sha256": "fb3ca3ed8455ede38dc1113c28aa5f5be267e0b3834067c7c29858bf88706305"
+        },
+        {
+          "file": "QDash_3.wav",
+          "seconds": 0.8642403628117914,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r3}.txtp",
+          "sha256": "9f7e4fa751484b21ffd9e2ed6e7b04154b8fd526158d757d31ce821cefeb5011"
+        },
+        {
+          "file": "QDash_4.wav",
+          "seconds": 0.9345351473922903,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r4}.txtp",
+          "sha256": "79f83aadf4909be1c403801f88ea6369389e7b6750a387323a37aa89f6b67b0a"
+        },
+        {
+          "file": "QDash_5.wav",
+          "seconds": 0.8834920634920634,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r5}.txtp",
+          "sha256": "919a08c5ee50534891daea73d0c4de0fa6576f5190627b260a2caf9c0f3ae513"
+        },
+        {
+          "file": "QDash_6.wav",
+          "seconds": 0.7481859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r6}.txtp",
+          "sha256": "66e6ea54048ec0ecc3e46b30e90c209babb71c8ba803185e9724a1f1b2ee7937"
+        },
+        {
+          "file": "QDash_7.wav",
+          "seconds": 0.9538321995464852,
+          "recipe": "Play_sfx_Irelia_IreliaQ_missilelaunch {r7}.txtp",
+          "sha256": "cbad1915f962bfb91cc6a95adb2279505a3cde39eeae7869d5ab3b6b88135d08"
+        }
+      ]
+    },
+    {
+      "group": "QHit",
+      "event": "Play_sfx_Irelia_IreliaQ_hit",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "QHit_1.wav",
+          "seconds": 0.8772562358276644,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r1}.txtp",
+          "sha256": "2fa63b0cea7fabfd392e3113262100af2ac6e9961d397153d145512870fa2ba9"
+        },
+        {
+          "file": "QHit_2.wav",
+          "seconds": 0.8771655328798186,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r2}.txtp",
+          "sha256": "cdb194b4b2cf36a3ea4dcb5f6f072beb8a4b5bbe41eecb511da7add669a8337f"
+        },
+        {
+          "file": "QHit_3.wav",
+          "seconds": 0.7624943310657596,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r3}.txtp",
+          "sha256": "f67ecb6b23018d62f7f1d4a5b0eea23c22c1626644330c5a423f44de4b3016dd"
+        },
+        {
+          "file": "QHit_4.wav",
+          "seconds": 0.982108843537415,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r4}.txtp",
+          "sha256": "30bad483f3701ef803f69ae601a25e5f0d8b6fc96940a6cf8fd64bed41ab2e38"
+        },
+        {
+          "file": "QHit_5.wav",
+          "seconds": 0.8777551020408163,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r5}.txtp",
+          "sha256": "8584c019fd37a0e80b82f75a9611c4fa7eec1d471cbe0063d9042ebd4ae2fe3b"
+        },
+        {
+          "file": "QHit_6.wav",
+          "seconds": 0.8353287981859411,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r6}.txtp",
+          "sha256": "79f37b1dada564282026c255a6514e8b3efc8fc42958eeaafcb3e580daa1b6c7"
+        },
+        {
+          "file": "QHit_7.wav",
+          "seconds": 1.0198639455782312,
+          "recipe": "Play_sfx_Irelia_IreliaQ_hit {r7}.txtp",
+          "sha256": "c07d0b8450bc4ed541a4095f60dd907104c69c6aa1f3525d6bb94de661228002"
+        }
+      ]
+    },
+    {
+      "group": "WCharge",
+      "event": "Play_sfx_Irelia_IreliaW_OnCast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "WCharge_1.wav",
+          "seconds": 3.564013605442177,
+          "recipe": "Play_sfx_Irelia_IreliaW_OnCast {r1}.txtp",
+          "sha256": "b7b5e5f29010d3c82387b221bdb33e12f55868719e488fdd91c088a27382ee9f"
+        },
+        {
+          "file": "WCharge_2.wav",
+          "seconds": 4.22390022675737,
+          "recipe": "Play_sfx_Irelia_IreliaW_OnCast {r2}.txtp",
+          "sha256": "aa3b28ba910abe31b2325f64332b4bd9ca8a46e8c3eff0eabd1b0e7cfbd180bf"
+        },
+        {
+          "file": "WCharge_3.wav",
+          "seconds": 4.062199546485261,
+          "recipe": "Play_sfx_Irelia_IreliaW_OnCast {r3}.txtp",
+          "sha256": "96b7945c5cf922aa01366e13199384bbc74d40742e93e16947aab5027ece822a"
+        },
+        {
+          "file": "WCharge_4.wav",
+          "seconds": 3.6004761904761904,
+          "recipe": "Play_sfx_Irelia_IreliaW_OnCast {r4}.txtp",
+          "sha256": "f5b62ebc4dc2194a6e401a1871ac79b012df0cf4f817af94b5f13f4b5ce90ccc"
+        }
+      ]
+    },
+    {
+      "group": "WCharged",
+      "event": "Play_sfx_Irelia_IreliaWCharged_cast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "WCharged_1.wav",
+          "seconds": 1.2333333333333334,
+          "recipe": "Play_sfx_Irelia_IreliaWCharged_cast.txtp",
+          "sha256": "b445b98974246b6df73f55db5547f058fdaa3b61af6d5f21c2d3071e25041aeb"
+        }
+      ]
+    },
+    {
+      "group": "WRelease",
+      "event": "Play_sfx_Irelia_IreliaW2_OnCast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "WRelease_1.wav",
+          "seconds": 1.5140816326530613,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r1}.txtp",
+          "sha256": "4bb5896d20cd32605144eda1b144580ea9766a4dc4989aefbcf28bcacde8c103"
+        },
+        {
+          "file": "WRelease_2.wav",
+          "seconds": 1.321814058956916,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r2}.txtp",
+          "sha256": "2ecf3d7b96b2a6cac0cf58ec0000f99bb4b44f505fb638a0798be83ce62aa209"
+        },
+        {
+          "file": "WRelease_3.wav",
+          "seconds": 1.4387301587301586,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r3}.txtp",
+          "sha256": "d4be39b8ead7cd8d55ff9a36fdd7320ba8a10973c7f6174e2af026e0634ef8ce"
+        },
+        {
+          "file": "WRelease_4.wav",
+          "seconds": 1.4087301587301588,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r4}.txtp",
+          "sha256": "ece27b1b4dc10b0102e64ae69841618c10bcd92cbb67bdacbb7545058b595a52"
+        },
+        {
+          "file": "WRelease_5.wav",
+          "seconds": 1.142562358276644,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r5}.txtp",
+          "sha256": "94e726356ba1059fb288fe0dd65121f343be1ee3c16d28c59d66e9340efb5681"
+        },
+        {
+          "file": "WRelease_6.wav",
+          "seconds": 1.2148979591836735,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r6}.txtp",
+          "sha256": "b533dec3e097925acd6a5c062c19166b9d8ea927bf143f7322e719d7fdf00561"
+        },
+        {
+          "file": "WRelease_7.wav",
+          "seconds": 1.186984126984127,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r7}.txtp",
+          "sha256": "bf3019c6f4153dadc6edbf826692ba9ffd30ab7f64e1aa021f9b3707a3a90750"
+        },
+        {
+          "file": "WRelease_8.wav",
+          "seconds": 1.3597732426303855,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r8}.txtp",
+          "sha256": "ffad76d20675a8f5cacb11b0c36cb772114dd17fde955cbec2de1b0bce75cad9"
+        },
+        {
+          "file": "WRelease_9.wav",
+          "seconds": 1.469251700680272,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r9}.txtp",
+          "sha256": "db5d0e018ba0bc5af844c9526a2369074976ed4507c530337a64884c5ea37113"
+        },
+        {
+          "file": "WRelease_10.wav",
+          "seconds": 1.3967573696145126,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r10}.txtp",
+          "sha256": "60d114891b18c54ff97d7b5e13535b192a5bc6a751b1a17f6d57b3e3f3d4504c"
+        },
+        {
+          "file": "WRelease_11.wav",
+          "seconds": 1.1638775510204082,
+          "recipe": "Play_sfx_Irelia_IreliaW2_OnCast {r11}.txtp",
+          "sha256": "964ba7900c08126629c87e52a00897f9edcca7f61e1c687e2733f49027520291"
+        }
+      ]
+    },
+    {
+      "group": "WHit",
+      "event": "Play_sfx_Irelia_IreliaW2_hit",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "WHit_1.wav",
+          "seconds": 1.3580725623582766,
+          "recipe": "Play_sfx_Irelia_IreliaW2_hit {r1}.txtp",
+          "sha256": "606030bab5d70eb1e3796561d45bd9a510a6a89a4c6dd7ded91a4df03f4081aa"
+        },
+        {
+          "file": "WHit_2.wav",
+          "seconds": 1.472312925170068,
+          "recipe": "Play_sfx_Irelia_IreliaW2_hit {r2}.txtp",
+          "sha256": "28980ba4c6e841efafe1ad9766a4f001f23850f7e6dcaf88711a9f95cdb7276b"
+        }
+      ]
+    },
+    {
+      "group": "WBlock",
+      "event": "Play_sfx_Irelia_IreliaWDefence_block_self",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "WBlock_1.wav",
+          "seconds": 0.6294104308390023,
+          "recipe": "Play_sfx_Irelia_IreliaWDefence_block_self {r1}.txtp",
+          "sha256": "bb88184987df7702ecfb101138a5e0cd2452ab037c8f7bb77d12af21aef06973"
+        },
+        {
+          "file": "WBlock_2.wav",
+          "seconds": 0.7840816326530612,
+          "recipe": "Play_sfx_Irelia_IreliaWDefence_block_self {r2}.txtp",
+          "sha256": "059b998df53308fee7ad8effb3d1dcf0111178f270560c1686502bc0a58754b3"
+        },
+        {
+          "file": "WBlock_3.wav",
+          "seconds": 0.9227437641723356,
+          "recipe": "Play_sfx_Irelia_IreliaWDefence_block_self {r3}.txtp",
+          "sha256": "6a14728c29cf7a9611e3e6aa3192dfe628407014332200845767ba5761412425"
+        },
+        {
+          "file": "WBlock_4.wav",
+          "seconds": 0.8960770975056689,
+          "recipe": "Play_sfx_Irelia_IreliaWDefence_block_self {r4}.txtp",
+          "sha256": "91c5697cdfb2e0057fbfb2046c5d6ded8302286c0ae43656398bdd7f409e2064"
+        },
+        {
+          "file": "WBlock_5.wav",
+          "seconds": 0.6187301587301587,
+          "recipe": "Play_sfx_Irelia_IreliaWDefence_block_self {r5}.txtp",
+          "sha256": "8563653affc8cfb44f47aa88b3147a45d485c283094c69f301a45f5b736d9707"
+        },
+        {
+          "file": "WBlock_6.wav",
+          "seconds": 0.8373696145124716,
+          "recipe": "Play_sfx_Irelia_IreliaWDefence_block_self {r6}.txtp",
+          "sha256": "8dfa8db3324c9478f6f72faead163dd192e941cc826b3796e81a37504e4cecc5"
+        }
+      ]
+    },
+    {
+      "group": "EFirst",
+      "event": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "EFirst_1.wav",
+          "seconds": 1.2896598639455783,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r1}.txtp",
+          "sha256": "8cb2db1d6443e1da4c15f29f743b3e6fca2dd819ed88a07e160fce62e306cb60"
+        },
+        {
+          "file": "EFirst_2.wav",
+          "seconds": 1.0273696145124716,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r2}.txtp",
+          "sha256": "5c7822b28eb1f87a23d742fe1d21ee6d9484212c52828b86cf1e81ff5d5b1727"
+        },
+        {
+          "file": "EFirst_3.wav",
+          "seconds": 1.3370521541950113,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r3}.txtp",
+          "sha256": "c8ada6abf686e930873de4648294d7c25e76847d118552b0f918930b86f54e65"
+        },
+        {
+          "file": "EFirst_4.wav",
+          "seconds": 1.2146485260770976,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r4}.txtp",
+          "sha256": "2c622fd2fb195b59c78616a2d8084d916723930600b4fa4007b0fc79f1be0651"
+        },
+        {
+          "file": "EFirst_5.wav",
+          "seconds": 1.2251473922902494,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r5}.txtp",
+          "sha256": "86a47be19a853fe97b5bbbcf4a762e59c95b09fec06a9d448dee3a69b055fd52"
+        },
+        {
+          "file": "EFirst_6.wav",
+          "seconds": 1.3439002267573696,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r6}.txtp",
+          "sha256": "f9c8cfc2f62964d0167eef6a853e04afc498df3ac6a65cff729031e1f312c0a1"
+        },
+        {
+          "file": "EFirst_7.wav",
+          "seconds": 1.2613151927437642,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r7}.txtp",
+          "sha256": "821879b77181a7714bcf3ad2e5194788e5382f1a5aff245273d7af07e3bfab10"
+        },
+        {
+          "file": "EFirst_8.wav",
+          "seconds": 1.2373922902494332,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r8}.txtp",
+          "sha256": "0c58d2b18cd87801b9764a01d3a0065a37403eae7e030dac11c7f9673e733dc3"
+        },
+        {
+          "file": "EFirst_9.wav",
+          "seconds": 1.1536507936507936,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r9}.txtp",
+          "sha256": "9b36eb381f2c1a21b9995f5992403abe99089fafb0472dc5033bc30646a35512"
+        },
+        {
+          "file": "EFirst_10.wav",
+          "seconds": 1.2706802721088435,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileCast {r10}.txtp",
+          "sha256": "1163e4583a64cd50b1671f3759f4de68b94500800704522a5c289a2afbdca3e7"
+        }
+      ]
+    },
+    {
+      "group": "ESecond",
+      "event": "Play_sfx_Irelia_IreliaE2_buffactivate",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "ESecond_1.wav",
+          "seconds": 0.3787074829931973,
+          "recipe": "Play_sfx_Irelia_IreliaE2_buffactivate {r1}.txtp",
+          "sha256": "c2910c55ee991964eca0ca63947f40063bbf0f1ea5ef019e3d653fd2d2ab84ba"
+        },
+        {
+          "file": "ESecond_2.wav",
+          "seconds": 0.3333560090702948,
+          "recipe": "Play_sfx_Irelia_IreliaE2_buffactivate {r2}.txtp",
+          "sha256": "3ebfd26708f5e694a9b847d390433ab85d9f897903ab7c2b52dbb04198c0234f"
+        },
+        {
+          "file": "ESecond_3.wav",
+          "seconds": 0.3226530612244898,
+          "recipe": "Play_sfx_Irelia_IreliaE2_buffactivate {r3}.txtp",
+          "sha256": "a1b17e4509f0f218b887d252bba13f3dc05354ff32073ba992d132817ba46b1e"
+        },
+        {
+          "file": "ESecond_4.wav",
+          "seconds": 0.29698412698412696,
+          "recipe": "Play_sfx_Irelia_IreliaE2_buffactivate {r4}.txtp",
+          "sha256": "f5b5aad80542580a15d3583aa5d4935a530be45d62edc22760f6323d724ba7c2"
+        },
+        {
+          "file": "ESecond_5.wav",
+          "seconds": 0.3626984126984127,
+          "recipe": "Play_sfx_Irelia_IreliaE2_buffactivate {r5}.txtp",
+          "sha256": "7ba548ab0be1eeaf75ce795c83fdbad2d2269458fea11eee0fef27c302716da8"
+        }
+      ]
+    },
+    {
+      "group": "ELaunch",
+      "event": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "ELaunch_1.wav",
+          "seconds": 0.6787755102040817,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r1}.txtp",
+          "sha256": "418d54008de4e4fc8e494af331b8f47f8dd10bf94edf6105a17c4b92abb1726f"
+        },
+        {
+          "file": "ELaunch_2.wav",
+          "seconds": 0.8463945578231292,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r2}.txtp",
+          "sha256": "bafdc2bd8584d055c075f30c874b97aecf7f33a10b417f8fbe5a82e643a0b882"
+        },
+        {
+          "file": "ELaunch_3.wav",
+          "seconds": 0.8528571428571429,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r3}.txtp",
+          "sha256": "35c25bc1b65c444aeeb1baec7a69f28aaf2f66dc905a0c981a05993f8f9ea4dc"
+        },
+        {
+          "file": "ELaunch_4.wav",
+          "seconds": 0.7163945578231292,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r4}.txtp",
+          "sha256": "f6cc5d6e57c22bffd78800048cc6f71e1fbe6107cd74bc1e2144ee3f36bc0d84"
+        },
+        {
+          "file": "ELaunch_5.wav",
+          "seconds": 0.9954875283446712,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r5}.txtp",
+          "sha256": "54139276047b17f44bb47511029b5266fd0ae8cbed249b1df32ab1fe0ef62c6d"
+        },
+        {
+          "file": "ELaunch_6.wav",
+          "seconds": 0.8424716553287982,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r6}.txtp",
+          "sha256": "fc8bb18cc73470249e547b88fe45d3e150dbeacf8466478ac405b3670425c960"
+        },
+        {
+          "file": "ELaunch_7.wav",
+          "seconds": 1.0536507936507937,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r7}.txtp",
+          "sha256": "e0c87a273077b42bfad60db1e477b6e1e2ccb35a2fbd598d38e07d4d76d19def"
+        },
+        {
+          "file": "ELaunch_8.wav",
+          "seconds": 0.9233560090702948,
+          "recipe": "Play_sfx_Irelia_IreliaEMissile_OnMissileLaunch {r8}.txtp",
+          "sha256": "a3d3236c8e8714b21b40effd6946cb2f00f2ef16e46d0f47101a77a4a5bfde58"
+        }
+      ]
+    },
+    {
+      "group": "EConverge",
+      "event": "Play_sfx_Irelia_IreliaESecondary_OnMissileCast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "EConverge_1.wav",
+          "seconds": 2.0063038548752834,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_OnMissileCast {r1}.txtp",
+          "sha256": "8bb308c69dc3ac82da7ceba06dc2bbcbd71de263f8d6d2646bd15d993d75d64c"
+        },
+        {
+          "file": "EConverge_2.wav",
+          "seconds": 2.015827664399093,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_OnMissileCast {r2}.txtp",
+          "sha256": "b9c96ef472ba7bc44b6562d29c0746172157c025e7e09b665ef12867d6041daf"
+        },
+        {
+          "file": "EConverge_3.wav",
+          "seconds": 1.6753514739229025,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_OnMissileCast {r3}.txtp",
+          "sha256": "77c6ea27388d7691d0ce3e6b2e2d48541b88abc9a770a45dd0dde0f5a06555d3"
+        },
+        {
+          "file": "EConverge_4.wav",
+          "seconds": 1.3586848072562359,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_OnMissileCast {r4}.txtp",
+          "sha256": "64366d4c23f7d3be3c4456d20e16644a19d20bc277ab97158c42ca15ac3ff33d"
+        },
+        {
+          "file": "EConverge_5.wav",
+          "seconds": 1.3053514739229024,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_OnMissileCast {r5}.txtp",
+          "sha256": "030e6577e078a10cfed1d99a64f93122d01e2fc54adf0f3dcfcd635d11253932"
+        }
+      ]
+    },
+    {
+      "group": "EHit",
+      "event": "Play_sfx_Irelia_IreliaESecondary_hit",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "EHit_1.wav",
+          "seconds": 1.8817913832199546,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit {r1}.txtp",
+          "sha256": "a55b2b58e772ddadbde71900e999282a162669096e73e397e8e49e82ce7a8adb"
+        },
+        {
+          "file": "EHit_2.wav",
+          "seconds": 1.851859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit {r2}.txtp",
+          "sha256": "654974643ed9877df92a08fbb9c156ae0492aa1514d46730f73657204fad07a9"
+        },
+        {
+          "file": "EHit_3.wav",
+          "seconds": 1.8503174603174604,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit {r3}.txtp",
+          "sha256": "f7b6a58f7c1b69bebac30170a2fd0c7d4528a090a102eb2e6d133617837eaca8"
+        },
+        {
+          "file": "EHit_4.wav",
+          "seconds": 1.9905668934240364,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit {r4}.txtp",
+          "sha256": "be072ae779a05daa0571e6fd5ac09971eca6597f9142541989b78f7eea85191c"
+        },
+        {
+          "file": "EHit_5.wav",
+          "seconds": 2.0858503401360546,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit {r5}.txtp",
+          "sha256": "70cc40fffdafe8c4214070e5f81a6ba089973d940d196f3f2b91cb21d02ef2fd"
+        }
+      ]
+    },
+    {
+      "group": "EHitMinion",
+      "event": "Play_sfx_Irelia_IreliaESecondary_hit_minion",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "EHitMinion_1.wav",
+          "seconds": 0.2981859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r1}.txtp",
+          "sha256": "6ff01b575a2e78531472d1bb863869e6d28fce4474e9085a1cba907a75fbdee9"
+        },
+        {
+          "file": "EHitMinion_2.wav",
+          "seconds": 0.3450113378684807,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r2}.txtp",
+          "sha256": "10d0529b67dee26e0413a180e9fcb4da08768f73f559ec075a00af71d9be8589"
+        },
+        {
+          "file": "EHitMinion_3.wav",
+          "seconds": 0.4883446712018141,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r3}.txtp",
+          "sha256": "419c177c982aebd7f98e7af448bdd2591d017c1131143a224d63a75b58b3137f"
+        },
+        {
+          "file": "EHitMinion_4.wav",
+          "seconds": 0.371156462585034,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r4}.txtp",
+          "sha256": "23de88e3923bf1dcccfa9a34bbf41d79cb8e997eff8732da5ce5028e167f6d08"
+        },
+        {
+          "file": "EHitMinion_5.wav",
+          "seconds": 0.35891156462585033,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r5}.txtp",
+          "sha256": "d00029c1cf512a64e18792c300b12330eb957591466642ff77eacd9bfe684935"
+        },
+        {
+          "file": "EHitMinion_6.wav",
+          "seconds": 0.4197052154195011,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r6}.txtp",
+          "sha256": "650bc0b5f0b348aaf820a4914c2b41d138b1fa8f9792e5d8e5ad50d9bee34fa1"
+        },
+        {
+          "file": "EHitMinion_7.wav",
+          "seconds": 0.3493650793650794,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r7}.txtp",
+          "sha256": "092ebb400c5b824efc47eafb3b5709e3ac9ab4c04c9e9d2ff29cc9cf1fde2e0f"
+        },
+        {
+          "file": "EHitMinion_8.wav",
+          "seconds": 0.35895691609977326,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_hit_minion {r8}.txtp",
+          "sha256": "a8e2ce53dce4480607acc9219453f65a76c901254e182f19297cd7729074274d"
+        }
+      ]
+    },
+    {
+      "group": "RCast",
+      "event": "Play_sfx_Irelia_IreliaR_OnCast",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "RCast_1.wav",
+          "seconds": 0.520249433106576,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnCast.txtp",
+          "sha256": "cc73f9a5b137adebef9c105f79a46ef29eb781ee518055cdef48ef43613d46f2"
+        }
+      ]
+    },
+    {
+      "group": "RLaunch",
+      "event": "Play_sfx_Irelia_IreliaR_onmissilelaunch",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "RLaunch_1.wav",
+          "seconds": 1.3666666666666667,
+          "recipe": "Play_sfx_Irelia_IreliaR_onmissilelaunch.txtp",
+          "sha256": "0984d659b30820c693daad44ac30e02f23e5fa31906c3de37fae5c4633690b17"
+        }
+      ]
+    },
+    {
+      "group": "RHit",
+      "event": "Play_sfx_Irelia_IreliaR_OnHit_champ",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "RHit_1.wav",
+          "seconds": 4.620975056689343,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_champ.txtp",
+          "sha256": "1a77020b44a7463b31df3cfb24b030673683280badfb4fcb1e0213fcd53f2c12"
+        }
+      ]
+    },
+    {
+      "group": "RHitMinion",
+      "event": "Play_sfx_Irelia_IreliaR_OnHit_minion",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "RHitMinion_1.wav",
+          "seconds": 0.2981859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r1} {d}.txtp",
+          "sha256": "6ff01b575a2e78531472d1bb863869e6d28fce4474e9085a1cba907a75fbdee9"
+        },
+        {
+          "file": "RHitMinion_2.wav",
+          "seconds": 0.3450113378684807,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r2} {d}.txtp",
+          "sha256": "10d0529b67dee26e0413a180e9fcb4da08768f73f559ec075a00af71d9be8589"
+        },
+        {
+          "file": "RHitMinion_3.wav",
+          "seconds": 0.4883446712018141,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r3} {d}.txtp",
+          "sha256": "419c177c982aebd7f98e7af448bdd2591d017c1131143a224d63a75b58b3137f"
+        },
+        {
+          "file": "RHitMinion_4.wav",
+          "seconds": 0.371156462585034,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r4} {d}.txtp",
+          "sha256": "23de88e3923bf1dcccfa9a34bbf41d79cb8e997eff8732da5ce5028e167f6d08"
+        },
+        {
+          "file": "RHitMinion_5.wav",
+          "seconds": 0.35891156462585033,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r5} {d}.txtp",
+          "sha256": "d00029c1cf512a64e18792c300b12330eb957591466642ff77eacd9bfe684935"
+        },
+        {
+          "file": "RHitMinion_6.wav",
+          "seconds": 0.4197052154195011,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r6} {d}.txtp",
+          "sha256": "650bc0b5f0b348aaf820a4914c2b41d138b1fa8f9792e5d8e5ad50d9bee34fa1"
+        },
+        {
+          "file": "RHitMinion_7.wav",
+          "seconds": 0.3493650793650794,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r7} {d}.txtp",
+          "sha256": "092ebb400c5b824efc47eafb3b5709e3ac9ab4c04c9e9d2ff29cc9cf1fde2e0f"
+        },
+        {
+          "file": "RHitMinion_8.wav",
+          "seconds": 0.35895691609977326,
+          "recipe": "Play_sfx_Irelia_IreliaR_OnHit_minion {r8} {d}.txtp",
+          "sha256": "a8e2ce53dce4480607acc9219453f65a76c901254e182f19297cd7729074274d"
+        }
+      ]
+    },
+    {
+      "group": "RWallHit",
+      "event": "Play_sfx_Irelia_IreliaR2_hit",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "RWallHit_1.wav",
+          "seconds": 0.5237868480725624,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r1}.txtp",
+          "sha256": "8e62257f6ec9ea33ac0f42912a944b32339270db059102469de97a1567fe7aab"
+        },
+        {
+          "file": "RWallHit_2.wav",
+          "seconds": 0.5303628117913832,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r2}.txtp",
+          "sha256": "2722158f19ea6b83d9e8735ef7cb7b3dbb0d9c2e65b6c49cb8e92fe759ef02c8"
+        },
+        {
+          "file": "RWallHit_3.wav",
+          "seconds": 0.4963718820861678,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r3}.txtp",
+          "sha256": "b81bdc834e64c8b0d1a0360d3361b34d66af644c269753939461e2880a9d35a7"
+        },
+        {
+          "file": "RWallHit_4.wav",
+          "seconds": 0.45424036281179136,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r4}.txtp",
+          "sha256": "9db7e79d20aa88c839349e7a4b5ff62ab25197d41591627579d39209d6771ee1"
+        },
+        {
+          "file": "RWallHit_5.wav",
+          "seconds": 0.4850340136054422,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r5}.txtp",
+          "sha256": "b9b85da6966e2c96822ef9aca381770bb539cae63bc8a4d149a40e913a1a1fb2"
+        },
+        {
+          "file": "RWallHit_6.wav",
+          "seconds": 0.515328798185941,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r6}.txtp",
+          "sha256": "7a699b19e7601c5bd03c51f347c8b05b91c1f226360d44b9c5775c76ef62165a"
+        },
+        {
+          "file": "RWallHit_7.wav",
+          "seconds": 0.46668934240362814,
+          "recipe": "Play_sfx_Irelia_IreliaR2_hit {r7}.txtp",
+          "sha256": "63a02b86c349fff48f227442d3013f6233ba09aff7413db70d6aeb03f50af7a7"
+        }
+      ]
+    }
+  ],
+  "tools": {
+    "wwiser": "https://github.com/bnnm/wwiser/releases/tag/v20260808",
+    "vgmstream": "https://github.com/vgmstream/vgmstream/releases/tag/r2117"
+  },
+  "notes": [
+    "Default switch variants are used for basic casts and hit materials.",
+    "Attack 1 and 2 share audio in the supplied base bank; both event mappings are retained.",
+    "Q cast preserves both layers. Seven deterministic paired variants are rendered.",
+    "Original mixer buses/init bank are absent; Unity sets the final playback volume.",
+    "R champion impact already contains the wall activation layer; it is not played twice.",
+    "W charge is stopped on release/cancel. Full-charge cue follows the gameplay threshold.",
+    "Q_Hit_reset references object 223180206 absent from the supplied base bank; no replacement sound is invented."
+  ],
+  "pcm_conversion": {
+    "float_peak": 1.2039164304733276,
+    "common_gain": 0.7890913156044405,
+    "wer_float_peak": 1.5319596529006958,
+    "wer_common_gain": 0.6201207702834851,
+    "max_output_peak": 0.95,
+    "note": "Preserve existing attack/Q levels; common W/E/R gain prevents PCM clipping."
+  }
+}

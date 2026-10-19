@@ -1,0 +1,40 @@
+{
+  "presentation": "Original body, sleeve and dress geometry with the base color atlas. Dress mask preserved as source reference.",
+  "source_folder": "C:\\Users\\rotte\\Downloads\\LOL Data\\Mel\\assets\\characters\\mel\\skins\\base",
+  "converter": "lol2gltf",
+  "clips": {
+    "Idle": "idle1",
+    "Attack": "attack1",
+    "Run": "run"
+  },
+  "files": [
+    {
+      "sha256": "7a534b3de25ef6b31f7a2acb317fcdd460bbaed1e618061598468d22a393e0a6",
+      "file": "mel_base.skn"
+    },
+    {
+      "sha256": "504b9a2271e6675c16874b9eee1c49b06aa7ea0c9452c58e9732413be2f13e70",
+      "file": "mel_base.skl"
+    },
+    {
+      "sha256": "fa1e1872ad842c84fcb69a9dec4256bd3ab4292785165d60f94cfa10e03a5a77",
+      "file": "mel_base_tx_cm.tex"
+    },
+    {
+      "sha256": "5e66714e2051bbc986f64ca2a6518da7b57752a8e164a49faca12aabcf114450",
+      "file": "mel_base_dressmask_tx_cm.tex"
+    },
+    {
+      "sha256": "2c9465cd65e26a1b5e8553d773b76aad40115f022de43444ce778d662dd62dce",
+      "file": "animations/idle1.anm"
+    },
+    {
+      "sha256": "47a77ce821aa6876a24e4df2c03506dfdd86f2ef697a7739e5d89aa7339db50f",
+      "file": "animations/run.anm"
+    },
+    {
+      "sha256": "4671320b10bae1ec75fc66f2a4d71ccbc807869dd6a8011740821b357aa343a5",
+      "file": "animations/attack1.anm"
+    }
+  ]
+}

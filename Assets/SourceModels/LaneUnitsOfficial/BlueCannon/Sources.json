@@ -1,0 +1,45 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "order_minion_siege.skn",
+      "source": "sru_orderminionsiege\\skins\\base\\order_minion_siege.skn",
+      "sha256": "d4288705530c4dc4b1354125a7cd8b068c5334f4f1d9f0a8731e387f33ac7afa"
+    },
+    {
+      "file": "order_minion_siege.skl",
+      "source": "sru_orderminionsiege\\skins\\base\\order_minion_siege.skl",
+      "sha256": "c3e4bd79783b52b027f7fe7caaee5c0cca03c3571f20bb078f1a0b154e428bf3"
+    },
+    {
+      "file": "order_minion_siege_tx_cm.tex",
+      "source": "sru_orderminionsiege\\skins\\base\\order_minion_siege_tx_cm.tex",
+      "sha256": "519e5d9af50b91f961e0ab119ee2758d3b2a8c58d683987e66e3e172c956b206"
+    },
+    {
+      "file": "animations/cannon_order_idle1.anm",
+      "source": "sru_orderminionsiege\\skins\\base\\animations\\cannon_order_idle1.anm",
+      "sha256": "7727493165aa733d92f87f4b2f538b2ae48a46f1f0ff32a95a3211bb8cb0364b"
+    },
+    {
+      "file": "animations/cannon_order_run1.anm",
+      "source": "sru_orderminionsiege\\skins\\base\\animations\\cannon_order_run1.anm",
+      "sha256": "edd8f8e45cfad661ad225f6f507400d3f4ab37860c87b89487b52bd89309c60e"
+    },
+    {
+      "file": "animations/cannon_order_attack1.anm",
+      "source": "sru_orderminionsiege\\skins\\base\\animations\\cannon_order_attack1.anm",
+      "sha256": "20c055e331ade3779509471cf40e769addc74245309ecab2df0ec34fb3883e43"
+    }
+  ],
+  "clips": {
+    "Idle": "cannon_order_idle1",
+    "Run": "cannon_order_run1",
+    "Attack": "cannon_order_attack1"
+  },
+  "materials": [
+    "Cannon_Order_Mat",
+    "Minion_Order_Mat"
+  ],
+  "tower_intact_primitive": null
+}

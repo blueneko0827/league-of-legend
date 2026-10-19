@@ -1,0 +1,11 @@
+Fuente proporcionada por el usuario: C:\Users\rotte\Downloads\settModel
+Subcarpeta Meshy_AI_Crimson_Horned_Warlor_biped.
+Walking.fbx: Meshy_AI_Crimson_Horned_Warlor_biped_Animation_Walking_withSkin.fbx.
+Character.fbx: Meshy_AI_Crimson_Horned_Warlor_biped_Character_output.fbx, referencia.
+Color*.png: cuatro mapas *_texture_0 originales (color, normal, metallic, roughness).
+
+Modelo y rig completos, altura normalizada a 2 unidades y materiales URP Lit.
+Metallic/smoothness se combinan con el mismo shader que usa Irelia.
+ChampionWalkAnimation muestrea el clip sin root motion; SettModelAnimation sigue
+el movimiento real, pausa, stun, preparación de ataques y muerte/reaparición.
+Los archivos fuente en Downloads y las estadísticas de combate no se modifican.

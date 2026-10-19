@@ -1,0 +1,56 @@
+{
+  "patch": "16.20.1",
+  "provider": "Riot Games Data Dragon",
+  "assets": [
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Passive.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/passive/Irelia_Passive.png",
+      "sha256": "036c8468deb679d380edd37070681ea7992cac07101b385048941c332cdb5cdf"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Q.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/IreliaQ.png",
+      "sha256": "460b56435d22f2165bad6ce235779d3d56e5acb35a69a661d6588d3b112d02ae"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\W.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/IreliaW.png",
+      "sha256": "babdd1dc16bf72685826b443773dc65842a015135ad32c147074381eee74f0cb"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\E.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/IreliaE.png",
+      "sha256": "81a9bdc067d5c4d1411e09838aed93ef01ff865db37168910a7c56fb365afd9b"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\R.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/IreliaR.png",
+      "sha256": "cc13c8f18bc8dc26de93bb2af8172d607db9de43c04e515a50ddb7c914d819f3"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Flash.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/SummonerFlash.png",
+      "sha256": "1272fe7b3275c0afc872a6aaa6b65e27d41572d57f9ce19b9ed81b79aa5eb2aa"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Ignite.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/SummonerDot.png",
+      "sha256": "958db3407c83a9499a5e464c2e37df59c6544590dcd3d822965a83740303b9af"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Portrait.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/champion/Irelia.png",
+      "sha256": "a8cd7e83c7b327516869d67eb9cd96499bcf720d799b814830373cb200a98c9c"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Barrier.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/SummonerBarrier.png",
+      "sha256": "a0cf7b08cdd6d852d325bc9124e05f0e2c55aac340e50665c385755dfa86fbc0"
+    },
+    {
+      "asset": "Assets\\Resources\\HudIcons\\Exhaust.png",
+      "source": "https://ddragon.leagueoflegends.com/cdn/16.20.1/img/spell/SummonerExhaust.png",
+      "sha256": "ad513e510391d7c8fc604d16e239f430f1a10dde563ae7cf237eb87b1f0de722"
+    }
+  ]
+}

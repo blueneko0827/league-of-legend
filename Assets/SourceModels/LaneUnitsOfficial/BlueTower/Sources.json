@@ -1,0 +1,39 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "turret_base.skn",
+      "source": "turret\\skins\\base\\turret_base.skn",
+      "sha256": "7ed1f6808b3b62c7db4637039720cf1edaffeaebe7d9ccc29ce5488e0c8ee596"
+    },
+    {
+      "file": "turret_base.skl",
+      "source": "turret\\skins\\base\\turret_base.skl",
+      "sha256": "31c97dada2208e369a09f170223bbbd24e89e452ecd7787a7f116e5ac65e48c5"
+    },
+    {
+      "file": "turret_base_tx_cm.tex",
+      "source": "turret\\skins\\base\\turret_base_tx_cm.tex",
+      "sha256": "7ba9f91987d5fe9fe2b1e392a0d842ba65d0ca17e5d015cdb0f40fa95a33c5b9"
+    },
+    {
+      "file": "animations/idle1.anm",
+      "source": "turret\\skins\\base\\animations\\idle1.anm",
+      "sha256": "4ab6da63eeaeb93836c09d15a7a152d9a5e6a8a8400f9ba3408eb59b3b7c5ee7"
+    }
+  ],
+  "clips": {
+    "Idle": "idle1"
+  },
+  "materials": [
+    "Base",
+    "Stage1",
+    "Stage2",
+    "Stage3",
+    "Rubble",
+    "Broken1",
+    "Broken2",
+    "Broken3"
+  ],
+  "tower_intact_primitive": "Base"
+}

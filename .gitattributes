@@ -1,0 +1,3 @@
+# Preserve exact bytes for the artist handoff baseline and original source archives.
+# Text files remain diffable; disable automatic line-ending conversion.
+* -text

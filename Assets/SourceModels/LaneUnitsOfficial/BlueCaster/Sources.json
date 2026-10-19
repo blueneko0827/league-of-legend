@@ -1,0 +1,44 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "order_minion_caster.skn",
+      "source": "sru_orderminionranged\\skins\\base\\order_minion_caster.skn",
+      "sha256": "44654d4d6ee543bc6587740b4d54f6f06712958bb797f9b56384535a108de680"
+    },
+    {
+      "file": "order_minion_caster.skl",
+      "source": "sru_orderminionranged\\skins\\base\\order_minion_caster.skl",
+      "sha256": "8526a2669f8e9c2d3d40063b7d1d9c443a80f7624bdc57e045762b90b06ad693"
+    },
+    {
+      "file": "orderminion_caster_tx_cm.tex",
+      "source": "sru_orderminionranged\\skins\\base\\orderminion_caster_tx_cm.tex",
+      "sha256": "393c4a04a066767aed41ffd431ebcb252ae1f4d878aa348782d7dd227683b16b"
+    },
+    {
+      "file": "animations/minion_caster_idle.anm",
+      "source": "sru_orderminionranged\\skins\\base\\animations\\minion_caster_idle.anm",
+      "sha256": "ebd4d3f72a96599f0f457c38b1c469fbdcd5d364a6dc02f46cafe90ae74b9fc2"
+    },
+    {
+      "file": "animations/minion_caster_run.anm",
+      "source": "sru_orderminionranged\\skins\\base\\animations\\minion_caster_run.anm",
+      "sha256": "103089a165381ca3ae1393837200568b264ac8588e84665a4a09b51f630a76e8"
+    },
+    {
+      "file": "animations/minion_caster_attack1.anm",
+      "source": "sru_orderminionranged\\skins\\base\\animations\\minion_caster_attack1.anm",
+      "sha256": "d7c13e235035aec81a4796ee7105c1d95193fe9e4fad7163931a2930ca023159"
+    }
+  ],
+  "clips": {
+    "Idle": "minion_caster_idle",
+    "Run": "minion_caster_run",
+    "Attack": "minion_caster_attack1"
+  },
+  "materials": [
+    "lambert1"
+  ],
+  "tower_intact_primitive": null
+}

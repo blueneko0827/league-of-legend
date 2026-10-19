@@ -1,0 +1,54 @@
+{
+  "source": "C:\\Users\\rotte\\OneDrive\\Desktop\\ireliaLOL\\base\\particles",
+  "assets": [
+    {
+      "file": "irelia_base_r_mis_blades.scb",
+      "sha256": "e474bc161a63eac33cdd8b135149c417237c85a7e0ea47a2c74bc0c102d1ba89"
+    },
+    {
+      "file": "irelia_base_r_eam_line.tex",
+      "sha256": "0bfec84bb487c7a14b89901c9f0f969a28d22259d7138e175d9f2db722f3933d",
+      "decoded": "WallEnergy.png"
+    },
+    {
+      "file": "irelia_base_r_groundlines_mesh_wall.scb",
+      "sha256": "8d1d864b3b087f8c50f283d9a43517d7ab1f71e80bbcedd88ab89729ecddd9f8"
+    }
+  ],
+  "blade_texture": "../Raw/irelia_base_blades_tx_cm.tex (existing Material2)",
+  "format_reference": "https://github.com/LeagueToolkit/LeagueToolkit/tree/main/src/LeagueToolkit/Core",
+  "wall_profile": {
+    "output": "Assets/Resources/LeagueData/IreliaRWall.json",
+    "source_vertices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "units_to_unity": 0.01,
+    "closed": false,
+    "note": "Gameplay boundary reconstructed from the bottom row of the supplied official visual mesh, not an independently verified server collision polygon."
+  },
+  "presentation": "Official R blade geometry, open wall proportions and energy texture. Unity reconstructs the planting, glow and spacing; original particle emitter definitions were not supplied.",
+  "aim_preview": {
+    "source": "C:\\Users\\rotte\\Downloads\\LOL Data\\ireliaLOL\\base\\particles",
+    "assets": [
+      {
+        "file": "irelia_base_r_mis_glow_lines.tex",
+        "sha256": "946ba2d341c710fff14ad757ead85bc0f28d0557fd695998d21c6660a72fb029",
+        "decoded": "AimTrail.png"
+      },
+      {
+        "file": "irelia_base_r_mis_glow.tex",
+        "sha256": "7b471cdf0c7d8d8f85686798a3ec7f814ed58c5fc0e363f33c6984a5d4dfb8ff",
+        "decoded": "AimTip.png"
+      }
+    ],
+    "presentation": "Reconstructed ground arrow with original R missile trail/tip textures; not the complete original targeting UI."
+  }
+}

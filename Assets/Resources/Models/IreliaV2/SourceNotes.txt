@@ -1,0 +1,34 @@
+IRELIA SIMPLE V2 - UNITY
+========================
+
+Contenido:
+- Assets/IreliaSimpleV2/Models/IreliaSimpleV2_Body.obj
+- Assets/IreliaSimpleV2/Models/IreliaSimpleV2_Hair.obj
+- Assets/IreliaSimpleV2/Models/IreliaSimpleV2_Armor.obj
+- Assets/IreliaSimpleV2/Models/IreliaSimpleV2_Blade.obj
+- Assets/IreliaSimpleV2/Scripts/IreliaSimpleV2Controller.cs
+- Assets/IreliaSimpleV2/Scripts/Editor/IreliaSimpleV2Setup.cs
+
+Qué es:
+- Un personaje low poly original, simple y reconocible, inspirado en Irelia.
+- Cuerpo femenino poligonal sencillo.
+- Pelo oscuro largo.
+- Armadura simple con colores tipo Irelia (plateado, rojo, azul oscuro).
+- 4 hojas flotantes.
+- Movimiento y ataque simples por script.
+
+Cómo importarlo en Unity:
+1) Descomprimí este ZIP.
+2) Copiá la carpeta Assets dentro de tu proyecto Unity.
+3) Esperá a que Unity importe todo.
+4) Abrí el menú superior: Tools > Irelia Simple V2 > Create Character
+5) Se crea el personaje automáticamente en la escena.
+
+Controles:
+- WASD / Flechas = mover
+- Click izquierdo o Espacio = atacar
+
+Notas:
+- Es un prototipo low poly.
+- No usa rig humanoide ni animaciones por huesos.
+- La animación es procedural/simple para que lo puedas probar rápido.

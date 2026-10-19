@@ -1,0 +1,10 @@
+MINIONS 3D PARA UNITY
+
+Incluye tres modelos OBJ y un archivo MTL de materiales:
+- Minion_Guerrero.obj
+- Minion_Mago.obj
+- Minion_Canon.obj
+
+Para importar: descomprime toda la carpeta en Assets/Minions de Unity. Arrastra cada OBJ a la escena. Los materiales se definen en MinionMaterials.mtl (Unity puede requerir extraer/asignar materiales segun version y pipeline).
+
+Son modelos low-poly estaticos, sin rigging ni animaciones, de diseño original inspirado en el arquetipo MOBA. Los modelos miran hacia el eje +Z y usan Y como vertical.

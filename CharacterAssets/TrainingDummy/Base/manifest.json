@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "source_roots": {
+    "downloads": "C:\\Users\\rotte\\Downloads",
+    "project": "."
+  },
+  "summary": {
+    "files": 20,
+    "bytes": 2122743,
+    "by_extension": {
+      ".anim": 2,
+      ".asset": 1,
+      ".glb": 4,
+      ".json": 1,
+      ".mat": 1,
+      ".meta": 9,
+      ".png": 1,
+      ".prefab": 1
+    },
+    "by_category": {
+      "base_original": 2,
+      "unity_snapshot": 18
+    }
+  },
+  "files": [
+    {
+      "path": "Original/target_dummyHit.glb",
+      "bytes": 350320,
+      "sha256": "adf42f9a852b326d916efb62a9910c1f16fed9395ed684b4ef695583e9e17dea",
+      "category": "base_original",
+      "sources": [
+        {
+          "root": "downloads",
+          "path": "target_dummyHit.glb"
+        }
+      ]
+    },
+    {
+      "path": "Original/target_dummyIdle.glb",
+      "bytes": 344372,
+      "sha256": "b8ff46ef35665102d50c834cb1619560c5612d0a44d4efb2152c2aa3e0ea3443",
+      "category": "base_original",
+      "sources": [
+        {
+          "root": "downloads",
+          "path": "target_dummyIdle.glb"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Dummy.prefab",
+      "bytes": 23993,
+      "sha256": "2f42e23f3e9bc183da2ba3cce2141d3e7a7505ce74d120269354b14a20f6e37a",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Dummy.prefab"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Dummy.prefab.meta",
+      "bytes": 154,
+      "sha256": "974da34b2bf528949ae3f0aadd01c217212852102424a250bf9ba30075705b3f",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Dummy.prefab.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Hit.anim",
+      "bytes": 100389,
+      "sha256": "e013518c79489da24c9dcf40d1344f9f725e8d71eb7f630cf9b9d6f84fd2c548",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Hit.anim"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Hit.anim.meta",
+      "bytes": 188,
+      "sha256": "f5f3b26f76cc4b476074ddd3d26ca44fd5d11075e3a083a40fcc7bd91bf28cc5",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Hit.anim.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Idle.anim",
+      "bytes": 48801,
+      "sha256": "7751c3ee845c60c7c7edcb2fdc7c159b99412c3468a6f6ee78e3574a28a5e695",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Idle.anim"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Idle.anim.meta",
+      "bytes": 188,
+      "sha256": "50b3b7e42fe79c4241b12c0022ad880a3c36c9a9b2dcfbd41f100746cfe5c3bc",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Idle.anim.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Material0.mat",
+      "bytes": 1982,
+      "sha256": "fa4afbbc2e6bbf1f6be2b0f27bde5896e8e577bd128797f590e60b8d226af851",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Material0.mat"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Material0.mat.meta",
+      "bytes": 188,
+      "sha256": "60b9738e38ed160366846db0a630d5cdb0ed3e263e3f256120be1ff3ac4170ae",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Material0.mat.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Mesh0.asset",
+      "bytes": 336219,
+      "sha256": "ef215ed19448f379635d54ddd209db91acdc653e6dbc905a4c9d09d33c9d9231",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Mesh0.asset"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Mesh0.asset.meta",
+      "bytes": 188,
+      "sha256": "a09215fc7fafd33340a503318564e6e0a6207c3f35fa0965fcbda791d58f3156",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Mesh0.asset.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Texture0.png",
+      "bytes": 217251,
+      "sha256": "cfb0dfef013ce6efc741308ae501b1b6f0686bf32c9802f92d8733f559fba93f",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Texture0.png"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/Resources/Models/TrainingDummy/Texture0.png.meta",
+      "bytes": 3069,
+      "sha256": "cf925d3a5154347b3f89cfcac0cf505d9497e071a92dfb85cd411b30d1023528",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/Resources/Models/TrainingDummy/Texture0.png.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/SourceModels/TrainingDummy/Sources.json",
+      "bytes": 563,
+      "sha256": "967b594bbf5da1f1dc51ec07cc493d2bfafd6cffc250dee997cf0e1db48695e4",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/SourceModels/TrainingDummy/Sources.json"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/SourceModels/TrainingDummy/Sources.json.meta",
+      "bytes": 62,
+      "sha256": "03a474f361c56e9c9ae30eb5d73667be0208f06aee983d25c8d17a7418151f68",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/SourceModels/TrainingDummy/Sources.json.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/SourceModels/TrainingDummy/target_dummyHit.glb",
+      "bytes": 350320,
+      "sha256": "adf42f9a852b326d916efb62a9910c1f16fed9395ed684b4ef695583e9e17dea",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/SourceModels/TrainingDummy/target_dummyHit.glb"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/SourceModels/TrainingDummy/target_dummyHit.glb.meta",
+      "bytes": 62,
+      "sha256": "d87974254a206d50726bb36e63a84e7588961a99067963dbedb33b89cd1153db",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/SourceModels/TrainingDummy/target_dummyHit.glb.meta"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/SourceModels/TrainingDummy/target_dummyIdle.glb",
+      "bytes": 344372,
+      "sha256": "b8ff46ef35665102d50c834cb1619560c5612d0a44d4efb2152c2aa3e0ea3443",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/SourceModels/TrainingDummy/target_dummyIdle.glb"
+        }
+      ]
+    },
+    {
+      "path": "Unity/Assets/SourceModels/TrainingDummy/target_dummyIdle.glb.meta",
+      "bytes": 62,
+      "sha256": "c4850f37dce9f5964cda791dfc8fc11ba612537e614358838035eae5ef56c6c6",
+      "category": "unity_snapshot",
+      "sources": [
+        {
+          "root": "project",
+          "path": "Assets/SourceModels/TrainingDummy/target_dummyIdle.glb.meta"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Only Idle and Hit source clips were found; no separate dummy audio/VFX bank was located."
+  ]
+}

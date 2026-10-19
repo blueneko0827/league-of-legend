@@ -1,0 +1,13 @@
+{
+  "visual_mesh_multiplier": 1.65,
+  "lane_width_unity": 16.0,
+  "camera_fov_degrees": 32.5,
+  "camera_pitch_degrees": 55.0,
+  "camera_yaw_degrees": 45,
+  "camera_distance": 34.30844573821068,
+  "model_tilt_degrees": 15,
+  "melee_height_ratio": 0.6,
+  "caster_height_ratio": 0.6,
+  "cannon_height_ratio": 0.6,
+  "tower_height_ratio": 3.0
+}

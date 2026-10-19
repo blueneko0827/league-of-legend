@@ -1,0 +1,55 @@
+{
+  "source_folder": "C:\\Users\\rotte\\Downloads\\LOL Data\\Sett\\assets\\characters\\sett\\skins\\base",
+  "files": [
+    {
+      "file": "sett.skn",
+      "sha256": "b90c2f3d3135b476b62e66b851b3c95ddbd1432f2f31766d62b927acc4627f6c"
+    },
+    {
+      "file": "sett.skl",
+      "sha256": "d476a8fbe170bff8ccdc8e5d4fa57db758af6806611a661a32487a6e8390ae5c"
+    },
+    {
+      "file": "sett_base_tx_cm.tex",
+      "sha256": "463581c7bc39c9c95bada5985e287f6f135071751c758166402b5f56556cb4b8"
+    },
+    {
+      "file": "sett_base_mom_tx_cm.tex",
+      "sha256": "e2022f5647431d98beccc5c951a74ba62d24343412742961735a5325657f66e5"
+    },
+    {
+      "file": "sett_base_wolverine_tx_cm.tex",
+      "sha256": "f85caf309e3266b7d476b808cc2aa537410484e59da34865e21f1cfa7df9b723"
+    },
+    {
+      "file": "animations/sett_idle.anm",
+      "sha256": "7d0713b2352eb8efca642075e18a68c428c288e024bbe24098097f2903e7d16d"
+    },
+    {
+      "file": "animations/sett_run.anm",
+      "sha256": "de731f46b82a29aeb48f9f0aefe2c7eda8f0c18a4ad5a68888dd9b185f245d58"
+    },
+    {
+      "file": "animations/sett_attack1_start.anm",
+      "sha256": "2a73c0964bbe6e516bb3b9a72a23d3d30215a07bc794f46aa250d8df892da168"
+    },
+    {
+      "file": "animations/sett_attack1.anm",
+      "sha256": "dba7306f4e20c1a63f248b9eaf2e8fae8f1aa677bfa32eb42b5e32813e78becc"
+    }
+  ],
+  "clips": {
+    "Idle": "sett_idle",
+    "Run": "sett_run",
+    "AttackStart": "sett_attack1_start",
+    "Attack": "sett_attack1"
+  },
+  "visible_materials": [
+    "Sett_Base_Mat"
+  ],
+  "hidden_materials": [
+    "Joke",
+    "Wolverine"
+  ],
+  "converter": "lol2gltf"
+}

@@ -1,0 +1,44 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "chaos_minion_melee.skn",
+      "source": "sru_chaosminionmelee\\skins\\base\\chaos_minion_melee.skn",
+      "sha256": "385353d2448d07ab63ad24366ba7105e0882930aeb9d8b8b2793308c715fedb0"
+    },
+    {
+      "file": "chaos_minion_melee.skl",
+      "source": "sru_chaosminionmelee\\skins\\base\\chaos_minion_melee.skl",
+      "sha256": "e5dbfef4f0e334f9b1837d6782eec6f7d0db8ce9dbe43ace9c136d2b75ec558b"
+    },
+    {
+      "file": "chaosminion_melee_tx_cm.tex",
+      "source": "sru_chaosminionmelee\\skins\\base\\chaosminion_melee_tx_cm.tex",
+      "sha256": "190d1ed78685d0ae095c3507af62cef54b21e46d4801598eefe13649cf72a2e6"
+    },
+    {
+      "file": "animations/minion_melee_idle.anm",
+      "source": "sru_orderminionmelee\\skins\\base\\animations\\minion_melee_idle.anm",
+      "sha256": "1d8daf259fddd2109dbfeb42cb52fd183e3f75677b501ea14feecc5f8dbff0f8"
+    },
+    {
+      "file": "animations/minion_melee_run.anm",
+      "source": "sru_orderminionmelee\\skins\\base\\animations\\minion_melee_run.anm",
+      "sha256": "954b1afc41ceb383f923ce7200c144841a0c9a64fd3f3ad9212673eb52635308"
+    },
+    {
+      "file": "animations/minion_melee_attack.anm",
+      "source": "sru_chaosminionmelee\\skins\\base\\animations\\minion_melee_attack.anm",
+      "sha256": "a31bdfdbee19678308e27310a04456e8d183137b1b2cead4bde3a99e9374177b"
+    }
+  ],
+  "clips": {
+    "Idle": "minion_melee_idle",
+    "Run": "minion_melee_run",
+    "Attack": "minion_melee_attack"
+  },
+  "materials": [
+    "RedMinion_Caster_MD_Default3"
+  ],
+  "tower_intact_primitive": null
+}

@@ -1,0 +1,44 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "chaos_minion_caster.skn",
+      "source": "sru_chaosminionranged\\skins\\base\\chaos_minion_caster.skn",
+      "sha256": "836d25566a27ccb2342258e0c86a5db94a067da7903fbc6f2697bf40518e17cf"
+    },
+    {
+      "file": "chaos_minion_caster.skl",
+      "source": "sru_chaosminionranged\\skins\\base\\chaos_minion_caster.skl",
+      "sha256": "27e4ffbf5d764208c5ccc5896d17592abd7362440b237cb9b5fba21d4a149f0f"
+    },
+    {
+      "file": "red_caster_tx_cm.tex",
+      "source": "sru_chaosminionranged\\skins\\base\\red_caster_tx_cm.tex",
+      "sha256": "8f767e66545ecec5e746223eeb1583517b1b50469ec7e391eab68547707ecc9f"
+    },
+    {
+      "file": "animations/minion_caster_idle.anm",
+      "source": "sru_chaosminionranged\\skins\\base\\animations\\minion_caster_idle.anm",
+      "sha256": "6f92752419030d07c449ddf6000c672a2d0c6cb13ee81fb57be9f194cf54c28d"
+    },
+    {
+      "file": "animations/minion_caster_run.anm",
+      "source": "sru_chaosminionranged\\skins\\base\\animations\\minion_caster_run.anm",
+      "sha256": "16f43b1bfb8780d1cb2231453a3936f95e263fce8b1021b092b569ed4bd0c6d2"
+    },
+    {
+      "file": "animations/minion_caster_attack.anm",
+      "source": "sru_chaosminionranged\\skins\\base\\animations\\minion_caster_attack.anm",
+      "sha256": "f02bc79e5889c08a3f27313de0b5ff87e437d3590be96d41c6ac6ced7681f708"
+    }
+  ],
+  "clips": {
+    "Idle": "minion_caster_idle",
+    "Run": "minion_caster_run",
+    "Attack": "minion_caster_attack"
+  },
+  "materials": [
+    "RedMinion_Caster_MD_Default3"
+  ],
+  "tower_intact_primitive": null
+}

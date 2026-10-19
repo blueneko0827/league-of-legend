@@ -1,0 +1,6 @@
+{
+  "name": "MidLane.Editor",
+  "rootNamespace": "MidLane.Editor",
+  "references": ["MidLane.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
+  "includePlatforms": ["Editor"]
+}

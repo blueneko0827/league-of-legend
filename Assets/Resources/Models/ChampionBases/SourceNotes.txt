@@ -1,0 +1,13 @@
+WomenBase.obj provisto por el usuario desde:
+C:\Users\rotte\Downloads\Women Base by Rub - ycfbSrNLqa\women-base.obj
+Autor indicado en el paquete: Rub. Se usa para Irelia y Mel.
+El paquete solo contiene geometría OBJ; no incluye women-base.mtl, texturas ni animaciones.
+
+CharacterBase.fbx provisto por el usuario desde:
+C:\Users\rotte\Downloads\Character Base by madtrollstudio - qbDLeTtb8K\characterBase.fbx
+Autor indicado en el paquete: madtrollstudio. Se usa para Sett y Vladimir.
+El paquete contiene una malla estática FBX sin clips de animación ni texturas.
+
+El simulador centra los pivotes, normaliza la altura a 2 unidades y asigna materiales URP.
+Irelia conserva el modelo de cuatro cuchillas y la animación procedural de IreliaSimpleV2,
+además de las hojas animadas de E. Los archivos originales de Downloads no se modifican.

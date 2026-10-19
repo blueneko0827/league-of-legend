@@ -1,0 +1,44 @@
+{
+  "archive": "Map11.wad.client",
+  "files": [
+    {
+      "file": "chaos_minion_siege.skn",
+      "source": "sru_chaosminionsiege\\skins\\base\\chaos_minion_siege.skn",
+      "sha256": "5ff119782619eef5f344b579037b1b9eb2682742c14c3e415a3347cdc4c7d65e"
+    },
+    {
+      "file": "chaos_minion_siege.skl",
+      "source": "sru_chaosminionsiege\\skins\\base\\chaos_minion_siege.skl",
+      "sha256": "ffb78ad37c484af23937cbbd92e66af33882dc963e1646d8fc29ec8e1d45848e"
+    },
+    {
+      "file": "chaos_minion_siege_tx_cm.tex",
+      "source": "sru_chaosminionsiege\\skins\\base\\chaos_minion_siege_tx_cm.tex",
+      "sha256": "4de294116499c185f3dd11134120c08647492cda5e69b1ba1851023e84f9066a"
+    },
+    {
+      "file": "animations/cannon_chaos_idle1.anm",
+      "source": "sru_chaosminionsiege\\skins\\base\\animations\\cannon_chaos_idle1.anm",
+      "sha256": "e315d27274331967b954f1d3c35b8037d7fc5aabf170ecf6eac1d01079ff1489"
+    },
+    {
+      "file": "animations/cannon_chaos_run1.anm",
+      "source": "sru_chaosminionsiege\\skins\\base\\animations\\cannon_chaos_run1.anm",
+      "sha256": "4bfde438a4c7ba082a7d7cb1795f53d42c6d90d1089692bac293ccdf02cf8220"
+    },
+    {
+      "file": "animations/cannon_chaos_attack1.anm",
+      "source": "sru_chaosminionsiege\\skins\\base\\animations\\cannon_chaos_attack1.anm",
+      "sha256": "db33ffbe757c69d9ab37f420aef42a9c9c0b17f04c8bce52f96caca69d1a7c83"
+    }
+  ],
+  "clips": {
+    "Idle": "cannon_chaos_idle1",
+    "Run": "cannon_chaos_run1",
+    "Attack": "cannon_chaos_attack1"
+  },
+  "materials": [
+    "Cannon_Chaos_Mat"
+  ],
+  "tower_intact_primitive": null
+}

@@ -1,0 +1,14 @@
+Crimson Valkyrie: paquete FBX y texturas proporcionado por el usuario desde
+C:\Users\rotte\Downloads\Meshy_AI_Crimson_Valkyrie_1014200520_texture_fbx
+
+Se conservan el FBX y los cuatro PNG originales (color, normal, metallic y roughness).
+El modelo no contiene rig ni clips de animación: una malla con cinco componentes geométricos
+independientes, el cuerpo y cuatro espadas. CrimsonModelAssets separa estos componentes,
+conserva UV/normales/tangentes y aplica la transformación de ejes del FBX.
+El usuario eligió usar las cuatro espadas nuevas como hojas flotantes y en la E.
+El cuerpo se normaliza a 2 unidades; la E conserva su lógica y tiempos existentes.
+
+Material URP Lit: color y normal originales; metallic en R y smoothness = 1 - roughness en A,
+combinados por un shader a una RenderTexture lineal. No se modifican los PNG originales.
+CrimsonModelImport configura lectura de malla, tipo NormalMap y espacios de color de datos.
+Los originales de Downloads no se modifican. Mel continúa usando WomenBase.
