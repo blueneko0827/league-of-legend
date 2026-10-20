@@ -18,6 +18,10 @@ namespace MidLane
         public TrainingDummyModel Visual { get; private set; }
         public float TotalDamage { get; private set; }
         public float LastDamageAt { get; private set; } = float.NegativeInfinity;
+        // Read-only statistics for the Practice Tool style labels (last hit, DPS, total).
+        public float LastHitAmount { get; private set; }
+        public float SequenceStartedAt { get; private set; }
+        public float DamagePerSecond { get { return TotalDamage <= 0 ? 0 : TotalDamage / Mathf.Max(1, LastDamageAt - SequenceStartedAt); } }
         public bool PracticeMark { get; private set; }
         public bool PermanentMark { get; private set; }
         public const float MovementRadius = 2.2f;
@@ -56,8 +60,8 @@ namespace MidLane
         public void RecordDamage(float amount, string label, DamageType type)
         {
             if (amount <= 0) return;
-            if (Time.time - LastDamageAt >= 5) TotalDamage = 0;
-            TotalDamage += amount; LastDamageAt = Time.time;
+            if (Time.time - LastDamageAt >= 5) { TotalDamage = 0; SequenceStartedAt = Time.time; }
+            TotalDamage += amount; LastDamageAt = Time.time; LastHitAmount = amount;
             rearmMark = true;
             Visual.PlayHit();
             Notices.Add(new DamageNotice { Amount = amount, Label = label, Type = type, StartedAt = Time.time });
@@ -68,7 +72,7 @@ namespace MidLane
         {
             if (world == null || world.Paused) return;
             if (rearmMark && Time.time - LastDamageAt >= 6) { PracticeMark = true; rearmMark = false; }
-            if (Time.time - LastDamageAt >= 5) TotalDamage = 0;
+            if (Time.time - LastDamageAt >= 5) { TotalDamage = 0; LastHitAmount = 0; }
             Notices.RemoveAll(n => Time.time - n.StartedAt >= 1.5f);
             if (!Mobile) return;
             if (Patrolling) { TickPatrol(); return; }

@@ -7,7 +7,8 @@ namespace MidLane
     public sealed class LaneTerrain : MonoBehaviour
     {
         readonly List<Mesh> meshes = new List<Mesh>();
-        Material surfaceMaterial;
+        Material surfaceMaterial, rockMaterial;
+        Texture2D rockTexture;
 
         public void Build(LaneWorld world)
         {
@@ -71,50 +72,148 @@ namespace MidLane
 
             // Deterministic scenery uses its own generator, without changing the match's RNG.
             var random = new System.Random(72014);
-            Mesh rockMesh = CreateRock(); meshes.Add(rockMesh);
+            rockTexture = CreateRockTexture();
+            rockMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "Painted verge rock" };
+            rockMaterial.SetTexture("_BaseMap", rockTexture);
+            rockMaterial.SetColor("_BaseColor", Color.white);
+            rockMaterial.SetFloat("_Smoothness", 0.08f); rockMaterial.SetFloat("_Metallic", 0);
+            var rockMeshes = new Mesh[4];
+            for (int i = 0; i < rockMeshes.Length; i++) { rockMeshes[i] = CreateRock(random, i); meshes.Add(rockMeshes[i]); }
             for (int side = -1; side <= 1; side += 2)
                 for (float x = -world.Settings.halfLength - 6; x <= world.Settings.halfLength + 6; x += 4.7f)
                 {
                     if (random.NextDouble() < 0.2) continue;
                     float edge = world.Settings.halfWidth + 1.8f;
                     Vector3 position = new Vector3(x + Range(random, -0.8f, 0.8f), 0, side * (edge + Range(random, 0, 1.8f)));
-                    var rock = new GameObject("Weathered verge rock"); rock.transform.SetParent(transform, false);
-                    rock.transform.localPosition = position;
-                    rock.transform.localRotation = Quaternion.Euler(0, Range(random, 0, 360), 0);
-                    rock.transform.localScale = new Vector3(Range(random, 0.8f, 1.8f), Range(random, 0.25f, 0.55f), Range(random, 0.5f, 1.1f));
-                    rock.AddComponent<MeshFilter>().sharedMesh = rockMesh;
-                    rock.AddComponent<MeshRenderer>().sharedMaterial = world.Material(new Color(0.22f, 0.28f, 0.25f));
+                    // A main stone, sometimes a taller boulder, with a few smaller stones beside it.
+                    bool boulder = random.NextDouble() < 0.25;
+                    float size = boulder ? Range(random, 1.1f, 1.6f) : Range(random, 0.7f, 1.2f);
+                    float height = boulder ? Range(random, 0.75f, 1.1f) : Range(random, 0.35f, 0.65f);
+                    PlaceRock(rockMeshes[random.Next(rockMeshes.Length)], position, size, height, random);
+                    int pebbles = random.Next(0, 3);
+                    for (int p = 0; p < pebbles; p++)
+                    {
+                        float angle = Range(random, 0, Mathf.PI * 2), distance = size * Range(random, 0.9f, 1.4f);
+                        Vector3 offset = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * distance;
+                        // Keep loose stones off the playable lane.
+                        if (Mathf.Abs(position.z + offset.z) < world.Settings.halfWidth + 0.6f) offset.z = -offset.z;
+                        PlaceRock(rockMeshes[random.Next(rockMeshes.Length)], position + offset,
+                            size * Range(random, 0.3f, 0.5f), Range(random, 0.3f, 0.5f), random);
+                    }
                 }
+        }
+
+        void PlaceRock(Mesh mesh, Vector3 position, float size, float height, System.Random random)
+        {
+            var rock = new GameObject("Weathered verge rock"); rock.transform.SetParent(transform, false);
+            // Sink the base slightly so no stone appears to float on the painted grass.
+            rock.transform.localPosition = position - Vector3.up * 0.04f;
+            rock.transform.localRotation = Quaternion.Euler(Range(random, -6, 6), Range(random, 0, 360), Range(random, -6, 6));
+            rock.transform.localScale = new Vector3(size * Range(random, 0.85f, 1.15f), height, size * Range(random, 0.6f, 0.95f));
+            rock.AddComponent<MeshFilter>().sharedMesh = mesh;
+            rock.AddComponent<MeshRenderer>().sharedMaterial = rockMaterial;
         }
 
         static float Range(System.Random random, float min, float max) { return Mathf.Lerp(min, max, (float)random.NextDouble()); }
 
-        static Mesh CreateRock()
+        // Faceted stone: an irregular base ring, a shoulder ring and a slanted top cap.
+        // UVs: side faces use the left half of the texture (stone, darker at the base),
+        // upward faces use the right half (lighter stone with moss).
+        static Mesh CreateRock(System.Random random, int variant)
         {
-            var vertices = new Vector3[15]; var triangles = new List<int>();
-            for (int i = 0; i < 7; i++)
+            int segments = 7 + variant % 3;
+            var rings = new Vector3[3, segments];
+            float lean = Range(random, -0.12f, 0.12f);
+            for (int i = 0; i < segments; i++)
             {
-                float angle = i * Mathf.PI * 2 / 7;
-                vertices[i] = new Vector3(Mathf.Cos(angle), -0.05f, Mathf.Sin(angle));
-                vertices[i + 7] = new Vector3(Mathf.Cos(angle) * 0.63f + 0.12f, 0.55f + 0.12f * Mathf.Sin(i * 2.1f), Mathf.Sin(angle) * 0.63f);
+                float angle = (i + Range(random, -0.25f, 0.25f)) * Mathf.PI * 2 / segments;
+                float radius = Range(random, 0.82f, 1.05f);
+                var dir = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+                rings[0, i] = dir * radius + Vector3.down * 0.05f;
+                rings[1, i] = dir * radius * Range(random, 0.78f, 0.92f) + Vector3.up * Range(random, 0.38f, 0.52f) + Vector3.right * lean * 0.5f;
+                rings[2, i] = dir * radius * Range(random, 0.42f, 0.6f) + Vector3.up * Range(random, 0.78f, 0.92f) + Vector3.right * lean;
             }
-            vertices[14] = new Vector3(0.08f, 0.68f, 0);
-            for (int i = 0; i < 7; i++)
+            Vector3 apex = new Vector3(lean, Range(random, 0.92f, 1.02f), Range(random, -0.08f, 0.08f));
+            var vertices = new List<Vector3>(); var uvs = new List<Vector2>();
+            for (int i = 0; i < segments; i++)
             {
-                int next = (i + 1) % 7;
-                triangles.AddRange(new[] { i, i + 7, next + 7, i, next + 7, next, i + 7, 14, next + 7 });
+                int next = (i + 1) % segments;
+                for (int ring = 0; ring < 2; ring++)
+                {
+                    AddFace(vertices, uvs, rings[ring, i], rings[ring + 1, i], rings[ring + 1, next]);
+                    AddFace(vertices, uvs, rings[ring, i], rings[ring + 1, next], rings[ring, next]);
+                }
+                AddFace(vertices, uvs, rings[2, i], apex, rings[2, next]);
             }
-            // Separate the faces for weathered facets instead of a smooth plastic silhouette.
-            var faces = new Vector3[triangles.Count]; var indices = new int[triangles.Count];
-            for (int i = 0; i < triangles.Count; i++) { faces[i] = vertices[triangles[i]]; indices[i] = i; }
-            var mesh = new Mesh { name = "Verge stone facets", vertices = faces, triangles = indices };
+            var triangles = new int[vertices.Count];
+            for (int i = 0; i < triangles.Length; i++) triangles[i] = i;
+            var mesh = new Mesh { name = "Verge stone facets " + variant };
+            mesh.SetVertices(vertices); mesh.SetUVs(0, uvs); mesh.triangles = triangles;
             mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
+        }
+
+        static void AddFace(List<Vector3> vertices, List<Vector2> uvs, Vector3 a, Vector3 b, Vector3 c)
+        {
+            // Separate vertices per face keep the hard, hand-cut facets.
+            Vector3 normal = Vector3.Cross(b - a, c - a).normalized;
+            bool top = normal.y > 0.55f;
+            foreach (Vector3 vertex in new[] { a, b, c })
+            {
+                vertices.Add(vertex);
+                if (top) uvs.Add(new Vector2(0.55f + 0.4f * Mathf.Clamp01(vertex.x * 0.5f + 0.5f), 0.1f + 0.8f * Mathf.Clamp01(vertex.z * 0.5f + 0.5f)));
+                else
+                {
+                    float around = Mathf.Atan2(vertex.z, vertex.x) / (Mathf.PI * 2) + 0.5f;
+                    uvs.Add(new Vector2(0.03f + 0.42f * around, Mathf.Clamp01(vertex.y)));
+                }
+            }
+        }
+
+        static Texture2D CreateRockTexture()
+        {
+            const int width = 128, height = 64;
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, true) { name = "Painted verge rock", wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Trilinear };
+            var pixels = new Color32[width * height];
+            Color stone = new Color(0.36f, 0.4f, 0.45f), stoneLight = new Color(0.5f, 0.54f, 0.57f), stoneDark = new Color(0.17f, 0.2f, 0.24f);
+            Color moss = new Color(0.27f, 0.39f, 0.2f), mossLight = new Color(0.4f, 0.52f, 0.25f);
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                {
+                    float u = x / (float)(width - 1), v = y / (float)(height - 1);
+                    float broad = Mathf.PerlinNoise(x * 0.07f + 3.1f, y * 0.11f + 7.3f);
+                    float fine = Mathf.PerlinNoise(x * 0.35f + 11.7f, y * 0.35f + 1.9f);
+                    // Painted strokes: a few dark cracks where the fine noise is near its middle.
+                    float crack = Mathf.Clamp01(1 - Mathf.Abs(fine - 0.5f) * 14);
+                    Color color;
+                    if (u < 0.5f)
+                    {
+                        color = Color.Lerp(stone, stoneLight, broad * 0.7f);
+                        // Darker toward the ground, lighter on the shoulder: fake ambient occlusion.
+                        color *= Mathf.Lerp(0.55f, 1.08f, Mathf.SmoothStep(0, 1, v));
+                        color = Color.Lerp(color, stoneDark, crack * 0.55f);
+                        // Moss creeping over the upper edge.
+                        float creep = Mathf.Clamp01((v - 0.72f) * 4) * Mathf.Clamp01(broad * 1.6f - 0.35f);
+                        color = Color.Lerp(color, moss, creep);
+                    }
+                    else
+                    {
+                        float mossy = Mathf.SmoothStep(0, 1, Mathf.Clamp01(broad * 1.5f - 0.2f));
+                        color = Color.Lerp(stoneLight, Color.Lerp(moss, mossLight, fine), mossy);
+                        color = Color.Lerp(color, stoneDark, crack * 0.3f * (1 - mossy));
+                    }
+                    color.a = 1;
+                    pixels[y * width + x] = color;
+                }
+            texture.SetPixels32(pixels); texture.Apply(true);
+            return texture;
         }
 
         void OnDestroy()
         {
             foreach (Mesh mesh in meshes) Destroy(mesh);
             if (surfaceMaterial != null) Destroy(surfaceMaterial);
+            if (rockMaterial != null) Destroy(rockMaterial);
+            if (rockTexture != null) Destroy(rockTexture);
         }
     }
 }

@@ -20,13 +20,21 @@ namespace MidLane
         {
             GameObject prefab = Resources.Load<GameObject>(ResourceRoot + "Dummy");
             if (prefab == null) throw new System.InvalidOperationException("Falta el modelo de práctica: " + ResourceRoot + "Dummy");
-            var visual = Instantiate(prefab, parent, false); visual.name = "Training dummy model";
+            // Same structure as champions: Model > Geometry (camera tilt) > imported rig.
+            // The rig keeps its own transform for animation sampling; the gameplay root and
+            // its collider are never scaled or tilted.
+            var geometry = new GameObject("Geometry").transform; geometry.SetParent(parent, false);
+            var visual = Instantiate(prefab, geometry, false); visual.name = "Training dummy model";
             var animation = visual.AddComponent<TrainingDummyModel>(); animation.Initialize(world);
             foreach (SkinnedMeshRenderer renderer in visual.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 var mesh = new Mesh(); renderer.BakeMesh(mesh); renderer.localBounds = mesh.bounds; Destroy(mesh);
             }
-            PracticeModels.FitHeight(visual.transform, parent, 1.8f, true);
+            // Height follows the champion's visual height (dummy_height_ratio) instead of a
+            // fixed 1.8 units, so the dummy keeps the Practice Tool proportion beside Irelia.
+            PracticeModels.FitHeight(visual.transform, geometry, world.Presentation.DummyVisualHeight, true);
+            geometry.gameObject.AddComponent<CameraFacingVisualTilt>().Initialize(world);
+            UnitShadows.Attach(world, visual);
             return animation;
         }
         void Initialize(LaneWorld lane)

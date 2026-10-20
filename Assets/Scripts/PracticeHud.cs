@@ -54,6 +54,7 @@ namespace MidLane
         public static bool BlocksPointer(Vector2 screenPoint)
         {
             Vector2 point = new Vector2(screenPoint.x * 1280 / Screen.width, screenPoint.y * 720 / Screen.height);
+            if (VisualTuningPanel.BlocksPointer(point)) return true;
             if (ChampionHudLayout.Body.Contains(point) || ChampionHudLayout.InventoryPanel.Contains(point)) return true;
             if (ChampionHudLayout.AddGold.Contains(point) || ChampionHudLayout.LevelUp.Contains(point)) return true;
             if (active != null) for (int i = 0; i < 4; i++)
@@ -263,52 +264,6 @@ namespace MidLane
                 GUI.Label(rect, new GUIContent("", item == null ? "Vacío" : item.name + "\n" + item.description), small);
             }
             GUI.Label(new Rect(20, 96, 224, 19), "Oro: " + enemy.Gold, small);
-        }
-        void DrawWorldBars()
-        {
-            foreach (Combatant unit in world.Units)
-            {
-                if (unit == null || !unit.Alive) continue;
-                Vector3 screen = world.View.WorldToScreenPoint(unit.VisualTop + Vector3.up * .3f);
-                if (screen.z <= 0) continue;
-                float x = screen.x * 1280 / Screen.width, y = (Screen.height - screen.y) * 720 / Screen.height;
-                if (y < 0 || y > 720 || x < 0 || x > 1280 || BlocksPointer(new Vector2(screen.x, Screen.height - screen.y))) continue;
-                float width = unit.Kind == UnitKind.Champion ? 110 : 65;
-                Bar(new Rect(x - width / 2, y, width, 8), unit.Health / unit.MaxHealth, unit.Color);
-                if (unit.Kind == UnitKind.Tower)
-                    GUI.Label(new Rect(x - 55, y - 22, 160, 22), "Torre · Indestructible", small);
-                if (unit.Kind == UnitKind.Champion)
-                {
-                    if (unit.Dummy != null) DrawDummyDamage(unit.Dummy, x, y);
-                    else GUI.Label(new Rect(x - 55, y - 22, 180, 22), unit.IsInStasis ? "ESTASIS · " + unit.ItemEffects.StasisRemaining.ToString("0.0") + " s" : unit.DisplayName + " · " + unit.Level + (unit.Marked ? " ◇" : ""), small);
-                    if (unit.Sett != null)
-                    {
-                        Color gritColor = GritBarColor(unit.Sett.GritFraction);
-                        Bar(new Rect(x - 55, y + 10, 110, 5), unit.Sett.GritFraction, gritColor);
-                        Color previous = GUI.color; GUI.color = gritColor;
-                        GUI.Label(new Rect(x - 65, y - 40, 130, 16), "GRIT " + unit.Sett.Grit.ToString("0") + " / " + unit.Sett.MaxGrit.ToString("0"), gritLabel);
-                        GUI.color = previous;
-                    }
-                    if (unit.TotalShield > 0)
-                    {
-                        float shieldY = y + (unit.Sett != null ? 17 : 10);
-                        Bar(new Rect(x - 55, shieldY, 110, 4), ShieldBarFraction(unit), Color.white);
-                        GUI.Label(new Rect(x + 58, shieldY - 6, 55, 16), unit.TotalShield.ToString("0"), gritLabel);
-                    }
-                }
-            }
-        }
-        void DrawDummyDamage(TrainingDummy dummy, float x, float y)
-        {
-            var style = new GUIStyle(small) { fontSize = 15, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
-            DamageLabel(new Rect(x - 100, y - 54, 200, 23), (dummy.PermanentMark ? "Q" : dummy.Patrolling ? "Aleatorio" : dummy.Mobile ? "Evasivo" : "Fijo") + " · Total: " + dummy.TotalDamage.ToString("0.#"), new Color(1, .85f, .35f), style);
-            for (int i = 0; i < dummy.Notices.Count; i++)
-            {
-                var hit = dummy.Notices[i]; float age = Time.time - hit.StartedAt;
-                Color color = hit.Type == DamageType.Magic ? new Color(.55f, .8f, 1) : hit.Type == DamageType.True ? Color.white : new Color(1, .65f, .35f);
-                color.a = Mathf.Clamp01((1.5f - age) * 2);
-                DamageLabel(new Rect(x - 110, y - 78 - (dummy.Notices.Count - 1 - i) * 21 - age * 18, 220, 23), hit.Label + "  " + hit.Amount.ToString("0.#"), color, style);
-            }
         }
         static void DamageLabel(Rect rect, string text, Color color, GUIStyle style)
         {

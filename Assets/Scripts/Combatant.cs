@@ -96,13 +96,13 @@ namespace MidLane
         {
             get
             {
-                if (Dummy != null) return SelectionHeight;
+                if (Dummy != null) return world.Presentation.DummyVisualHeight;
                 if (Kind == UnitKind.Tower) return world.Presentation.TowerVisualHeight;
                 if (Kind == UnitKind.Minion) return world.Presentation.MinionVisualHeight(MinionType) * VisualScale;
                 return SelectionHeight * VisualScale;
             }
         }
-        public Quaternion VisualTiltRotation { get { return Dummy != null || Kind == UnitKind.Tower ? Quaternion.identity : CameraFacingVisualTilt.WorldRotation(world.View, world.Presentation.model_tilt_degrees); } }
+        public Quaternion VisualTiltRotation { get { return Kind == UnitKind.Tower ? Quaternion.identity : CameraFacingVisualTilt.WorldRotation(world.View, world.Presentation.model_tilt_degrees); } }
         public Vector3 VisualTop { get { return Position + VisualTiltRotation * (Vector3.up * VisualHeight); } }
         public float TowerAggroRadius { get { return TowerToTowerRules.TowerAggroRadius; } }
         public float AttackReach(Combatant target)

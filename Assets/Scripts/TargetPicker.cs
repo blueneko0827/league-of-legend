@@ -62,9 +62,10 @@ namespace MidLane
             rect = default(Rect);
             Vector3 point = camera.WorldToScreenPoint(unit.VisualTop + Vector3.up * .3f);
             if (point.z <= camera.nearClipPlane || point.z >= camera.farClipPlane) return false;
-            float width = (unit.Kind == UnitKind.Champion ? 110 : 65) * camera.pixelWidth / 1280f;
-            float barHeight = 12 * camera.pixelHeight / 720f;
-            rect = new Rect(point.x - width / 2, point.y - barHeight, width, barHeight + 4 * camera.pixelHeight / 720f);
+            // Same frame PracticeHud draws (HUD space, y down), converted to pixels (y up).
+            Rect frame = WorldBarLayout.Frame(unit, Vector2.zero);
+            float sx = camera.pixelWidth / 1280f, sy = camera.pixelHeight / 720f;
+            rect = new Rect(point.x + frame.x * sx, point.y - frame.yMax * sy, frame.width * sx, frame.height * sy);
             return rect.Overlaps(camera.pixelRect);
         }
 

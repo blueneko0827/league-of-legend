@@ -12,6 +12,7 @@ namespace MidLane
             GameObject rig = OfficialLaneUnitAssets.Create(name, geometry);
             PracticeModels.FitHeight(geometry, parent, world.Presentation.MinionVisualHeight(type), true);
             geometry.gameObject.AddComponent<CameraFacingVisualTilt>().Initialize(world);
+            UnitShadows.Attach(world, rig);
             parent.gameObject.AddComponent<MinionModelAnimation>().Configure(rig, name);
         }
     }

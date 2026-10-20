@@ -75,6 +75,7 @@ namespace MidLane
             gameObject.AddComponent<PlayerCommands>().Initialize(this);
             gameObject.AddComponent<PracticeHud>().Initialize(this);
             gameObject.AddComponent<ShopHud>().Initialize(this);
+            gameObject.AddComponent<VisualTuningPanel>().Initialize(this);
         }
 
         void Update()
@@ -216,15 +217,14 @@ namespace MidLane
         void BuildArena()
         {
             arenaRoot = new GameObject("Arena").transform; arenaRoot.SetParent(transform);
-            RenderSettings.ambientLight = new Color(0.45f, 0.52f, 0.62f);
             Shape("Ground", PrimitiveType.Cube, arenaRoot, new Vector3(0, -0.35f, 0),
                 new Vector3(Settings.halfLength * 2 + 80, 0.5f, Settings.halfWidth * 2 + 80), new Color(0.09f, 0.18f, 0.11f), true);
             var terrain = new GameObject("Lane terrain"); terrain.transform.SetParent(arenaRoot, false);
             terrain.AddComponent<LaneTerrain>().Build(this);
             LaneBoundaryVisuals.Build(this, arenaRoot);
-            var light = new GameObject("Sun").AddComponent<Light>(); light.transform.SetParent(arenaRoot);
-            light.type = LightType.Directional; light.intensity = 1.3f; light.shadows = LightShadows.Soft;
-            light.transform.rotation = Quaternion.Euler(55, -35, 0);
+            Sun = new GameObject("Sun").AddComponent<Light>(); Sun.transform.SetParent(arenaRoot);
+            Sun.type = LightType.Directional; Sun.shadows = LightShadows.Soft;
+            ApplyLighting();
             View = new GameObject("Isometric Camera").AddComponent<Camera>(); View.transform.SetParent(arenaRoot);
             View.tag = "MainCamera";
             View.gameObject.AddComponent<AudioListener>();
