@@ -30,10 +30,10 @@ namespace MidLane
         // materials are unlit, so their colors stay as authored; they only cast shadows.
         public float sun_pitch_degrees = 50;
         public float sun_yaw_degrees = 120;
-        public float sun_intensity = .9f;
+        public float sun_intensity = 1;
         public Color sun_color = new Color(1, .96f, .88f, 1);
         public float shadow_strength = .8f;
-        public Color ambient_color = new Color(.4f, .46f, .58f, 1);
+        public Color ambient_color = new Color(.5f, .56f, .68f, 1);
         public bool unit_shadows = true;
 
         public float ChampionVisualHeight { get { return TowerToTowerRules.ChampionSelectionHeight * visual_mesh_multiplier; } }

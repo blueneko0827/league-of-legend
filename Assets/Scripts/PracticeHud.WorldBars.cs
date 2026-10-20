@@ -113,7 +113,7 @@ namespace MidLane
             TrainingDummy dummy = unit.Dummy;
             // Practice Tool statistics under the dummy's feet.
             Vector3 feet = world.View.WorldToScreenPoint(unit.Position);
-            if (feet.z > 0)
+            if (feet.z > 0 && !BlocksPointer(new Vector2(feet.x, Screen.height - feet.y)))
             {
                 float x = feet.x * 1280 / Screen.width, y = (Screen.height - feet.y) * 720 / Screen.height + 4;
                 Color text = new Color(.96f, .96f, .94f);

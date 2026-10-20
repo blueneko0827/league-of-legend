@@ -17,6 +17,9 @@ namespace MidLane
         static readonly Color Panel = new Color(0.035f, 0.055f, 0.085f, 0.96f);
         LaneWorld world;
         bool open, overlay;
+        // Scale is edited on a copy and only committed by "Aplicar escala", because health
+        // bars and click areas read these values live while the meshes are rebuilt on restart.
+        float pendingMesh, pendingDummy, pendingTower;
         float overlayOpacity = .45f;
         readonly List<Texture2D> references = new List<Texture2D>();
         readonly List<string> referenceNames = new List<string>();
@@ -40,7 +43,7 @@ namespace MidLane
             if (world == null) return;
             var hud = world.GetComponent<PracticeHud>();
             if (hud != null && hud.LatencyFieldFocused) return;
-            if (Input.GetKeyDown(KeyCode.F8)) open = !open;
+            if (Input.GetKeyDown(KeyCode.F8)) { open = !open; if (open) ReadPendingScale(); }
             if (Input.GetKeyDown(KeyCode.F9)) { LoadReferences(); overlay = !overlay && references.Count > 0; }
         }
 
@@ -101,13 +104,14 @@ namespace MidLane
             c.camera_pitch_degrees = Slider(ref y, x, "Inclinación", c.camera_pitch_degrees, 45, 70, "0.0");
             c.camera_yaw_degrees = Slider(ref y, x, "Giro", c.camera_yaw_degrees, 0, 90, "0.0");
             c.camera_zoom = Slider(ref y, x, "Distancia (zoom)", c.camera_zoom, .6f, 1.6f, "0.00");
+            c.model_tilt_degrees = Slider(ref y, x, "Inclinación de modelos", c.model_tilt_degrees, 0, 20, "0.0");
             if (GUI.changed) { c.Clamp(); world.ApplyCameraPresentation(); }
 
             GUI.changed = false;
             Header(ref y, x, "Luz y sombras (en vivo)");
             c.sun_pitch_degrees = Slider(ref y, x, "Altura del sol", c.sun_pitch_degrees, 20, 89, "0");
             c.sun_yaw_degrees = Slider(ref y, x, "Dirección del sol", c.sun_yaw_degrees, 0, 360, "0");
-            c.sun_intensity = Slider(ref y, x, "Intensidad del sol", c.sun_intensity, 0, 2, "0.00");
+            c.sun_intensity = Slider(ref y, x, "Intensidad del sol", c.sun_intensity, 0, 3, "0.00");
             c.shadow_strength = Slider(ref y, x, "Fuerza de sombra", c.shadow_strength, 0, 1, "0.00");
             float ambient = Mathf.Max(c.ambient_color.r, Mathf.Max(c.ambient_color.g, c.ambient_color.b));
             float newAmbient = Slider(ref y, x, "Luz ambiente", ambient, .05f, 1, "0.00");
@@ -119,16 +123,20 @@ namespace MidLane
             }
 
             Header(ref y, x, "Escala (al reiniciar)");
-            c.visual_mesh_multiplier = Slider(ref y, x, "Tamaño de campeón", c.visual_mesh_multiplier, 1, 2.4f, "0.00");
-            c.dummy_height_ratio = Slider(ref y, x, "Dummy / campeón", c.dummy_height_ratio, .5f, 1.2f, "0.00");
-            c.tower_height_ratio = Slider(ref y, x, "Torre / campeón", c.tower_height_ratio, 2.5f, 3.5f, "0.00");
-            c.model_tilt_degrees = Slider(ref y, x, "Inclinación de modelos", c.model_tilt_degrees, 0, 20, "0.0");
+            pendingMesh = Slider(ref y, x, "Tamaño de campeón", pendingMesh, .5f, 3, "0.00");
+            pendingDummy = Slider(ref y, x, "Dummy / campeón", pendingDummy, .5f, 1.2f, "0.00");
+            pendingTower = Slider(ref y, x, "Torre / campeón", pendingTower, 2.5f, 3.5f, "0.00");
             y += 4;
-            if (GUI.Button(new Rect(x, y, 170, 24), "Aplicar escala (reinicia)", button)) { c.Clamp(); world.Restart(); status = "Escala aplicada"; }
+            if (GUI.Button(new Rect(x, y, 170, 24), "Aplicar escala (reinicia)", button))
+            {
+                c.visual_mesh_multiplier = pendingMesh; c.dummy_height_ratio = pendingDummy; c.tower_height_ratio = pendingTower;
+                c.Clamp(); ReadPendingScale(); world.Restart(); status = "Escala aplicada";
+            }
             if (GUI.Button(new Rect(x + 178, y, 170, 24), "Restaurar del JSON", button))
             {
                 JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(ScenePresentationConfig.Load()), c);
-                world.ApplyCameraPresentation(); world.ApplyLighting(); status = "Valores del JSON restaurados (escala: reiniciar)";
+                ReadPendingScale(); world.Restart(); world.ApplyCameraPresentation(); world.ApplyLighting();
+                status = "Valores del JSON restaurados";
             }
             y += 30;
 
@@ -144,6 +152,12 @@ namespace MidLane
 #endif
             GUI.Label(new Rect(x, y + 30, 350, 34), status, small);
             GUI.matrix = previousMatrix;
+        }
+
+        void ReadPendingScale()
+        {
+            ScenePresentationConfig c = world.Presentation;
+            pendingMesh = c.visual_mesh_multiplier; pendingDummy = c.dummy_height_ratio; pendingTower = c.tower_height_ratio;
         }
 
         void Header(ref float y, float x, string text)
@@ -166,6 +180,8 @@ namespace MidLane
             {
                 string path = Path.GetFullPath(Path.Combine(Application.dataPath, "Resources/ScenePresentation.json"));
                 File.WriteAllText(path, JsonUtility.ToJson(config, true));
+                // Without a reimport, Resources.Load would keep returning the previous text.
+                UnityEditor.AssetDatabase.ImportAsset("Assets/Resources/ScenePresentation.json");
                 status = "Guardado en Assets/Resources/ScenePresentation.json";
             }
             catch (System.Exception error) { status = "No se pudo guardar: " + error.Message; }

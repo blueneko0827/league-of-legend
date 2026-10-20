@@ -24,8 +24,10 @@ namespace MidLane
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientIntensity = 1;
             RenderSettings.ambientLight = config.ambient_color;
+            // The probe expects linear values; the project renders in linear color space.
+            Color ambient = QualitySettings.activeColorSpace == ColorSpace.Linear ? config.ambient_color.linear : config.ambient_color;
             var probe = new SphericalHarmonicsL2();
-            probe.AddAmbientLight(config.ambient_color);
+            probe.AddAmbientLight(ambient);
             RenderSettings.ambientProbe = probe;
         }
 

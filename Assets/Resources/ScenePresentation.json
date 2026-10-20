@@ -14,9 +14,9 @@
   "dummy_height_ratio": 0.86,
   "sun_pitch_degrees": 50.0,
   "sun_yaw_degrees": 120.0,
-  "sun_intensity": 0.9,
+  "sun_intensity": 1.0,
   "sun_color": { "r": 1.0, "g": 0.96, "b": 0.88, "a": 1.0 },
   "shadow_strength": 0.8,
-  "ambient_color": { "r": 0.4, "g": 0.46, "b": 0.58, "a": 1.0 },
+  "ambient_color": { "r": 0.5, "g": 0.56, "b": 0.68, "a": 1.0 },
   "unit_shadows": true
 }

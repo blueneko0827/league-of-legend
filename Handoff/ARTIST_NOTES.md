@@ -38,8 +38,9 @@
     La escena estaba en ambiente "Skybox", que ignoraba el color de ambiente del código;
     ahora es ambiente plano. Sombras dirigidas hacia la derecha de la pantalla, como en
     las capturas de LoL. El suelo queda un poco más oscuro y frío.
-  - `Assets/Rendering/MidLaneURP.asset`: sombras suaves activadas y mapa de sombras de
-    2048 a 4096.
+  - `Assets/Rendering/MidLaneURP.asset`: sombras suaves activadas, mapa de sombras de
+    2048 a 4096 y distancia de sombras de 50 a 75 (para que no se corten con el zoom).
+    En equipos de pocos recursos se puede volver a 2048.
   - Los personajes son Unlit, así que la luz no cambia sus colores: solo afecta al suelo
     y las rocas.
 
@@ -56,7 +57,7 @@
   - **Rocas del borde:** cuatro formas facetadas con textura pintada por código (piedra
     más oscura en la base y musgo en la parte superior), agrupadas con piedras pequeñas.
     Siguen generándose con semilla fija.
-  - **Panel de ajuste (F8):** cámara, luz y sombras en vivo; escala al reiniciar. En el
+  - **Panel de ajuste (F8):** cámara, inclinación de modelos, luz y sombras en vivo; la escala se aplica con "Aplicar escala", que reinicia Práctica. En el
     Editor, "Guardar JSON" escribe `Assets/Resources/ScenePresentation.json`.
     **F9** superpone las capturas `References/imagelol*` con opacidad regulable para
     comparar encuadre y proporciones. Ambas son herramientas de esta copia de trabajo.
