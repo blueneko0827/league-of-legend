@@ -11,7 +11,8 @@ namespace MidLane
         public const float WorldUnitsPerGameplayUnit = LeagueChampionStats.WorldUnitsPerLeagueUnit;
         public const float MetersPerWorldUnit = UnitsToMeters / WorldUnitsPerGameplayUnit;
         public const float VisualMeshMultiplier = 1.65f;
-        public const float LengthUnits = 5150, WidthUnits = 1600;
+        // Official distance between the mid outer turrets (~3760 units), previously 5150.
+        public const float LengthUnits = SummonersRiftGeometry.MidOuterTowerDistance * 100, WidthUnits = 1600;
         public const float HalfLength = LengthUnits * WorldUnitsPerGameplayUnit / 2;
         public const float HalfWidth = WidthUnits * WorldUnitsPerGameplayUnit / 2;
         public const float TowerRadius = 88.4f * WorldUnitsPerGameplayUnit;

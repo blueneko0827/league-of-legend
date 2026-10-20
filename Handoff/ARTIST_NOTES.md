@@ -69,6 +69,10 @@
 - **Archivos de autoría incluidos:** no aplica (todo es código).
 
 - **Cambios que requieren fusionar código o afectan contratos con la simulación:**
+  - `Core/TowerToTowerRules.cs`: `LengthUnits` pasa de 5150 a la distancia oficial entre
+    las torres externas de mid (`SummonersRiftGeometry.MidOuterTowerDistance`, ~3760). Las
+    torres quedan a ±18,8 unidades del centro; límites del mapa, puntos de recuperación,
+    terreno y cámara se recalculan solos. Dummies e Irelia siguen dentro de la línea.
   - `Combatant.cs`: `VisualHeight` del dummy usa `DummyVisualHeight` y
     `VisualTiltRotation` ya no excluye al dummy. Afecta solo anclajes de HUD y el área
     de selección con el mouse, no colisiones ni alcances.
