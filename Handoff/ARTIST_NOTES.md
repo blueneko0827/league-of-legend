@@ -13,8 +13,9 @@
     Ahora su altura es `altura visual del campeón × dummy_height_ratio` (0,86) y usa la
     misma inclinación (`CameraFacingVisualTilt`) dentro de un contenedor `Geometry`,
     igual que los campeones. El collider y el radio de juego del dummy no cambian.
-  - Irelia y las torres mantienen su tamaño (la proporción torre/Irelia ≈ 3 ya coincide
-    con `imagelol2.jpg`).
+  - **Torres:** `tower_height_ratio` pasa de 3,0 a 2,7, la proporción de las mallas
+    oficiales (torre ≈ 610–630 unidades de alto sobre el suelo, Irelia ≈ 228).
+    Irelia mantiene su tamaño.
   - **Cámara:** mismos valores iniciales (FOV 32,5°, inclinación 55°, giro 45°). Se
     agregó `camera_zoom` (multiplicador de distancia, 1 = encuadre actual) y ahora la
     cámara puede reaplicarse en vivo.

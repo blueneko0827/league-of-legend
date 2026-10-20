@@ -21,7 +21,7 @@ namespace MidLane
         public float melee_height_ratio = .6f;
         public float caster_height_ratio = .6f;
         public float cannon_height_ratio = .6f;
-        public float tower_height_ratio = 3f;
+        public float tower_height_ratio = 2.7f;
         // Training dummy height relative to the champion's visual height. Measured from the
         // LoL Practice Tool references (References/imagelol3.jpg): a dummy is ~0.86 of Irelia.
         public float dummy_height_ratio = .86f;

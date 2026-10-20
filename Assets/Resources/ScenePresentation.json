@@ -10,7 +10,7 @@
   "melee_height_ratio": 0.6,
   "caster_height_ratio": 0.6,
   "cannon_height_ratio": 0.6,
-  "tower_height_ratio": 3.0,
+  "tower_height_ratio": 2.7,
   "dummy_height_ratio": 0.86,
   "sun_pitch_degrees": 50.0,
   "sun_yaw_degrees": 120.0,
