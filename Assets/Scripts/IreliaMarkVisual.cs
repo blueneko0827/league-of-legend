@@ -43,6 +43,8 @@ namespace MidLane
             glyph.position = actor.VisualTop + Vector3.up * 1.05f;
             if (world.View != null) glyph.rotation = world.View.transform.rotation;
         }
+        // The official mark lives under the world, so it must stop when this unit is hidden.
+        void OnDisable() { if (official != null) official.Stop(); official = null; }
         void OnDestroy()
         {
             if (official != null) official.Stop();

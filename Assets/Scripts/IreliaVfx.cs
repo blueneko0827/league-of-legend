@@ -114,12 +114,16 @@ namespace MidLane
             if (dash != null && !blade.IsDashing) { dash.Instance.StopBound(); dash = null; }
         }
 
+        RiotVfxPose lastDashPose;
         RiotVfxPose DashPose()
         {
+            // The effect outlives Irelia across a Practice restart: keep its last pose.
+            if (actor == null || blade == null) return lastDashPose;
             Transform bone = Bone("C_BUFFBONE_GLB_LAYOUT_LOC");
             Vector3 position = bone != null ? bone.position : actor.Position;
             Vector3 direction = blade.QDirection.sqrMagnitude > .001f ? blade.QDirection : Facing() * Vector3.forward;
-            return new RiotVfxPose(position, actor.VisualTiltRotation * Quaternion.LookRotation(Flat(direction)));
+            lastDashPose = new RiotVfxPose(position, actor.VisualTiltRotation * Quaternion.LookRotation(Flat(direction)));
+            return lastDashPose;
         }
 
         // Passive: glow on one blade per stack, the activation burst and aura at four stacks.

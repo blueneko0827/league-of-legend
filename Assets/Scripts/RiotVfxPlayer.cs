@@ -26,6 +26,7 @@ namespace MidLane
         static readonly int ColorId = Shader.PropertyToID("_Color"), UvId = Shader.PropertyToID("_UV"), Uv2Id = Shader.PropertyToID("_UV2");
         static readonly int ErosionId = Shader.PropertyToID("_Erosion");
         static int seed = 7919;
+        const string ProxySuffix = " (VFX)";
         // Raised for every system that starts (diagnostics and Play Mode tests).
         public static event Action<RiotVfxPlayer> Started;
 
@@ -81,7 +82,12 @@ namespace MidLane
             if (Instance == null || world == null) { Destroy(gameObject); return; }
             if (!world.Paused)
             {
-                if (poseSource != null) pose = poseSource();
+                if (poseSource != null)
+                {
+                    // A pose source whose owner disappeared ends the effect instead of throwing every frame.
+                    try { pose = poseSource(); }
+                    catch (Exception e) { poseSource = null; Instance.Stop(); Debug.LogException(e); }
+                }
                 Instance.Tick(Time.deltaTime * TimeScale, pose);
             }
             if (Instance.Finished) { Destroy(gameObject); return; }
@@ -151,8 +157,11 @@ namespace MidLane
                 if (material != null)
                     foreach (SkinnedMeshRenderer source in attachedVisual.GetComponentsInChildren<SkinnedMeshRenderer>())
                     {
-                        if (source.shadowCastingMode == ShadowCastingMode.ShadowsOnly || source.sharedMesh == null) continue;
-                        var twin = new GameObject(source.name + " (VFX)"); twin.transform.SetParent(source.transform, false);
+                        // Skip shadow twins and glow copies made by another live effect.
+                        if (source.shadowCastingMode == ShadowCastingMode.ShadowsOnly || source.sharedMesh == null ||
+                            source.name.EndsWith(ProxySuffix, StringComparison.Ordinal)) continue;
+                        var twin = new GameObject(source.name + ProxySuffix); twin.transform.SetParent(source.transform, false);
+                        twin.layer = source.gameObject.layer;
                         var copy = twin.AddComponent<SkinnedMeshRenderer>();
                         copy.sharedMesh = source.sharedMesh; copy.rootBone = source.rootBone; copy.bones = source.bones;
                         copy.localBounds = source.localBounds; copy.updateWhenOffscreen = source.updateWhenOffscreen;

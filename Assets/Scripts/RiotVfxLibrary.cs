@@ -17,6 +17,9 @@ namespace MidLane
         readonly Dictionary<string, Mesh> meshes = new Dictionary<string, Mesh>();
         readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         readonly Dictionary<string, Material> materials = new Dictionary<string, Material>();
+        // Per-emitter cache: avoids building the string key for every particle every frame.
+        readonly Dictionary<RiotVfxEmitterData, Material> emitterMaterials = new Dictionary<RiotVfxEmitterData, Material>();
+        readonly Dictionary<RiotVfxEmitterData, Material> attachedMaterials = new Dictionary<RiotVfxEmitterData, Material>();
         readonly List<Object> owned = new List<Object>();
         static readonly int MainTex = Shader.PropertyToID("_MainTex"), ErosionTex = Shader.PropertyToID("_ErosionTex");
         static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend"), DstBlend = Shader.PropertyToID("_DstBlend");
@@ -118,6 +121,16 @@ namespace MidLane
         // Blend modes of VfxEmitterDefinitionData.blendMode.
         public Material GetMaterial(RiotVfxEmitterData emitter, bool attached = false)
         {
+            Dictionary<RiotVfxEmitterData, Material> cache = attached ? attachedMaterials : emitterMaterials;
+            Material cached;
+            if (cache.TryGetValue(emitter, out cached) && cached != null) return cached;
+            cached = BuildMaterial(emitter, attached);
+            cache[emitter] = cached;
+            return cached;
+        }
+
+        Material BuildMaterial(RiotVfxEmitterData emitter, bool attached)
+        {
             string key = emitter.texture + "|" + emitter.blend + "|" + emitter.twoSided + "|" + emitter.pass + "|" + attached +
                 "|" + (emitter.erosion != null ? emitter.erosion.map : "") + "|" + emitter.alphaRef +
                 "|" + (emitter.textureMult != null ? emitter.textureMult.texture : "");
@@ -156,7 +169,7 @@ namespace MidLane
         void OnDestroy()
         {
             foreach (Object item in owned) if (item != null) Destroy(item);
-            owned.Clear(); materials.Clear(); meshes.Clear();
+            owned.Clear(); materials.Clear(); meshes.Clear(); emitterMaterials.Clear(); attachedMaterials.Clear();
         }
     }
 }

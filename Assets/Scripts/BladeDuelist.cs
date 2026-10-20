@@ -305,7 +305,8 @@ namespace MidLane
             if ((marked || !victim.Alive) && self.Cooldowns.Remaining(0, Time.time) > 0)
                 self.Cooldowns.Start(0, Time.time, Tuning.qResetLock);
             victim.ClearMark();
-            if (QLanded != null) QLanded(victim, marked || !victim.Alive);
+            if (QLanded != null)
+                try { QLanded(victim, marked || !victim.Alive); } catch (System.Exception e) { Debug.LogException(e); }
             self.ResetAttackTimer();
             if (attackAfterDash && victim.Targetable) self.OrderAttackAfterAbility(victim);
         }
@@ -340,7 +341,9 @@ namespace MidLane
                 float damage = 10 + 3 * (Progress.Level - 1) + 0.2f * (self.AttackDamage - self.BaseStats.AttackDamage.At(Progress.Level));
                 self.DealAbilityDamage(target, damage * (target.Kind == UnitKind.Tower ? 0.5f : 1), DamageType.Magic, -1);
             }
-            if (OnHitLanded != null) OnHitLanded(target, empowered, critical, fromQ);
+            // Presentation listeners can never interrupt the hit being resolved.
+            if (OnHitLanded != null)
+                try { OnHitLanded(target, empowered, critical, fromQ); } catch (System.Exception e) { Debug.LogException(e); }
         }
         public void AwardSpellHits(IEnumerable<Combatant> victims)
         {
