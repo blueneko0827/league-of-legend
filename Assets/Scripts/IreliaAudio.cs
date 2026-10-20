@@ -9,7 +9,9 @@ namespace MidLane
         Attack1Cast, Attack2Cast, Attack1Hit, Attack2Hit, QCast, QDash, QHit,
         WCharge, WCharged, WRelease, WHit, WBlock,
         EFirst, ESecond, ELaunch, EConverge, EHit, EHitMinion,
-        RCast, RLaunch, RHit, RHitMinion, RWallHit
+        RCast, RLaunch, RHit, RHitMinion, RWallHit,
+        // Hito 2.1: critical hit, passive empowered hits and the 4-stack activation.
+        CritHit, PSparkles, PMaxSparkles, PMax
     }
 
     // Called by committed gameplay actions; animation events cannot create fake impacts.
@@ -57,7 +59,13 @@ namespace MidLane
             }
         }
         public void BasicCast(int variant) { Play(variant == 2 ? IreliaSoundCue.Attack2Cast : IreliaSoundCue.Attack1Cast); }
-        public void BasicHit(int variant) { Play(variant == 2 ? IreliaSoundCue.Attack2Hit : IreliaSoundCue.Attack1Hit); }
+        public void BasicHit(int variant, bool critical = false)
+        { Play(critical && HasClips(IreliaSoundCue.CritHit) ? IreliaSoundCue.CritHit : variant == 2 ? IreliaSoundCue.Attack2Hit : IreliaSoundCue.Attack1Hit); }
+        // Official passive layers (Irelia_Base_P_Hit_* and P_buf sound events).
+        public void PassiveEmpoweredHit() { Play(IreliaSoundCue.PSparkles); }
+        public void PassiveMaxedHit() { Play(IreliaSoundCue.PMaxSparkles); }
+        public void PassiveMaxed() { Play(IreliaSoundCue.PMax); }
+        bool HasClips(IreliaSoundCue cue) { AudioClip[] group; return clips.TryGetValue(cue, out group) && group.Length > 0; }
         public void QStart() { Play(IreliaSoundCue.QCast); Play(IreliaSoundCue.QDash); }
         public void QImpact() { Play(IreliaSoundCue.QHit); }
         public void WStart() { WChargeActive = true; Play(IreliaSoundCue.WCharge, true); }

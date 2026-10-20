@@ -93,6 +93,35 @@ namespace MidLane.Tests
             yield return new WaitForSeconds(.7f);
             Assert.IsTrue(dummy.Actor.Marked); Assert.Greater(dummy.TotalDamage, 0);
         }
+        [UnityTest] public IEnumerator OfficialBasicAttackPassiveAndQEffectsPlay()
+        {
+            var library = RiotVfxLibrary.For(world);
+            Assert.IsTrue(library.Loaded);
+            foreach (string name in new[] { "Irelia_Base_BA_Far_swipe_01", "Irelia_Base_BA_Far_swipe_02", "Irelia_Base_BA_Hit",
+                "Irelia_Base_P_Blades_Stacks_1_2_3", "Irelia_Base_P_buf", "Irelia_Base_Q_Dash", "Irelia_Base_Q_tar", "Irelia_Base_Q_Mark_SelfOnly" })
+                Assert.NotNull(library.FindSystem(name), name);
+            Assert.IsNotEmpty(library.Data.events);
+            var started = new System.Collections.Generic.List<string>();
+            System.Action<RiotVfxPlayer> record = player => started.Add(player.SystemName);
+            RiotVfxPlayer.Started += record;
+            try
+            {
+                var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+                world.Player.transform.position = dummy.Home - Vector3.right * 2.5f;
+                world.Player.Stop(); world.Player.OrderAttack(dummy.Actor);
+                yield return new WaitForSeconds(1.2f);
+                Assert.Contains("Irelia_Base_BA_Far_swipe_01", started);
+                Assert.IsTrue(started.Exists(name => name.StartsWith("Irelia_Base_BA_Hit")));
+                world.Player.Stop();
+                yield return new WaitForSeconds(1.2f);
+                world.Player.transform.position = dummy.Home - Vector3.right * 4;
+                Assert.IsTrue(world.Player.Cast(0, dummy.Actor.Position, dummy.Actor));
+                yield return new WaitForSeconds(.6f);
+                Assert.Contains("Irelia_Base_Q_Dash", started); Assert.Contains("Irelia_Base_Q_tar", started);
+                Assert.Contains("Irelia_Base_P_Blades_Stacks_1_2_3", started);
+            }
+            finally { RiotVfxPlayer.Started -= record; }
+        }
         [UnityTest] public IEnumerator CameraAndPatrolMatchTheCurrentPracticeAndCapturePreview()
         {
             Assert.AreEqual(32.5f, world.View.fieldOfView, .001f);

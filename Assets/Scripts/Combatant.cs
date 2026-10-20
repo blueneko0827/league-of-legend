@@ -184,6 +184,7 @@ namespace MidLane
             {
                 Blade = gameObject.AddComponent<BladeDuelist>(); Blade.Initialize(world, this);
                 Audio = gameObject.AddComponent<IreliaAudio>(); Audio.Initialize(world, this);
+                gameObject.AddComponent<IreliaVfx>().Initialize(world, this);
             }
             if (kind == UnitKind.Champion && archetype == Archetype.Prism)
             { Mel = gameObject.AddComponent<MelAbilities>(); Mel.Initialize(world, this); }
@@ -294,6 +295,7 @@ namespace MidLane
             Combatant target = windingTarget; windingTarget = null;
             if (!CanAct || !ValidEnemy(target) || Vector3.Distance(Position, target.Position) > windingReach + (Kind == UnitKind.Tower ? 0 : 0.4f))
             { nextAttack = Time.time; return; }
+            bool critical = false;
             if (Kind == UnitKind.Minion && MinionType != MinionType.Melee)
                 world.CreateBasicProjectile(this, target, AttackDamage);
             else if (Mel != null && Dummy == null)
@@ -304,11 +306,12 @@ namespace MidLane
             else
             {
                 if (Blade == null) world.FlashLine(Position + Vector3.up, target.Position + Vector3.up, Color);
-                float raw = AttackDamage * (Kind == UnitKind.Champion && Random.value < CritChance ? 2 : 1);
+                critical = Kind == UnitKind.Champion && Random.value < CritChance;
+                float raw = AttackDamage * (critical ? 2 : 1);
                 if (Kind == UnitKind.Champion) ApplyAttackHit(target, raw); else target.TakeDamage(BasicDamageAgainst(target, raw), this);
-                if (Audio != null) Audio.BasicHit(BasicAttackVariant);
+                if (Audio != null) Audio.BasicHit(BasicAttackVariant, critical);
             }
-            if (Blade != null) Blade.OnBasicAttackHit(target);
+            if (Blade != null) Blade.OnBasicAttackHit(target, critical);
         }
         internal void OrderAttackAfterAbility(Combatant other) { if (ValidEnemy(other)) { CancelRecall(); AttackTarget = other; moving = false; } }
         internal void HoldAttackPosition() { AttackTarget = null; moving = false; }

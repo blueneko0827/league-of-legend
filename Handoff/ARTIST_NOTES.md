@@ -1,5 +1,93 @@
 # Notas para la devolución
 
+## Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos)
+
+- **Herramientas y versiones utilizadas:** Unity 6000.6.5f1, URP 17.6.0. Python 3 + Pillow
+  para `Tools/Import-IreliaVfx.py` (lee los `.bin`, `.tex` y `.scb` originales sin otras
+  dependencias). Sonidos con wwiser v20260808 y vgmstream r2117, igual que
+  `Tools/Import-IreliaAudio.py`. Sin paquetes nuevos de Unity.
+
+- **Efectos oficiales (nuevo):** los efectos se generan a partir de las definiciones
+  originales de Riot (`VfxSystemDefinitionData` de los `.bin` de la skin base), no se
+  dibujaron a mano. `Tools/Import-IreliaVfx.py` exporta 27 sistemas (104 emisores) a
+  `Assets/Resources/Vfx/Irelia/IreliaVfx.json`, 40 texturas a `.../Textures/*.png` y 10
+  mallas `.scb` (dentro del JSON), además de los eventos de partículas del grafo de
+  animación original (qué clip lanza qué efecto, en qué frame y desde qué hueso).
+  Los GUID se derivan del nombre: reimportar no rompe referencias.
+  - Runtime: `RiotVfxData.cs`, `RiotVfxSimulation.cs`, `RiotVfxLibrary.cs`,
+    `RiotVfxPlayer.cs` y el shader `Resources/Shaders/RiotParticle.shader`. Reproduce
+    emisión por tasa o partícula única, retardos, vida, curvas de color/escala/rotación,
+    tablas de probabilidad, velocidad, arrastre y aceleración, billboards, quads, mallas,
+    estelas, silueta del personaje (malla adjunta), flipbooks, desplazamiento de UV,
+    erosión alfa, textura multiplicada y los modos de fusión de Riot.
+  - **Ataque básico:** barridos `BA_Far_swipe_01/02` en el frame indicado por los clips
+    oficiales Attack/Attack2, escalados con la velocidad de ataque; si la preparación se
+    cancela antes del impacto, el barrido se corta. Impacto `BA_Hit`, `BA_Hit_02` o
+    `BA_Hit_Crit` (crítico) en el hueso del pecho del objetivo.
+  - **Pasiva:** brillo en una cuchilla flotante por carga (`P_Blades_Stacks_1_2_3`) y en
+    las cuatro al máximo (`P_Blades_Stacks_4`); activación a 4 cargas (`P_buf`: destello
+    sobre la silueta de Irelia y aura); golpes potenciados `P_Hit_02/04` y barridos
+    `P_Far_swipe_01/02` superpuestos; `P_Hit_4stack_left` cuando la Q completa las cargas.
+  - **Q:** `Q_Dash` (borde de avance, estela, onda de choque y silueta brillante),
+    `Q_tar` en el objetivo, `Q_heal` en Irelia, `Q_Proc` cuando la Q se reinicia (marca o
+    muerte) y la marca oficial `Q_Mark_SelfOnly`, que reemplaza el rombo cian.
+  - Ajustes en `ScenePresentation.json`: `"official_vfx": false` vuelve a la presentación
+    anterior (incluido el rombo); `vfx_scale` (0,5–2) escala los efectos alrededor de su
+    punto de anclaje. Con 1 conservan la proporción del campeón agrandado
+    (`ChampionVisualHeight / 228` unidades por unidad LoL).
+  - Convenciones del conversor, por si hay que tocarlo: ejes LoL → Unity con X espejado
+    como el importador de personajes (rotaciones: se invierten Y y Z); los quads de Riot
+    miden ±1 × escala; los huesos raíz de buff (`C_Buffbone_Glb_Layout_Loc`, etc.) están
+    girados 180° en `irelia_base.skl`, y los barridos lo compensan con su propia rotación.
+
+- **Modelos, pivotes, rig y prefabs modificados:** ninguno. Los efectos se anclan a los
+  huesos que ya existen en los prefabs (`C_Buffbone_Glb_*`, `Buffbone_Glb_Ground_Loc`,
+  `Sword1..4_Skn` y el pecho/cabeza del dummy).
+
+- **Animaciones modificadas/nuevas y su mapeo a acciones:** no se agregaron clips. Se
+  usan los clips oficiales que ya tenía el proyecto (Attack = `irelia_attack_01`,
+  Attack2 = `irelia_attack_02`, QDash/QToIdle/QToRun/QChain) y ahora los efectos siguen
+  sus eventos de partículas originales.
+
+- **Sonidos nuevos:** `Tools/Import-IreliaPassiveAudio.py` agrega, con la misma ganancia
+  que los clips de ataque/Q existentes: `CritHit_1..4` (impacto crítico), `PSparkles_1..12`
+  (golpe potenciado), `PMaxSparkles_1..7` (golpe que completa las cargas) y `PMax_1..5`
+  (activación a 4 cargas). Manifiesto: `Assets/SourceAudio/IreliaOfficial/PassiveSources.json`.
+  Los clips existentes no se modificaron.
+
+- **Recursos o paquetes nuevos y sus requisitos:** scripts nuevos (con `.meta`):
+  `RiotVfxData.cs`, `RiotVfxSimulation.cs`, `RiotVfxLibrary.cs`, `RiotVfxPlayer.cs`,
+  `IreliaVfx.cs`; shader `RiotParticle.shader`; carpeta `Assets/Resources/Vfx/Irelia/`;
+  herramientas `Tools/Import-IreliaVfx.py` y `Tools/Import-IreliaPassiveAudio.py`.
+
+- **Cambios que requieren fusionar código o afectan contratos con la simulación:**
+  - `BladeDuelist.cs`: eventos de solo lectura `OnHitLanded(objetivo, potenciado, crítico,
+    desdeQ)` y `QLanded(objetivo, reinicio)`; `OnBasicAttackHit` recibe dos parámetros
+    opcionales. Daño, cargas y tiempos no cambian.
+  - `Combatant.cs`: el crítico se guarda en una variable antes de calcular el daño (mismo
+    cálculo y mismo orden de `Random.value`) y se pasa al audio y al evento; Irelia agrega
+    el componente `IreliaVfx`.
+  - `IreliaAudio.cs`: nuevas señales `CritHit`, `PSparkles`, `PMaxSparkles`, `PMax`
+    (al final del enum) y `BasicHit(variante, crítico)`.
+  - `IreliaMarkVisual.cs`: muestra la marca oficial; el rombo queda como respaldo.
+  - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva que verifica que los
+    sistemas cargan y que el ataque básico y la Q lanzan sus efectos.
+
+- **Capturas de comparación y resolución utilizada:** pendiente, 1280×720 en Game.
+
+- **Limitaciones pendientes:**
+  - El renderizador de partículas de Riot no es público: la interpretación de algunos
+    campos (giro de billboards, tamaño base de los quads, `uvMode`) se dedujo de los datos.
+    Se ajusta con `vfx_scale` o en `RiotVfxSimulation.cs`.
+  - Omitidos: 2 emisores de distorsión (refracción de pantalla, requiere otra pasada de
+    render) y 1 emisor de polvo de la Q cuya textura (de Kai'Sa) no viene en los archivos.
+  - `P_Hit_4stack_right` no está en los archivos entregados: se usa la versión izquierda.
+  - El simulador decide el crítico al impactar, no al iniciar el ataque; por eso se usa el
+    impacto y el sonido críticos, pero no la animación/sonido de lanzamiento crítico.
+  - El sonido `Q_Hit_reset` no está en el banco base (igual que antes).
+  - El proyecto trabaja en espacio de color lineal: los efectos aditivos pueden verse algo
+    más intensos que en LoL.
+
 ## Hito 1 · Escala, cámara, iluminación, sombras, suelo, rocas y barras de vida
 
 - **Herramientas y versiones utilizadas:** Unity 6000.6.5f1, URP 17.6.0. Todo el

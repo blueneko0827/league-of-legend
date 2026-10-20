@@ -1,0 +1,230 @@
+{
+  "source": "CharacterAssets/Irelia/Base/Original/assets/sounds/wwise2016/sfx/characters/irelia/skins/base",
+  "gain": 0.7890913156044405,
+  "events": [
+    {
+      "group": "CritHit",
+      "event": "Play_sfx_Irelia_IreliaCritAttack_OnHit",
+      "default_switch": "1153642577",
+      "clips": [
+        {
+          "file": "CritHit_1.wav",
+          "seconds": 0.94859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaCritAttack_OnHit [1559186049=1153642577] {r1}.txtp",
+          "peak": 0.955423245622938,
+          "sha256": "768cfd4a59c90a08d5e7242496fc28479ee4baeef754a665ca7c9a6e395c8400"
+        },
+        {
+          "file": "CritHit_2.wav",
+          "seconds": 0.941859410430839,
+          "recipe": "Play_sfx_Irelia_IreliaCritAttack_OnHit [1559186049=1153642577] {r2}.txtp",
+          "peak": 0.8637685791018936,
+          "sha256": "4ae30c733556c9dc0cfb5ab5c5d586f2233678ff8ccfb18f4debc2de60d92170"
+        },
+        {
+          "file": "CritHit_3.wav",
+          "seconds": 0.9193650793650794,
+          "recipe": "Play_sfx_Irelia_IreliaCritAttack_OnHit [1559186049=1153642577] {r3}.txtp",
+          "peak": 0.7472305061706477,
+          "sha256": "cb493c991d620ed074d400ed9c4680ae8abd0dfa3031b8447e56dd46f143e89c"
+        },
+        {
+          "file": "CritHit_4.wav",
+          "seconds": 0.9423809523809524,
+          "recipe": "Play_sfx_Irelia_IreliaCritAttack_OnHit [1559186049=1153642577] {r4}.txtp",
+          "peak": 0.6882636100365742,
+          "sha256": "8660bfcf01bc39f81efb5ce84839642b290b31a348abb30a93c8d6f19789bd76"
+        }
+      ]
+    },
+    {
+      "group": "PSparkles",
+      "event": "Play_sfx_Irelia_IreliaP_sparkles",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "PSparkles_1.wav",
+          "seconds": 0.5933333333333334,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r1}.txtp",
+          "peak": 0.7122575187517644,
+          "sha256": "ace10bec93b2b5e64bcaaf2a33311296b464df369228fd75859de1d8f4a41278"
+        },
+        {
+          "file": "PSparkles_2.wav",
+          "seconds": 0.7001133786848073,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r2}.txtp",
+          "peak": 0.7405145445923694,
+          "sha256": "bbf4a14b8cf0f20f68361ddcf6b936459673333587f4e82a0524f7c5c9a09bf3"
+        },
+        {
+          "file": "PSparkles_3.wav",
+          "seconds": 0.5900226757369614,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r3}.txtp",
+          "peak": 0.7411270149278412,
+          "sha256": "c806dff843cc173a6a7a641bb4c72871596067af30dc03db5c9c9beb6b58a377"
+        },
+        {
+          "file": "PSparkles_4.wav",
+          "seconds": 0.6591609977324263,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r4}.txtp",
+          "peak": 0.7527909485351438,
+          "sha256": "e00a2f328683f61e5e26056b26e326f2d33f001ffe659c713b6abe65c6f20dac"
+        },
+        {
+          "file": "PSparkles_5.wav",
+          "seconds": 0.7453741496598639,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r5}.txtp",
+          "peak": 0.7836406024130863,
+          "sha256": "a604121f9f78224e1035d07324b0da06827a6463fe552b32bd8aef0c4e28dde2"
+        },
+        {
+          "file": "PSparkles_6.wav",
+          "seconds": 0.5937868480725623,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r6}.txtp",
+          "peak": 0.7116332900394022,
+          "sha256": "690366bf7a5944711ebeb0c849dfa7c1a931a4155e7bf299a1be03c4f63ee365"
+        },
+        {
+          "file": "PSparkles_7.wav",
+          "seconds": 0.6115646258503401,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r7}.txtp",
+          "peak": 0.7240883272438968,
+          "sha256": "274e4a3bc8257debf719771c6288eb4096c7fe085f4ef58502167698fa4790fe"
+        },
+        {
+          "file": "PSparkles_8.wav",
+          "seconds": 0.65140589569161,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r8}.txtp",
+          "peak": 0.8051884395005021,
+          "sha256": "924c1ebe5ae775882ff1d35ebda962c8ce2aea489254659f7e3ee0b03a76b71d"
+        },
+        {
+          "file": "PSparkles_9.wav",
+          "seconds": 0.5729478458049887,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r9}.txtp",
+          "peak": 0.7610734551497879,
+          "sha256": "e8f217851b25e4ccce544e5fe36f96d8929180da27f7629f4defc225d77d2706"
+        },
+        {
+          "file": "PSparkles_10.wav",
+          "seconds": 0.5185260770975056,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r10}.txtp",
+          "peak": 0.9384136716801745,
+          "sha256": "e13652ff0ecd421acf6006f340553bce473535590c7aefb9f26a1a584b8a19db"
+        },
+        {
+          "file": "PSparkles_11.wav",
+          "seconds": 0.7209977324263038,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r11}.txtp",
+          "peak": 0.9436680670109652,
+          "sha256": "ade124f9964ec55d363236f33257f3f0e823e254ff347159681bc3c6cf79b826"
+        },
+        {
+          "file": "PSparkles_12.wav",
+          "seconds": 0.6079818594104308,
+          "recipe": "Play_sfx_Irelia_IreliaP_sparkles {r12}.txtp",
+          "peak": 0.911039699944045,
+          "sha256": "e62cbaf86693199a53336d4c1f59abb89b71c3ad1859412aa6676ec7ca10dc6a"
+        }
+      ]
+    },
+    {
+      "group": "PMaxSparkles",
+      "event": "Play_sfx_Irelia_IreliaP_max_sparkles",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "PMaxSparkles_1.wav",
+          "seconds": 0.5937868480725623,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r1}.txtp",
+          "peak": 0.7116332900394022,
+          "sha256": "690366bf7a5944711ebeb0c849dfa7c1a931a4155e7bf299a1be03c4f63ee365"
+        },
+        {
+          "file": "PMaxSparkles_2.wav",
+          "seconds": 0.7453741496598639,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r2}.txtp",
+          "peak": 0.7836406024130863,
+          "sha256": "a604121f9f78224e1035d07324b0da06827a6463fe552b32bd8aef0c4e28dde2"
+        },
+        {
+          "file": "PMaxSparkles_3.wav",
+          "seconds": 0.6591609977324263,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r3}.txtp",
+          "peak": 0.7527909485351438,
+          "sha256": "e00a2f328683f61e5e26056b26e326f2d33f001ffe659c713b6abe65c6f20dac"
+        },
+        {
+          "file": "PMaxSparkles_4.wav",
+          "seconds": 0.5900226757369614,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r4}.txtp",
+          "peak": 0.7411270149278412,
+          "sha256": "c806dff843cc173a6a7a641bb4c72871596067af30dc03db5c9c9beb6b58a377"
+        },
+        {
+          "file": "PMaxSparkles_5.wav",
+          "seconds": 0.7001133786848073,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r5}.txtp",
+          "peak": 0.7405145445923694,
+          "sha256": "bbf4a14b8cf0f20f68361ddcf6b936459673333587f4e82a0524f7c5c9a09bf3"
+        },
+        {
+          "file": "PMaxSparkles_6.wav",
+          "seconds": 0.6115646258503401,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r6}.txtp",
+          "peak": 0.7240883272438968,
+          "sha256": "274e4a3bc8257debf719771c6288eb4096c7fe085f4ef58502167698fa4790fe"
+        },
+        {
+          "file": "PMaxSparkles_7.wav",
+          "seconds": 0.5933333333333334,
+          "recipe": "Play_sfx_Irelia_IreliaP_max_sparkles {r7}.txtp",
+          "peak": 0.7122575187517644,
+          "sha256": "ace10bec93b2b5e64bcaaf2a33311296b464df369228fd75859de1d8f4a41278"
+        }
+      ]
+    },
+    {
+      "group": "PMax",
+      "event": "Play_sfx_Irelia_IreliaP_Max_OnBuffActivate",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "PMax_1.wav",
+          "seconds": 3.139183673469388,
+          "recipe": "Play_sfx_Irelia_IreliaP_Max_OnBuffActivate {r1}.txtp",
+          "peak": 0.862978510241868,
+          "sha256": "46bc4ba24a9600a5580b6504ac23ae74c21a4b6bf04f1e22b40e5e7f86d4cc50"
+        },
+        {
+          "file": "PMax_2.wav",
+          "seconds": 2.869795918367347,
+          "recipe": "Play_sfx_Irelia_IreliaP_Max_OnBuffActivate {r2}.txtp",
+          "peak": 0.8040650912058925,
+          "sha256": "e83bd0c61f43b319d30bc909968c32c06d0bb597a2325f90e268cc95257be817"
+        },
+        {
+          "file": "PMax_3.wav",
+          "seconds": 3.0563718820861676,
+          "recipe": "Play_sfx_Irelia_IreliaP_Max_OnBuffActivate {r3}.txtp",
+          "peak": 0.7994280576953601,
+          "sha256": "e14e39869433aa96f792208651e4de948452514cb1ffdea8a9bc63864f7f2ee4"
+        },
+        {
+          "file": "PMax_4.wav",
+          "seconds": 3.5075510204081635,
+          "recipe": "Play_sfx_Irelia_IreliaP_Max_OnBuffActivate {r4}.txtp",
+          "peak": 0.759634041684362,
+          "sha256": "7fd5a83b3c70b3e8c5cd4f09e29228f954dd342294f9d906e8b5d0bcc03c74fe"
+        },
+        {
+          "file": "PMax_5.wav",
+          "seconds": 3.093310657596372,
+          "recipe": "Play_sfx_Irelia_IreliaP_Max_OnBuffActivate {r5}.txtp",
+          "peak": 0.8430411945203884,
+          "sha256": "708dc4f22f327a274bddae7d03b9db6e3ace4079acac3d6c95dd97faec23e016"
+        }
+      ]
+    }
+  ]
+}

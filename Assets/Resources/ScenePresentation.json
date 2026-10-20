@@ -18,5 +18,7 @@
   "sun_color": { "r": 1.0, "g": 0.96, "b": 0.88, "a": 1.0 },
   "shadow_strength": 0.8,
   "ambient_color": { "r": 0.5, "g": 0.56, "b": 0.68, "a": 1.0 },
-  "unit_shadows": true
+  "unit_shadows": true,
+  "official_vfx": true,
+  "vfx_scale": 1.0
 }

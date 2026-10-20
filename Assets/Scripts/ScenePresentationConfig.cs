@@ -35,6 +35,10 @@ namespace MidLane
         public float shadow_strength = .8f;
         public Color ambient_color = new Color(.5f, .56f, .68f, 1);
         public bool unit_shadows = true;
+        // Official Riot particle systems (basic attack, passive, Q). vfx_scale multiplies their
+        // size around the attachment point; 1 keeps the proportion of the enlarged champion.
+        public bool official_vfx = true;
+        public float vfx_scale = 1;
 
         public float ChampionVisualHeight { get { return TowerToTowerRules.ChampionSelectionHeight * visual_mesh_multiplier; } }
         public float MinionVisualHeight(MinionType type)
@@ -72,6 +76,7 @@ namespace MidLane
             sun_pitch_degrees = Mathf.Clamp(sun_pitch_degrees, 20, 89);
             sun_intensity = Mathf.Clamp(sun_intensity, 0, 3);
             shadow_strength = Mathf.Clamp01(shadow_strength);
+            vfx_scale = Mathf.Clamp(vfx_scale, .5f, 2);
             // Fixed at the farthest framing previously reachable with the scroll wheel, times the zoom.
             camera_distance = CameraDistance;
         }
