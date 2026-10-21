@@ -122,6 +122,30 @@ namespace MidLane.Tests
             }
             finally { RiotVfxPlayer.Started -= record; }
         }
+        [UnityTest] public IEnumerator EmpoweredHitBurstsAtTheDummyChest()
+        {
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            RiotVfxPlayer passiveHit = null;
+            System.Action<RiotVfxPlayer> record = player => { if (player.SystemName.StartsWith("Irelia_Base_P_Hit_0")) passiveHit = player; };
+            RiotVfxPlayer.Started += record;
+            try
+            {
+                world.Player.transform.position = dummy.Home - Vector3.right * 2.5f;
+                world.Player.Blade.AwardSpellHits(new[] { dummy.Actor, dummy.Actor, dummy.Actor, dummy.Actor });
+                Assert.AreEqual(4, world.Player.Stacks);
+                world.Player.Stop(); world.Player.OrderAttack(dummy.Actor);
+                float deadline = Time.time + 2;
+                while (passiveHit == null && Time.time < deadline) yield return null;
+                Assert.NotNull(passiveHit, "golpe potenciado sin efecto de pasiva");
+                yield return null;
+                Transform chest = RiotVfxPlayer.FindBone(dummy.Actor.transform, "C_Buffbone_Glb_Chest_Loc");
+                Assert.NotNull(chest);
+                Assert.Less(Vector3.Distance(passiveHit.Pose.position, chest.position), .05f);
+                Assert.Greater(passiveHit.Pose.position.y - dummy.Actor.Position.y, dummy.Actor.VisualHeight * .3f);
+                Assert.Greater(passiveHit.DepthPull, 0);
+            }
+            finally { RiotVfxPlayer.Started -= record; }
+        }
         [UnityTest] public IEnumerator CameraAndPatrolMatchTheCurrentPracticeAndCapturePreview()
         {
             Assert.AreEqual(32.5f, world.View.fieldOfView, .001f);

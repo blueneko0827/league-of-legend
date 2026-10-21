@@ -20,6 +20,7 @@ Shader "MidLane/RiotParticle"
         _VertexColor ("Use vertex color", Float) = 1
         _Linearize ("Convert gamma color to linear", Float) = 1
         _EdgeFade ("Edge fade: 0 none, 1 soft rectangle, 2 ellipse", Float) = 0
+        _DepthPull ("Depth pull toward the camera (world units)", Float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 5
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst blend", Float) = 10
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
@@ -44,7 +45,7 @@ Shader "MidLane/RiotParticle"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST; float4 _ErosionTex_ST; float4 _MultTex_ST;
                 float4 _Color; float4 _UV; float4 _UV2; float4 _Erosion;
-                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize; float _EdgeFade;
+                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize; float _EdgeFade; float _DepthPull;
                 float _SrcBlend; float _DstBlend; float _Cull;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
@@ -54,6 +55,10 @@ Shader "MidLane/RiotParticle"
                 Varyings o;
                 float3 world = TransformObjectToWorld(i.positionOS.xyz);
                 world += TransformObjectToWorldNormal(i.normalOS) * _Inflate;
+                // Hit effects sit inside their target: moving along the view ray keeps the
+                // on-screen position and only brings the depth in front of the target's body.
+                float3 toCamera = _WorldSpaceCameraPos - world;
+                world += toCamera * (min(_DepthPull, length(toCamera) * .5) / max(length(toCamera), 1e-4));
                 o.positionCS = TransformWorldToHClip(world);
                 float2 uv = i.uv * _UV.xy + _UV.zw;
                 o.uv = float2(uv.x, 1 - uv.y);

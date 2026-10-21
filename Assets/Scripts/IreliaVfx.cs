@@ -138,7 +138,7 @@ namespace MidLane
                 // The hit that completed the stacks shows the 4-stack proc on its target.
                 if (lastQVictim != null && Time.time - lastQVictimAt < .25f)
                 {
-                    PlayOnTarget("Irelia_Base_P_Hit_4stack_left", lastQVictim, blade.QDirection, true);
+                    PlayOnTarget("Irelia_Base_P_Hit_4stack_left", lastQVictim, blade.QDirection);
                     if (actor.Audio != null) actor.Audio.PassiveMaxedHit();
                 }
             }
@@ -169,7 +169,7 @@ namespace MidLane
             }
             if (empowered)
             {
-                PlayOnTarget(actor.BasicAttackVariant == 2 && !fromQ ? "Irelia_Base_P_Hit_04" : "Irelia_Base_P_Hit_02", target, direction, true);
+                PlayOnTarget(actor.BasicAttackVariant == 2 && !fromQ ? "Irelia_Base_P_Hit_04" : "Irelia_Base_P_Hit_02", target, direction);
                 if (actor.Audio != null) actor.Audio.PassiveEmpoweredHit();
             }
         }
@@ -184,12 +184,22 @@ namespace MidLane
             if (refunded) RiotVfxPlayer.Play(world, "Irelia_Base_Q_Proc", TargetBonePose(target, "C_Buffbone_Glb_Overhead_Loc", blade.QDirection));
         }
 
-        // Spell/attack hits use the target's chest bone (mHitBoneName). The passive hit systems
-        // are authored from the ground (their flashes are offset 80 units up), so they use it.
-        void PlayOnTarget(string system, Combatant target, Vector3 direction, bool ground = false)
+        // Attack, passive and Q hits all burst at the target's chest bone (mHitBoneName), as in
+        // LoL: the passive flashes are authored like BA_Hit (flat quads around the hit point; the
+        // 80-unit emitter offset is overridden by its curve, which stays at 0 height). Anchored at
+        // the feet they were hidden under the dummy and its HUD.
+        void PlayOnTarget(string system, Combatant target, Vector3 direction)
         {
-            RiotVfxPlayer.Play(world, system, ground ? TargetBonePose(target, "Buffbone_Glb_Ground_Loc", direction, 0) :
-                TargetBonePose(target, "C_Buffbone_Glb_Chest_Loc", direction));
+            RiotVfxPlayer player = RiotVfxPlayer.Play(world, system, TargetBonePose(target, "C_Buffbone_Glb_Chest_Loc", direction));
+            if (player != null) player.DepthPull = HitDepthPull(target);
+        }
+
+        // The burst is centred inside the target's body; pull it in front so the body does not
+        // hide half of it (LoL draws its hit flashes over the target).
+        public static float HitDepthPull(Combatant target)
+        {
+            if (target == null || target.SelectionHeight <= 0) return 0;
+            return Mathf.Clamp(target.Radius * target.VisualHeight / target.SelectionHeight * .75f, .15f, 1.2f);
         }
 
         // Hit effects use the target's official bone and face along the attack. Without the bone,

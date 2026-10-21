@@ -26,8 +26,9 @@
     `BA_Hit_Crit` (crítico) en el hueso del pecho del objetivo.
   - **Pasiva:** brillo en una cuchilla flotante por carga (`P_Blades_Stacks_1_2_3`) y en
     las cuatro al máximo (`P_Blades_Stacks_4`); activación a 4 cargas (`P_buf`: destello
-    sobre la silueta de Irelia y aura); golpes potenciados `P_Hit_02/04` y barridos
-    `P_Far_swipe_01/02` superpuestos; `P_Hit_4stack_left` cuando la Q completa las cargas.
+    sobre la silueta de Irelia y aura); golpes potenciados `P_Hit_02/04` en el pecho del
+    objetivo, junto con el impacto del ataque, y barridos `P_Far_swipe_01/02` superpuestos;
+    `P_Hit_4stack_left` cuando la Q completa las cargas.
   - **Q:** `Q_Dash` (borde de avance, estela, onda de choque y silueta brillante),
     `Q_tar` en el objetivo, `Q_heal` en Irelia, `Q_Proc` cuando la Q se reinicia (marca o
     muerte) y la marca oficial `Q_Mark_SelfOnly`, que reemplaza el rombo cian.
@@ -42,7 +43,7 @@
 
 - **Modelos, pivotes, rig y prefabs modificados:** ninguno. Los efectos se anclan a los
   huesos que ya existen en los prefabs (`C_Buffbone_Glb_*`, `Buffbone_Glb_Ground_Loc`,
-  `Sword1..4_Skn` y el pecho/cabeza del dummy).
+  `Sword1..4_Skn` y el pecho del objetivo).
 
 - **Animaciones modificadas/nuevas y su mapeo a acciones:** no se agregaron clips. Se
   usan los clips oficiales que ya tenía el proyecto (Attack = `irelia_attack_01`,
@@ -70,8 +71,9 @@
   - `IreliaAudio.cs`: nuevas señales `CritHit`, `PSparkles`, `PMaxSparkles`, `PMax`
     (al final del enum) y `BasicHit(variante, crítico)`.
   - `IreliaMarkVisual.cs`: muestra la marca oficial; el rombo queda como respaldo.
-  - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva que verifica que los
-    sistemas cargan y que el ataque básico y la Q lanzan sus efectos.
+  - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: pruebas nuevas que verifican que los
+    sistemas cargan, que el ataque básico y la Q lanzan sus efectos y que el golpe
+    potenciado estalla en el pecho del dummy.
 
 - **Capturas de comparación y resolución utilizada:** pendiente, 1280×720 en Game.
 
@@ -95,6 +97,13 @@
 - **Bordes suaves:** el aura de la pasiva (textura desplazada y multiplicada) mostraba el
   contorno cuadrado del quad. Los billboards y quads tienen ahora un borde suavizado y los de
   textura desplazada/multiplicada un desvanecimiento elíptico (`_EdgeFade` en el shader).
+- **Pasiva sobre los dummies:** los golpes potenciados (`P_Hit_02/04`, `P_Hit_4stack_left`)
+  se anclaban a los pies del objetivo, donde quedaban tapados por el dummy y su panel de daño
+  (y la variante `_04`, girada 180°, quedaba bajo el suelo). Ahora estallan en el pecho del
+  objetivo, como el impacto del ataque y como en LoL. Los impactos sobre un objetivo se
+  dibujan acercados a la cámara según el radio del objetivo (`_DepthPull`; la posición en
+  pantalla no cambia), para que su cuerpo no tape la mitad del destello. Prueba nueva:
+  `EmpoweredHitBurstsAtTheDummyChest`.
 
 ## Hito 1 · Escala, cámara, iluminación, sombras, suelo, rocas y barras de vida
 

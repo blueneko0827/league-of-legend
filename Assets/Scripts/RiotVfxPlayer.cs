@@ -13,7 +13,10 @@ namespace MidLane
     {
         public RiotVfxInstance Instance { get; private set; }
         public float TimeScale = 1;
+        // World units the draws are pulled toward the camera (hit effects inside their target).
+        public float DepthPull;
         public string SystemName { get { return Instance != null ? Instance.Data.name : ""; } }
+        public RiotVfxPose Pose { get { return pose; } }
         LaneWorld world;
         RiotVfxLibrary library;
         Func<RiotVfxPose> poseSource;
@@ -24,7 +27,7 @@ namespace MidLane
         readonly List<Renderer> attachedProxies = new List<Renderer>();
         MaterialPropertyBlock block;
         static readonly int ColorId = Shader.PropertyToID("_Color"), UvId = Shader.PropertyToID("_UV"), Uv2Id = Shader.PropertyToID("_UV2");
-        static readonly int ErosionId = Shader.PropertyToID("_Erosion");
+        static readonly int ErosionId = Shader.PropertyToID("_Erosion"), DepthPullId = Shader.PropertyToID("_DepthPull");
         static int seed = 7919;
         const string ProxySuffix = " (VFX)";
         // Raised for every system that starts (diagnostics and Play Mode tests).
@@ -109,7 +112,7 @@ namespace MidLane
                     draw.kind == RiotVfxDrawKind.Trail ? TrailMesh(trail++, draw) : library.Quad;
                 if (mesh == null) continue;
                 block.SetVector(ColorId, (Vector4)draw.color); block.SetVector(UvId, draw.uv); block.SetVector(Uv2Id, draw.uv2);
-                block.SetVector(ErosionId, Erosion(draw));
+                block.SetVector(ErosionId, Erosion(draw)); block.SetFloat(DepthPullId, DepthPull);
                 Graphics.DrawMesh(mesh, draw.matrix, library.GetMaterial(draw.emitter), gameObject.layer, null, 0, block,
                     ShadowCastingMode.Off, false);
             }
@@ -180,7 +183,7 @@ namespace MidLane
                 proxy.enabled = visible && source != null && source.enabled && source.gameObject.activeInHierarchy;
                 if (!proxy.enabled) continue;
                 block.Clear(); block.SetVector(ColorId, (Vector4)color); block.SetVector(UvId, new Vector4(1, 1, 0, 0)); block.SetVector(Uv2Id, new Vector4(1, 1, 0, 0));
-                block.SetVector(ErosionId, new Vector4(0, 0, .1f, 0));
+                block.SetVector(ErosionId, new Vector4(0, 0, .1f, 0)); block.SetFloat(DepthPullId, 0);
                 proxy.SetPropertyBlock(block);
             }
         }
