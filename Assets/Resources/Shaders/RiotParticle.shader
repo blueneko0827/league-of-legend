@@ -19,6 +19,7 @@ Shader "MidLane/RiotParticle"
         _Inflate ("Normal inflate (world units)", Float) = 0
         _VertexColor ("Use vertex color", Float) = 1
         _Linearize ("Convert gamma color to linear", Float) = 1
+        _EdgeFade ("Edge fade: 0 none, 1 soft rectangle, 2 ellipse", Float) = 0
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 5
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst blend", Float) = 10
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
@@ -43,7 +44,7 @@ Shader "MidLane/RiotParticle"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST; float4 _ErosionTex_ST; float4 _MultTex_ST;
                 float4 _Color; float4 _UV; float4 _UV2; float4 _Erosion;
-                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize;
+                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize; float _EdgeFade;
                 float _SrcBlend; float _DstBlend; float _Cull;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
@@ -74,6 +75,15 @@ Shader "MidLane/RiotParticle"
                     half feather = max(_Erosion.z, 0.01);
                     half threshold = _Erosion.x * (1 + feather);
                     color.a *= saturate((value - threshold + feather) / feather);
+                }
+                // Quads never show their rectangle: a soft border, or an elliptical fade for
+                // scrolled/tiled textures whose content does not fade out at the quad's edge.
+                if (_EdgeFade > 0.5)
+                {
+                    float2 d = abs(i.raw - 0.5) * 2;
+                    half fade = _EdgeFade > 1.5 ? saturate((1 - length(d)) / 0.45)
+                        : saturate((1 - d.x) / 0.12) * saturate((1 - d.y) / 0.12);
+                    color.a *= fade * fade * (3 - 2 * fade);
                 }
                 clip(color.a - _AlphaClip);
                 // Textures (sRGB off), colors and vertex colors are raw gamma values, as in LoL.

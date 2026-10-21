@@ -92,6 +92,9 @@
   torso del objetivo y escala con su altura (antes era pequeña sobre la cabeza); la estela de la
   Q queda plana sobre el camino, visible desde la cámara; los efectos aditivos ya no se ven
   apagados por la conversión lineal.
+- **Bordes suaves:** el aura de la pasiva (textura desplazada y multiplicada) mostraba el
+  contorno cuadrado del quad. Los billboards y quads tienen ahora un borde suavizado y los de
+  textura desplazada/multiplicada un desvanecimiento elíptico (`_EdgeFade` en el shader).
 
 ## Hito 1 · Escala, cámara, iluminación, sombras, suelo, rocas y barras de vida
 

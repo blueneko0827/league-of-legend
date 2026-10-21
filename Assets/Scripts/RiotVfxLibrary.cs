@@ -28,6 +28,7 @@ namespace MidLane
         static readonly int Inflate = Shader.PropertyToID("_Inflate");
         static readonly int MultTex = Shader.PropertyToID("_MultTex"), UseMult = Shader.PropertyToID("_UseMult");
         static readonly int VertexColor = Shader.PropertyToID("_VertexColor"), Linearize = Shader.PropertyToID("_Linearize");
+        static readonly int EdgeFade = Shader.PropertyToID("_EdgeFade");
 
         public static RiotVfxLibrary For(LaneWorld world)
         {
@@ -153,6 +154,7 @@ namespace MidLane
             // matches LoL's brightness); alpha-type blends are converted to linear exactly.
             bool additive = emitter.blend == 0 || emitter.blend == 4 || emitter.blend == 6 || emitter.blend == 7;
             material.SetFloat(Linearize, additive ? 0 : 1);
+            material.SetFloat(EdgeFade, EdgeFadeMode(emitter));
             // Riot meshes and quads are authored for both sides unless culling is explicit;
             // the X mirror also flips their winding, so draw both faces.
             material.SetFloat(Cull, (float)CullMode.Off);
@@ -168,6 +170,18 @@ namespace MidLane
             material.renderQueue = 3000 + Mathf.Clamp(emitter.pass, -400, 400);
             materials[key] = material; owned.Add(material);
             return material;
+        }
+
+        // Billboards and quads get a soft border so a texture that is not fully transparent at
+        // its edge (DXT/mip bleeding, wrap) never shows a box. Scrolled, offset or multiplied
+        // textures tile across the quad, so they get an elliptical fade (the passive aura).
+        static float EdgeFadeMode(RiotVfxEmitterData e)
+        {
+            if (e.primitive != "billboard" && e.primitive != "quad") return 0;
+            bool tiled = e.uvMode == 2 || (e.textureMult != null && e.textureMult.Present) ||
+                (e.uvScroll != null && e.uvScroll.Present) || (e.birthUvScroll != null && e.birthUvScroll.Present) ||
+                (e.birthUvOffset != null && e.birthUvOffset.Present);
+            return tiled ? 2 : 1;
         }
 
         void OnDestroy()
