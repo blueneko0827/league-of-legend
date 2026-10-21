@@ -29,6 +29,7 @@ namespace MidLane
         static readonly int MultTex = Shader.PropertyToID("_MultTex"), UseMult = Shader.PropertyToID("_UseMult");
         static readonly int VertexColor = Shader.PropertyToID("_VertexColor"), Linearize = Shader.PropertyToID("_Linearize");
         static readonly int EdgeFade = Shader.PropertyToID("_EdgeFade");
+        static readonly int PaletteTex = Shader.PropertyToID("_PaletteTex"), UsePalette = Shader.PropertyToID("_UsePalette"), PaletteV = Shader.PropertyToID("_PaletteV");
 
         public static RiotVfxLibrary For(LaneWorld world)
         {
@@ -56,7 +57,7 @@ namespace MidLane
                     {
                         if (emitter == null || emitter.Skipped) continue;
                         GetMaterial(emitter, emitter.primitive == "attachedMesh");
-                        if (emitter.primitive == "mesh") GetMesh(emitter.mesh);
+                        if (emitter.primitive == "mesh" || emitter.IsBeam) GetMesh(emitter.mesh);
                     }
         }
 
@@ -134,7 +135,8 @@ namespace MidLane
         {
             string key = emitter.texture + "|" + emitter.blend + "|" + emitter.twoSided + "|" + emitter.pass + "|" + attached +
                 "|" + (emitter.erosion != null ? emitter.erosion.map : "") + "|" + emitter.alphaRef +
-                "|" + (emitter.textureMult != null ? emitter.textureMult.texture : "");
+                "|" + (emitter.textureMult != null ? emitter.textureMult.texture : "") +
+                "|" + (emitter.palette != null && emitter.palette.Present ? emitter.palette.texture + "#" + emitter.palette.index + "/" + emitter.palette.count : "");
             Material material;
             if (materials.TryGetValue(key, out material) && material != null) return material;
             material = new Material(Shader) { name = "Riot VFX " + emitter.name };
@@ -167,6 +169,14 @@ namespace MidLane
             bool mult = emitter.textureMult != null && emitter.textureMult.Present;
             material.SetFloat(UseMult, mult ? 1 : 0);
             if (mult) material.SetTexture(MultTex, GetTexture(emitter.textureMult.texture));
+            bool palette = emitter.palette != null && emitter.palette.Present;
+            material.SetFloat(UsePalette, palette ? 1 : 0);
+            if (palette)
+            {
+                // Rows run top to bottom in the source image; Unity's v runs bottom to top.
+                material.SetTexture(PaletteTex, GetTexture(emitter.palette.texture));
+                material.SetFloat(PaletteV, 1 - (Mathf.Clamp(emitter.palette.index, 0, emitter.palette.count - 1) + .5f) / emitter.palette.count);
+            }
             material.renderQueue = 3000 + Mathf.Clamp(emitter.pass, -400, 400);
             materials[key] = material; owned.Add(material);
             return material;
@@ -177,7 +187,7 @@ namespace MidLane
         // textures tile across the quad, so they get an elliptical fade (the passive aura).
         static float EdgeFadeMode(RiotVfxEmitterData e)
         {
-            if (e.primitive != "billboard" && e.primitive != "quad") return 0;
+            if (e.primitive != "billboard" && e.primitive != "quad" && e.primitive != "ray") return 0;
             bool tiled = e.uvMode == 2 || (e.textureMult != null && e.textureMult.Present) ||
                 (e.uvScroll != null && e.uvScroll.Present) || (e.birthUvScroll != null && e.birthUvScroll.Present) ||
                 (e.birthUvOffset != null && e.birthUvOffset.Present);

@@ -1,4 +1,4 @@
-"""Import the official Irelia particle definitions used by basic attacks, passive and Q.
+"""Import the official Irelia particle definitions used by basic attacks, passive, Q, W and E.
 
 Usage: python Tools/Import-IreliaVfx.py [CharacterAssets/Irelia/Base/Original]
 Requires Pillow. Everything else is read here with the Python standard library.
@@ -7,6 +7,7 @@ Reads Riot's skin VFX bins (VfxSystemDefinitionData), the animation graph partic
 events, the TEX textures and SCB meshes they reference, and writes:
   Assets/Resources/Vfx/Irelia/IreliaVfx.json   emitter data + meshes + animation events
   Assets/Resources/Vfx/Irelia/Textures/*.png   decoded textures (largest mip)
+  Assets/Resources/Models/IreliaOfficial/BladesPassive4.png   4-stack blades texture
 Unity plays the JSON with RiotVfx*.cs. GUIDs are derived from the file names, so a
 re-import keeps every reference.
 """
@@ -23,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'CharacterAssets/Irelia/Base/Original'
 OUTPUT = ROOT / 'Assets/Resources/Vfx/Irelia'
 TEXTURES = OUTPUT / 'Textures'
-SYSTEMS = re.compile(r'^Irelia_Base_(BA|P|Q)_')
+SYSTEMS = re.compile(r'^Irelia_Base_(BA|P|Q|W|E)_')
 # Screen-space refraction needs a grab pass the project does not have; skipped, not faked.
 SKIPPED_EMITTER_KEYS = ('distortionDefinition',)
 
@@ -96,7 +97,8 @@ AnimationGraphData mClipDataMap AtomicClipData mEventDataMap ParticleEventData m
 mEndFrame mParticleEventDataPairList ParticleEventDataPair mBoneName mTargetBoneName mIsKillEvent
 mScalePlaySpeedWithAnimation mAnimationResourceData AnimationResourceData mAnimationFilePath
 ResourceResolver resourceMap VfxTextureMultDefinitionData birthUvScrollRateMult birthUVOffsetMult texDivMult
-uvScrollClampMult'''.split()
+uvScrollClampMult childParticleSetDefinition VfxChildParticleSetDefinitionData childrenIdentifiers
+VfxChildIdentifier effectKey'''.split()
 NAME = {fnv1a(n): n for n in NAMES}
 BONES = {fnv1a(n): n for n in ('C_BUFFBONE_GLB_LAYOUT_LOC', 'BUFFBONE_GLB_GROUND_LOC', 'C_BUFFBONE_GLB_CENTER_LOC',
                                  'C_BUFFBONE_GLB_CHEST_LOC', 'C_BUFFBONE_GLB_GROUND_LOC', 'C_BUFFBONE_GLB_OVERHEAD_LOC',
@@ -247,10 +249,50 @@ def folder_meta(folder):
 # ---------------------------------------------------------------------------------------------
 files = {p.name.lower(): p for p in SOURCE.rglob('*') if p.is_file()}
 systems = {}
-for path in sorted((SOURCE / 'data/characters/irelia').glob('*.bin')) + sorted((SOURCE / 'LongNames').glob('*.bin')):
-    for entry in read_bin(path):
+# Unresolved/ holds bins whose original path is unknown (e.g. P_Hit_4stack_right); some are
+# not property bins at all, so unreadable ones are skipped.
+for path in (sorted((SOURCE / 'data/characters/irelia').glob('*.bin')) + [SOURCE / 'data/characters/irelia/skins/skin0.bin'] +
+             sorted((SOURCE / 'LongNames').glob('*.bin')) +
+             sorted((SOURCE / 'Unresolved').glob('*.bin'))):
+    try:
+        entries = read_bin(path)
+    except (ValueError, struct.error, UnicodeDecodeError, AssertionError):
+        continue
+    for entry in entries:
         if entry['@class'] == 'VfxSystemDefinitionData' and SYSTEMS.match(entry.get('particleName', '')):
-            systems[entry['particleName']] = entry
+            systems.setdefault(entry['particleName'], entry)
+
+
+def build_resolver():
+    """Effect keys (child particles, animation events) resolve through the skin's ResourceResolver."""
+    found = {}
+    def walk(obj):
+        if isinstance(obj, dict):
+            for key, v in obj.items():
+                if key == 'resourceMap':
+                    for k, target in v:
+                        found[k] = target
+                else:
+                    walk(v)
+        elif isinstance(obj, list):
+            for v in obj:
+                walk(v)
+    for entry in read_bin(SOURCE / 'data/characters/irelia/skins/skin0.bin'):
+        walk(entry)
+    return found
+
+
+RESOLVER = build_resolver()
+SYSTEM_BY_ENTRY = {entry['@key']: name for name, entry in systems.items()}
+
+
+def child_systems(e):
+    """Systems a particle spawns (childParticleSetDefinition, or its newer unnamed equivalent)."""
+    keys = [c.get('effectKey') for c in ((e.get('childParticleSetDefinition') or {}).get('childrenIdentifiers') or [])
+            if isinstance(c, dict)]
+    keys += [c.get('effectKey') for c in ((e.get('a03664c8') or {}).get('663f55e6') or []) if isinstance(c, dict)]
+    names = [SYSTEM_BY_ENTRY.get(RESOLVER.get(k, k)) for k in keys if k is not None]
+    return [n for n in names if n]
 
 
 def value(obj, size):
@@ -308,7 +350,8 @@ def color_ramp(path):
 
 
 PRIMITIVES = {'VfxPrimitiveArbitraryQuad': 'quad', 'VfxPrimitiveMesh': 'mesh', 'VfxPrimitiveArbitraryTrail': 'trail',
-              'VfxPrimitiveCameraTrail': 'cameraTrail', 'VfxPrimitiveAttachedMesh': 'attachedMesh'}
+              'VfxPrimitiveCameraTrail': 'cameraTrail', 'VfxPrimitiveAttachedMesh': 'attachedMesh',
+              'VfxPrimitiveBeam': 'beam', 'VfxPrimitiveRay': 'ray'}
 
 
 def emitter(e):
@@ -322,9 +365,16 @@ def emitter(e):
     mesh_path = mesh_def.get('mSimpleMeshName', '')
     if mesh_path:
         name = Path(mesh_path.replace('\\', '/')).stem.lower()
-        if name not in meshes:
-            meshes[name] = read_scb(files[name + '.scb'].read_bytes())
-        out['mesh'] = name
+        if name not in meshes and name + '.scb' not in files:
+            notes.append(f'Not in the supplied files: {mesh_path} (emitter skipped).')
+            out['skip'] = 'missing mesh'
+        else:
+            if name not in meshes:
+                meshes[name] = read_scb(files[name + '.scb'].read_bytes())
+            out['mesh'] = name
+            if out['primitive'] == 'beam':
+                z = meshes[name]['positions'][2::3]
+                out['beamLength'] = max(z) - min(z)
     trail = prim.get('mTrail') or {}
     if trail:
         out['trailTiling'] = value(trail.get('mBirthTilingSize'), 3)
@@ -400,6 +450,19 @@ def emitter(e):
         out['textureMult'] = {'texture': texture_ref(mult['textureMult']), 'texDiv': [float(div[0]), float(div[1])],
                               'birthUvScroll': value(mult.get('birthUvScrollRateMult'), 2),
                               'birthUvOffset': value(mult.get('birthUVOffsetMult'), 2)}
+    children = child_systems(e)
+    if children:
+        out['children'] = children
+    orbital = value(e.get('birthOrbitalVelocity'), 3)
+    if orbital is not None:
+        out['orbitalVelocity'] = orbital
+    # paletteDefinition (class unnamed): the texture's red channel picks a color from one row of a
+    # palette texture with 'count' rows (W swipes recolor greyscale textures with irelia_Base_P_gradient).
+    palette = e.get('paletteDefinition')
+    if isinstance(palette, dict) and texture_ref(palette.get('ffa711fb', '')):
+        index = value(palette.get('8bd46035'), 3)
+        out['palette'] = {'texture': texture_ref(palette['ffa711fb']), 'count': int(palette.get('9e52382f', 1)),
+                          'index': float(index['c'][0]) if index else 0.0}
     erosion = e.get('alphaErosionDefinition')
     if isinstance(erosion, dict):
         name = texture_ref(erosion.get('erosionMapName', ''))

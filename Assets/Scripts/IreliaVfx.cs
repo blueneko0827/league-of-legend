@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MidLane
 {
-    // Presentation only: plays Irelia's official basic attack, passive and Q particle systems
+    // Presentation only: plays Irelia's official basic attack, passive, Q, W and E particle systems
     // (Riot's emitter definitions, see RiotVfx*). It observes the committed gameplay state and
     // the BladeDuelist hit events; it never changes damage, timing or targeting.
     [DefaultExecutionOrder(250)]
@@ -34,19 +34,44 @@ namespace MidLane
 
         struct Pending { public float at; public string system; public string bone; public float rate; }
 
+        // W: the shield while charging, the full-charge flash once, the slash on release.
+        RiotVfxPlayer wShield, wFull;
+        bool observedCharging, wFullShown;
+        float wChargeFraction;
+        // E: one set of effects per blade pair (BladeLink) cast by this Irelia.
+        int observedE;
+        readonly Dictionary<BladeLink, EVfx> eLinks = new Dictionary<BladeLink, EVfx>();
+        readonly List<BladeLink> eFinished = new List<BladeLink>();
+
+        sealed class EVfx
+        {
+            public BladeLink link;
+            public RiotVfxPlayer missile1, missile2, blades1, blades2, indicator1, indicator2, beam, sparks;
+            public bool firstLanded, secondLanded;
+            public RiotVfxPose pose1, pose2;
+            public void Stop()
+            {
+                foreach (RiotVfxPlayer player in new[] { missile1, missile2, blades1, blades2, indicator1, indicator2, beam, sparks })
+                    if (player != null) player.Stop();
+            }
+        }
+
         public void Initialize(LaneWorld lane, Combatant owner)
         {
             world = lane; actor = owner; blade = owner.Blade;
             model = transform.Find("Model");
             rig = model != null ? model.GetComponentInChildren<IreliaRigAnimation>() : null;
             observedBasic = actor.BasicAttackSequence; observedQ = blade.QSequence; observedDeaths = actor.Deaths;
-            blade.OnHitLanded += HitLanded; blade.QLanded += QLanded;
+            observedE = blade.ESequence;
+            blade.OnHitLanded += HitLanded; blade.QLanded += QLanded; blade.WLanded += WLanded; blade.ELanded += ELanded;
+            if (actor.Audio != null) actor.Audio.Played += SoundPlayed;
             if (Enabled) RiotVfxLibrary.For(world);
         }
 
         void OnDestroy()
         {
-            if (blade != null) { blade.OnHitLanded -= HitLanded; blade.QLanded -= QLanded; }
+            if (blade != null) { blade.OnHitLanded -= HitLanded; blade.QLanded -= QLanded; blade.WLanded -= WLanded; blade.ELanded -= ELanded; }
+            if (actor != null && actor.Audio != null) actor.Audio.Played -= SoundPlayed;
             StopPersistent();
         }
 
@@ -59,12 +84,15 @@ namespace MidLane
             {
                 StopPersistent(); pending.Clear(); swipes.Clear(); swipeSequence = -1; observedDeaths = actor.Deaths;
                 observedBasic = actor.BasicAttackSequence; observedQ = blade.QSequence; observedStacks = 0;
+                observedE = blade.ESequence; observedCharging = false;
                 return;
             }
             if (!Enabled) { StopPersistent(); return; }
             ObserveBasicAttack();
             ObserveQ();
             ObservePassive();
+            ObserveW();
+            ObserveE();
             for (int i = pending.Count - 1; i >= 0; i--)
             {
                 if (Time.time < pending[i].at) continue;
@@ -128,6 +156,161 @@ namespace MidLane
             Vector3 direction = blade.QDirection.sqrMagnitude > .001f ? blade.QDirection : Facing() * Vector3.forward;
             lastDashPose = new RiotVfxPose(position, actor.VisualTiltRotation * Quaternion.LookRotation(Flat(direction)));
             return lastDashPose;
+        }
+
+        // W (Defiant Dance): W_DR shield around Irelia while she charges, W_FullPower when the charge
+        // completes, and the slash on release (the golden empowered one after a full charge).
+        void ObserveW()
+        {
+            bool charging = blade.IsCharging;
+            if (charging && !observedCharging)
+            {
+                if (wShield != null) wShield.Stop();
+                wShield = RiotVfxPlayer.Play(world, "Irelia_Base_W_DR", BonePose("BUFFBONE_GLB_GROUND_LOC", true));
+                wFullShown = false;
+            }
+            if (charging)
+            {
+                wChargeFraction = blade.ChargeFraction;
+                if (!wFullShown && wChargeFraction >= 1)
+                {
+                    wFullShown = true;
+                    wFull = RiotVfxPlayer.Play(world, "Irelia_Base_W_FullPower", BonePose("BUFFBONE_GLB_GROUND_LOC", true));
+                }
+            }
+            else if (observedCharging)
+            {
+                if (wShield != null) wShield.Stop();
+                if (wFull != null) wFull.Stop();
+                wShield = wFull = null;
+                // Released (not cancelled by a stun or death): the slash leaves along the aim.
+                if (blade.WReleaseElapsed < .25f)
+                    RiotVfxPlayer.PlayAt(world, wChargeFraction >= 1 ? "Irelia_Base_W_Swipe_Empowered" : "Irelia_Base_W_Swipe",
+                        actor.Position, Quaternion.LookRotation(Flat(blade.WDirection)));
+            }
+            observedCharging = charging;
+        }
+
+        void WLanded(Combatant target)
+        {
+            if (!Enabled || target == null) return;
+            // W_Hit is authored from the ground (its flashes sit 100 units up), facing along the slash.
+            RiotVfxPlayer player = RiotVfxPlayer.PlayAt(world, "Irelia_Base_W_Hit", target.Position, Quaternion.LookRotation(Flat(blade.WDirection)));
+            if (player != null) player.DepthPull = HitDepthPull(target);
+        }
+
+        // A hit absorbed while charging (the same moment as the official block sound).
+        void SoundPlayed(IreliaSoundCue cue, AudioClip clip)
+        {
+            if (cue != IreliaSoundCue.WBlock || !Enabled || actor == null || !actor.Alive) return;
+            RiotVfxPlayer.Play(world, "Irelia_Base_W_Block", BonePose("BUFFBONE_GLB_GROUND_LOC", true));
+        }
+
+        // E (Flawless Duet): cast swirl on Irelia (animation event of spell3 / spell3_b), each blade's
+        // missile, the blade standing at its point with its ground ring, then the beam between the two
+        // blades while they converge, and the hit/stun effects on the units caught.
+        void ObserveE()
+        {
+            if (blade.ESequence != observedE)
+            {
+                observedE = blade.ESequence;
+                RiotVfxPlayer.Play(world, blade.ESecondCast ? "Irelia_Base_E_cas_02" : "Irelia_Base_E_cas",
+                    BonePose("BUFFBONE_GLB_GROUND_LOC", true, true));
+            }
+            foreach (BladeLink link in world.BladeLinks)
+                if (link != null && link.Owner == blade && !eLinks.ContainsKey(link)) eLinks[link] = new EVfx { link = link };
+            eFinished.Clear();
+            foreach (KeyValuePair<BladeLink, EVfx> pair in eLinks)
+            {
+                // The link is destroyed at the convergence impact (or when Irelia dies / Practice restarts).
+                if (pair.Key == null) { pair.Value.Stop(); eFinished.Add(pair.Key); continue; }
+                UpdateE(pair.Value);
+            }
+            foreach (BladeLink link in eFinished) eLinks.Remove(link);
+        }
+
+        void UpdateE(EVfx e)
+        {
+            BladeLink link = e.link;
+            float now = Time.time, flight = Mathf.Max(.01f, blade.Tuning.ePlacementTime);
+            bool hostile = actor.Team != world.PlayerTeam;
+            if (e.missile1 == null && !e.firstLanded)
+                e.missile1 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_01", MissilePose(e, true));
+            if (!e.firstLanded && now >= link.FirstLaunchedAt + flight)
+            {
+                e.firstLanded = true;
+                if (e.missile1 != null) e.missile1.Stop();
+                e.blades1 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Blades", BladePose(e, true));
+                e.indicator1 = RiotVfxPlayer.PlayAt(world, hostile ? "Irelia_Base_E_Team_Indicator_Enemy" : "Irelia_Base_E_Team_Indicator",
+                    link.First, Quaternion.LookRotation(Flat(link.First - link.FirstOrigin)));
+            }
+            if (!link.HasSecond) return;
+            if (e.missile2 == null && !e.secondLanded && now >= link.SecondLaunchedAt)
+                e.missile2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_02", MissilePose(e, false));
+            if (!e.secondLanded && now >= link.SecondLaunchedAt + flight)
+            {
+                e.secondLanded = true;
+                if (e.missile2 != null) e.missile2.Stop();
+                e.blades2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Blades", BladePose(e, false));
+                e.indicator2 = RiotVfxPlayer.PlayAt(world, hostile ? "Irelia_Base_E_Team_Indicator_Enemy" : "Irelia_Base_E_Team_Indicator",
+                    link.Second, Quaternion.LookRotation(Flat(link.Second - link.SecondOrigin)));
+                // The beam joins the two blades and follows them as they converge.
+                e.beam = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Enemy" : "Irelia_Base_E_Beam", () =>
+                {
+                    RiotVfxPose a = BladePoseNow(e, true), b = BladePoseNow(e, false);
+                    return new RiotVfxPose(a.position, a.rotation, b.position);
+                });
+                e.sparks = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Warning_Sparks_Enemy" : "Irelia_Base_E_Beam_Warning_Sparks", () =>
+                {
+                    RiotVfxPose a = BladePoseNow(e, true), b = BladePoseNow(e, false);
+                    return new RiotVfxPose((a.position + b.position) * .5f, a.rotation);
+                });
+            }
+        }
+
+        // The blade flies from Irelia's position at the cast to its point.
+        System.Func<RiotVfxPose> MissilePose(EVfx e, bool first)
+        {
+            return () =>
+            {
+                if (e.link == null) return first ? e.pose1 : e.pose2;
+                BladeLink link = e.link;
+                Vector3 from = first ? link.FirstOrigin : link.SecondOrigin, to = first ? link.First : link.Second;
+                float launched = first ? link.FirstLaunchedAt : link.SecondLaunchedAt;
+                float t = Mathf.Clamp01((Time.time - launched) / Mathf.Max(.01f, blade.Tuning.ePlacementTime));
+                var pose = new RiotVfxPose(Vector3.Lerp(from, to, t), Quaternion.LookRotation(Flat(to - from)));
+                if (first) e.pose1 = pose; else e.pose2 = pose;
+                return pose;
+            };
+        }
+
+        System.Func<RiotVfxPose> BladePose(EVfx e, bool first) { return () => BladePoseNow(e, first); }
+
+        // Standing blade: at its point, sliding to the middle while the pair converges.
+        RiotVfxPose BladePoseNow(EVfx e, bool first)
+        {
+            BladeLink link = e.link;
+            if (link == null) return first ? e.pose1 : e.pose2;
+            Vector3 point = first ? link.First : link.Second, origin = first ? link.FirstOrigin : link.SecondOrigin;
+            if (link.HasSecond && Time.time >= link.ConvergeAt)
+                point = Vector3.Lerp(point, (link.First + link.Second) * .5f,
+                    (Time.time - link.ConvergeAt) / Mathf.Max(.01f, link.ImpactAt - link.ConvergeAt));
+            var pose = new RiotVfxPose(point, Quaternion.LookRotation(Flat(point - origin)));
+            if (first) e.pose1 = pose; else e.pose2 = pose;
+            return pose;
+        }
+
+        void ELanded(Combatant target, bool stunned)
+        {
+            if (!Enabled || target == null) return;
+            PlayOnTarget(target.Kind == UnitKind.Champion ? "Irelia_Base_E_Hit" : "Irelia_Base_E_Hit_minion", target, target.Position - actor.Position);
+            // Stunned champions (and practice dummies) flash their own silhouette.
+            if (stunned && target.Kind == UnitKind.Champion)
+            {
+                Transform visual = target.transform.Find("Model");
+                RiotVfxPlayer.Play(world, "Irelia_Base_E_hit_Avatar", TargetBonePose(target, "C_Buffbone_Glb_Chest_Loc", target.Position - actor.Position),
+                    1, visual != null ? visual.gameObject : null);
+            }
         }
 
         // Passive: glow on one blade per stack, the activation burst and aura at four stacks.
@@ -287,6 +470,11 @@ namespace MidLane
         {
             for (int i = 0; i < stackGlows.Length; i++) { if (stackGlows[i] != null) stackGlows[i].Stop(); stackGlows[i] = null; stackGlowStyle[i] = 0; }
             SetBladesMaxed(false);
+            if (wShield != null) wShield.Stop();
+            if (wFull != null) wFull.Stop();
+            wShield = wFull = null;
+            foreach (EVfx e in eLinks.Values) e.Stop();
+            eLinks.Clear();
             if (buff != null) buff.Stop();
             buff = null;
             if (dash != null) dash.Instance.StopBound();

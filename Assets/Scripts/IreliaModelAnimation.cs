@@ -89,7 +89,8 @@ namespace MidLane
                         actor.Blade.ESecondCast ? actor.Blade.Tuning.eSecondCastTime : actor.Blade.Tuning.ePlacementTime,
                         walking, q || walking || attacking, Time.deltaTime);
                 if (e && !q && !walking && !attacking) transform.rotation = Quaternion.LookRotation(actor.Blade.EDirection);
-                UpdateWGuard(w && actor.Blade.IsCharging);
+                // With the official W particles (IreliaVfx: W_DR shield) the placeholder guard blades stay off.
+                UpdateWGuard(w && actor.Blade.IsCharging && !world.Presentation.official_vfx);
                 if (actor.IsStunned) attackAt = -100;
             }
             float bob = (1 + Mathf.Sin(elapsed * (movement > 0 ? 9 : 2))) * (movement > 0 ? 0.025f : 0.007f);

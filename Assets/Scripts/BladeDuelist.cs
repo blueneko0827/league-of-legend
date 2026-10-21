@@ -23,6 +23,13 @@ namespace MidLane
         public event System.Action<Combatant, bool, bool, bool> OnHitLanded;
         // QLanded: target, cooldown refunded (marked target or kill).
         public event System.Action<Combatant, bool> QLanded;
+        // Hito 2.2 presentation hooks (read-only): a W slash hit, an E convergence hit (stunned).
+        public event System.Action<Combatant> WLanded;
+        public event System.Action<Combatant, bool> ELanded;
+        internal void NotifyWHit(Combatant target)
+        { if (WLanded != null) try { WLanded(target); } catch (System.Exception e) { Debug.LogException(e); } }
+        internal void NotifyEHit(Combatant target, bool stunned)
+        { if (ELanded != null) try { ELanded(target, stunned); } catch (System.Exception e) { Debug.LogException(e); } }
         public Vector3 PredictDashPosition(float seconds)
         {
             if (!IsDashing || dashTarget == null) return self.Position;
@@ -148,8 +155,10 @@ namespace MidLane
                 fullWChargeSoundPlayed = false;
                 if (self.Audio != null) self.Audio.WStart();
                 wReleasedAt = float.NegativeInfinity; WCastId = self.SpellCastId;
-                chargeVisual = world.Shape("Charging guard", PrimitiveType.Cylinder, transform, Vector3.up * 0.1f,
-                    new Vector3(2.2f, 0.035f, 2.2f), self.Color * 0.6f);
+                // The official W particles (IreliaVfx) replace this placeholder disc.
+                if (!world.Presentation.official_vfx)
+                    chargeVisual = world.Shape("Charging guard", PrimitiveType.Cylinder, transform, Vector3.up * 0.1f,
+                        new Vector3(2.2f, 0.035f, 2.2f), self.Color * 0.6f);
                 if (wIndicator==null) wIndicator=IreliaDirectionIndicator.Create(transform,"W · charge direction");
                 PresentWIndicator();
             }

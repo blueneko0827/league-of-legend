@@ -11,7 +11,9 @@ namespace MidLane
         EFirst, ESecond, ELaunch, EConverge, EHit, EHitMinion,
         RCast, RLaunch, RHit, RHitMinion, RWallHit,
         // Hito 2.1: critical hit, passive empowered hits and the 4-stack activation.
-        CritHit, PSparkles, PMaxSparkles, PMax
+        CritHit, PSparkles, PMaxSparkles, PMax,
+        // Hito 2.2: an E blade landing at its point and its standing glow.
+        EBladeLand, ESparkles
     }
 
     // Called by committed gameplay actions; animation events cannot create fake impacts.
@@ -80,6 +82,7 @@ namespace MidLane
         }
         public void EPlace(bool second) { Play(second ? IreliaSoundCue.ESecond : IreliaSoundCue.EFirst); Play(IreliaSoundCue.ELaunch); }
         public void EConverging() { Play(IreliaSoundCue.EConverge); }
+        public void EBladeLanded() { Play(IreliaSoundCue.EBladeLand); Play(IreliaSoundCue.ESparkles); }
         public void EImpact(bool champion) { Play(champion ? IreliaSoundCue.EHit : IreliaSoundCue.EHitMinion); }
         public void RStart()
         {

@@ -123,6 +123,37 @@ namespace MidLane.Tests
             }
             finally { RiotVfxPlayer.Started -= record; }
         }
+        [UnityTest] public IEnumerator OfficialWAndEEffectsPlay()
+        {
+            Assert.IsTrue(RiotVfxLibrary.For(world).Loaded);
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            var started = new System.Collections.Generic.List<string>();
+            System.Action<RiotVfxPlayer> record = player => started.Add(player.SystemName);
+            RiotVfxPlayer.Started += record;
+            try
+            {
+                world.Player.transform.position = dummy.Home - Vector3.right * 3; world.Player.Stop();
+                // W: shield while charging, the full-charge flash, then the empowered slash and its hit.
+                Assert.IsTrue(world.Player.Cast(1, dummy.Actor.Position));
+                yield return new WaitForSeconds(.9f);
+                Assert.Contains("Irelia_Base_W_DR", started); Assert.Contains("Irelia_Base_W_FullPower", started);
+                world.Player.Blade.RequestWRelease(dummy.Actor.Position);
+                yield return new WaitForSeconds(.6f);
+                Assert.Contains("Irelia_Base_W_Swipe_Empowered", started); Assert.Contains("Irelia_Base_W_Hit", started);
+                yield return new WaitForSeconds(.5f);
+                // E: cast swirl, both blade missiles, the standing blades and their beam, the hit and stun.
+                world.Player.Stop();
+                Assert.IsTrue(world.Player.Cast(2, dummy.Home - Vector3.forward * 2));
+                yield return new WaitForSeconds(.4f);
+                Assert.IsTrue(world.Player.Cast(2, dummy.Home + Vector3.forward * 2));
+                yield return new WaitForSeconds(.8f);
+                foreach (string name in new[] { "Irelia_Base_E_cas", "Irelia_Base_E_Mis_01", "Irelia_Base_E_Blades", "Irelia_Base_E_Team_Indicator",
+                    "Irelia_Base_E_cas_02", "Irelia_Base_E_Mis_02", "Irelia_Base_E_Beam", "Irelia_Base_E_Hit", "Irelia_Base_E_hit_Avatar" })
+                    Assert.Contains(name, started, name);
+                Assert.IsTrue(dummy.Actor.Marked);
+            }
+            finally { RiotVfxPlayer.Started -= record; }
+        }
         [UnityTest] public IEnumerator EmpoweredHitBurstsAtTheDummyChest()
         {
             var dummy = world.PracticeDummies[0]; dummy.enabled = false;

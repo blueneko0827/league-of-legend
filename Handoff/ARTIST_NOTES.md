@@ -1,6 +1,79 @@
 # Notas para la devolución
 
-Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos).
+## Hito 2.2 · W (Danza Desafiante) y E (Dueto Impecable): efectos y sonidos
+
+- Herramientas y versiones utilizadas: las mismas del Hito 2.1 (Unity 6000.6.5f1, URP 17.6.0,
+  Python 3 + Pillow, wwiser v20260808, vgmstream r2117). Sin paquetes nuevos de Unity.
+
+- Cambios de cámara, encuadre y escala: ninguno. Los efectos usan la misma escala que el
+  Hito 2.1 (`vfx_scale`, `official_vfx` en `ScenePresentation.json`).
+
+- Modelos, pivotes, rig y prefabs modificados: ninguno.
+
+- Animaciones modificadas/nuevas y su mapeo a acciones: no se agregaron clips. Se siguen los
+  eventos del grafo oficial: `irelia_spell3` lanza `E_cas` y `irelia_spell3_b` lanza
+  `E_cas_02` desde `Buffbone_Glb_Ground_Loc`. El clip oficial de carga de la W ya guarda las
+  cuchillas flotantes, como en LoL.
+
+- Partículas, shaders, materiales e iluminación:
+  - `Tools/Import-IreliaVfx.py` ahora importa también los sistemas `W_*` y `E_*` (53 sistemas,
+    200 emisores). El runtime suma lo que estos usan: haz entre dos puntos (`VfxPrimitiveBeam`,
+    la línea entre las dos cuchillas de la E), rayos orientados (`VfxPrimitiveRay`, la columna de
+    luz sobre la cuchilla), partículas hijas (`childParticleSetDefinition`: estelas y brillos que
+    siguen a cada partícula), velocidad orbital y paleta de color (`paletteDefinition`: el corte
+    dorado de la W). La velocidad orbital también aplica a las chispas de `Q_heal` y `Q_Proc`
+    (antes salían rectas; ahora giran alrededor de Irelia como en LoL).
+  - **W:** `W_DR` (escudo alrededor de Irelia mientras carga), `W_FullPower` (destello y anillo
+    dorado al completar la carga, hasta soltar), `W_Swipe` / `W_Swipe_Empowered` (corte al
+    soltar; el dorado con carga completa) en la dirección apuntada, `W_Hit` en cada objetivo
+    alcanzado y `W_Block` cuando la W absorbe un golpe.
+  - **E:** `E_cas` / `E_cas_02` (giro al lanzar), `E_Mis_01` / `E_Mis_02` (vuelo de cada
+    cuchilla desde Irelia hasta su punto), `E_Blades` (cuchilla suspendida con su columna de
+    luz) y `E_Team_Indicator` (anillo en el suelo; versión roja para una Irelia enemiga),
+    `E_Beam` y `E_Beam_Warning_Sparks` (haz entre las cuchillas mientras convergen), y al
+    impactar `E_Hit` / `E_Hit_minion` en cada unidad y `E_hit_Avatar` (silueta) en el campeón
+    aturdido.
+  - Con `"official_vfx": true` ya no se muestran los marcadores anteriores: el disco y las seis
+    cuchillas que giraban durante la carga de la W, la barra del corte de la W, y las cuchillas
+    de malla y el haz propio de la E. Con `false` vuelven tal como estaban.
+
+- HUD/barras y otros cambios: sonidos nuevos con `Tools/Import-IreliaEAudio.py` (misma
+  ganancia que los existentes): `EBladeLand_1` (evento `IreliaE_missile_stop`, cuando cada
+  cuchilla llega a su punto; se conserva el impacto y se recorta el zumbido de 7 s que sigue)
+  y `ESparkles_1..14` (`IreliaESecondary_sparkles`). Manifiesto:
+  `Assets/SourceAudio/IreliaOfficial/ESources.json`. Los sonidos de W y E que ya existían no
+  cambian.
+
+- Recursos o paquetes nuevos y sus requisitos: texturas y mallas de W/E en
+  `Assets/Resources/Vfx/Irelia/`, audios en `Assets/Resources/Audio/Irelia/`. Sin scripts
+  nuevos; sin paquetes nuevos.
+
+- Archivos de autoría incluidos: ninguno externo; todo sale de los archivos originales con
+  `Tools/Import-IreliaVfx.py` y `Tools/Import-IreliaEAudio.py`.
+
+- Cambios que requieren fusionar código o afectan contratos con la simulación:
+  - `BladeDuelist.cs`: eventos de solo lectura `WLanded(objetivo)` y `ELanded(objetivo,
+    aturdido)`; el disco de carga solo se crea sin `official_vfx`.
+  - `BladeWave.cs`: avisa cada impacto de la W (no de la R); oculta su barra con `official_vfx`.
+  - `BladeLink.cs`: expone su línea de tiempo (orígenes, lanzamientos, convergencia, impacto)
+    para los efectos; crea las cuchillas de malla y su haz solo sin `official_vfx`; reproduce el
+    sonido de llegada de cada cuchilla. Daño, aturdimiento, marca y tiempos no cambian.
+  - `IreliaModelAnimation.cs`: las cuchillas de guardia de la W solo sin `official_vfx`.
+  - `IreliaAudio.cs`: señales `EBladeLand` y `ESparkles` (al final del enum).
+  - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva `OfficialWAndEEffectsPlay`.
+
+- Capturas de comparación y resolución utilizada: pendientes, 1280×720 en Game.
+
+- Limitaciones pendientes:
+  - Sin la textura original (de otros campeones, no incluida): el polvo de `W_DR`, la chispa de
+    `W_Hit`, el centro y el polvo de `W_Swipe_Empowered` y el círculo oscuro de `E_Blades`.
+    La malla `W_Swipe_Empowered/mesh_dustup` es de otra skin y tampoco está.
+  - Varios campos de los emisores de W/E no tienen nombre conocido (p. ej. el modo de los haces);
+    se dejaron en su valor por defecto.
+  - El zumbido largo de la cuchilla en espera no se reproduce en bucle (se recorta, ver arriba).
+  - El evento de sonido `FUTURE_IreliaE_foley` de la animación no está en el banco base.
+
+## Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos)
 
 - Herramientas y versiones utilizadas: Unity 6000.6.5f1, URP 17.6.0. Python 3 + Pillow
   para `Tools/Import-IreliaVfx.py` (lee los `.bin`, `.tex` y `.scb` originales sin otras

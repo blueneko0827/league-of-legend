@@ -74,6 +74,16 @@ namespace MidLane
         public bool Present { get { return !string.IsNullOrEmpty(texture); } }
     }
 
+    // paletteDefinition: the texture's red channel picks a color in one row of a palette texture.
+    [Serializable]
+    public sealed class RiotVfxPalette
+    {
+        public string texture;
+        public int count;
+        public float index;
+        public bool Present { get { return !string.IsNullOrEmpty(texture) && count > 0; } }
+    }
+
     [Serializable]
     public sealed class RiotVfxEmitterData
     {
@@ -83,6 +93,8 @@ namespace MidLane
         public bool directionOriented, groundLayer, randomStartFrame;
         public float delay, lifetime, linger, bindWeight, flexScale, flexOffset, shapeRadius, shapeHeight;
         public float directionVelocityScale, directionVelocityMinScale, frameRate, trailCutoff;
+        // Beam meshes: length along Z in LoL units, stretched to the target distance.
+        public float beamLength;
         public float[] texDiv, shapeSize, shapeRotationAxes;
         public RiotVfxValue rate, particleLifetime, birthColor, color, colorRamp, birthScale, scale;
         public RiotVfxValue birthRotation, rotation, rotationalVelocity, birthVelocity, velocity;
@@ -91,10 +103,20 @@ namespace MidLane
         public RiotVfxValue[] shapeRotationAngles;
         public RiotVfxErosion erosion;
         public RiotVfxTextureMult textureMult;
+        public RiotVfxPalette palette;
+        // Systems each particle spawns and carries (childParticleSetDefinition).
+        public string[] children;
+        // birthOrbitalVelocity: angular velocity (radians/s) of the particle around the emitter.
+        public RiotVfxValue orbitalVelocity;
 
         public bool Skipped { get { return !string.IsNullOrEmpty(skip); } }
         public bool IsBillboard { get { return primitive == "billboard"; } }
         public bool IsTrail { get { return primitive == "trail" || primitive == "cameraTrail"; } }
+        // VfxPrimitiveBeam: its mesh is stretched from the emitter to the system's target point.
+        public bool IsBeam { get { return primitive == "beam"; } }
+        // VfxPrimitiveRay: a camera-facing strip that starts at the particle and runs along its +Z.
+        public bool IsRay { get { return primitive == "ray"; } }
+        public bool HasChildren { get { return children != null && children.Length > 0; } }
     }
 
     // Evaluation of Riot values. Curves are piecewise linear; the time is normalized to the

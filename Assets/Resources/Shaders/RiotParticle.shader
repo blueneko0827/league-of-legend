@@ -10,6 +10,9 @@ Shader "MidLane/RiotParticle"
         _MultTex ("Multiplied texture", 2D) = "white" {}
         _UV2 ("Multiplied UV scale/offset", Vector) = (1,1,0,0)
         _UseMult ("Use multiplied texture", Float) = 0
+        _PaletteTex ("Palette", 2D) = "white" {}
+        _UsePalette ("Use palette", Float) = 0
+        _PaletteV ("Palette row (v)", Float) = .5
         _Color ("Color", Color) = (1,1,1,1)
         _UV ("UV scale/offset", Vector) = (1,1,0,0)
         _Erosion ("Erosion (drive, feather in, feather out, use alpha)", Vector) = (0,0,0.1,0)
@@ -42,8 +45,10 @@ Shader "MidLane/RiotParticle"
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
             TEXTURE2D(_ErosionTex); SAMPLER(sampler_ErosionTex);
             TEXTURE2D(_MultTex); SAMPLER(sampler_MultTex);
+            TEXTURE2D(_PaletteTex); SAMPLER(sampler_PaletteTex);
             CBUFFER_START(UnityPerMaterial)
-                float4 _MainTex_ST; float4 _ErosionTex_ST; float4 _MultTex_ST;
+                float4 _MainTex_ST; float4 _ErosionTex_ST; float4 _MultTex_ST; float4 _PaletteTex_ST;
+                float _UsePalette; float _PaletteV;
                 float4 _Color; float4 _UV; float4 _UV2; float4 _Erosion;
                 float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize; float _EdgeFade; float _DepthPull;
                 float _SrcBlend; float _DstBlend; float _Cull;
@@ -71,7 +76,10 @@ Shader "MidLane/RiotParticle"
             }
             half4 Frag(Varyings i) : SV_Target
             {
-                half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * _Color * i.color;
+                half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                // paletteDefinition: the red channel picks the color in one palette row.
+                if (_UsePalette > 0.5) color.rgb = SAMPLE_TEXTURE2D(_PaletteTex, sampler_PaletteTex, float2(clamp(color.r, .002, .998), _PaletteV)).rgb;
+                color *= _Color * i.color;
                 if (_UseMult > 0.5) color *= SAMPLE_TEXTURE2D(_MultTex, sampler_MultTex, i.uv2);
                 if (_UseErosion > 0.5)
                 {

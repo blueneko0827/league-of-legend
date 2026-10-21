@@ -7,7 +7,12 @@ namespace MidLane
     {
         public Vector3 position;
         public Quaternion rotation;
-        public RiotVfxPose(Vector3 position, Quaternion rotation) { this.position = position; this.rotation = rotation; }
+        // Beam end point (VfxPrimitiveBeam), e.g. the other E blade. World space.
+        public Vector3 target;
+        public bool hasTarget;
+        public RiotVfxPose(Vector3 position, Quaternion rotation) { this.position = position; this.rotation = rotation; target = position; hasTarget = false; }
+        public RiotVfxPose(Vector3 position, Quaternion rotation, Vector3 target)
+        { this.position = position; this.rotation = rotation; this.target = target; hasTarget = true; }
     }
 
     public struct RiotVfxView
@@ -50,7 +55,11 @@ namespace MidLane
         public readonly List<Vector3> TrailPositions = new List<Vector3>();
         public readonly List<Vector2> TrailUvs = new List<Vector2>();
         public readonly List<Color> TrailColors = new List<Color>();
+        // Finds the systems particles spawn (childParticleSetDefinition); null disables children.
+        public System.Func<string, RiotVfxSystemData> ResolveChild;
         readonly Emitter[] emitters;
+        // Children whose parent particle died keep playing out their linger.
+        readonly List<RiotVfxInstance> orphans = new List<RiotVfxInstance>();
         readonly System.Random random;
         RiotVfxPose pose;
         bool posed;
@@ -58,7 +67,8 @@ namespace MidLane
         sealed class Particle
         {
             public float age, life;
-            public Vector3 position, velocity, drag, rotation, rotationalVelocity, scale;
+            public Vector3 position, velocity, drag, rotation, rotationalVelocity, scale, orbital;
+            public List<RiotVfxInstance> children;
             public Color color;
             public Vector2 uvOffset, uvRate, multOffset, multRate;
             public int frame;
@@ -89,7 +99,17 @@ namespace MidLane
 
         public int ParticleCount
         {
-            get { int n = 0; foreach (Emitter e in emitters) n += e.particles.Count + e.trail.Count; return n; }
+            get
+            {
+                int n = 0;
+                foreach (Emitter e in emitters)
+                {
+                    n += e.particles.Count + e.trail.Count;
+                    foreach (Particle p in e.particles) if (p.children != null) foreach (RiotVfxInstance c in p.children) n += c.ParticleCount;
+                }
+                foreach (RiotVfxInstance c in orphans) n += c.ParticleCount;
+                return n;
+            }
         }
 
         // Stops emission. Particles keep living for their linger time, or vanish without one.
@@ -99,6 +119,7 @@ namespace MidLane
             Stopped = true;
             foreach (Emitter e in emitters)
             {
+                foreach (Particle p in e.particles) ReleaseChildren(p);
                 if (e.data.linger < 0) { e.particles.Clear(); e.trail.Clear(); continue; }
                 foreach (Particle p in e.particles) p.life = Mathf.Min(p.life, p.age + e.data.linger);
                 foreach (TrailPoint p in e.trail) p.life = Mathf.Min(p.life, p.age + e.data.linger);
@@ -112,6 +133,7 @@ namespace MidLane
             foreach (Emitter e in emitters)
             {
                 if (!e.Bound || e.data.linger >= 0) continue;
+                foreach (Particle p in e.particles) ReleaseChildren(p);
                 e.emittedSingle = true; e.particles.Clear(); e.trail.Clear(); e.stopped = true;
             }
         }
@@ -156,6 +178,11 @@ namespace MidLane
                 if (e.particles.Count > 0 || e.trail.Count > 0) anyAlive = true;
                 if (!Stopped && !e.stopped && (d.lifetime < 0 || Age - d.delay < d.lifetime)) anyAlive = true;
             }
+            for (int i = orphans.Count - 1; i >= 0; i--)
+            {
+                orphans[i].Tick(dt, orphans[i].pose);
+                if (orphans[i].Finished) orphans.RemoveAt(i); else anyAlive = true;
+            }
             if (!anyAlive) Finished = true;
         }
 
@@ -193,8 +220,18 @@ namespace MidLane
                 color = RiotVfxEval.Color(d.birthColor, emitterTime, Color.white, random),
                 uvOffset = RiotVfxEval.Vector2(d.birthUvOffset, emitterTime, Vector2.zero, random),
                 uvRate = RiotVfxEval.Vector2(d.birthUvScroll, emitterTime, Vector2.zero, random),
+                orbital = Pseudo(RiotVfxEval.Vector3(d.orbitalVelocity, emitterTime, Vector3.zero, random)),
                 frameAtBirth = pose
             };
+            if (d.HasChildren && ResolveChild != null)
+                foreach (string name in d.children)
+                {
+                    RiotVfxSystemData child = ResolveChild(name);
+                    if (child == null) continue;
+                    if (p.children == null) p.children = new List<RiotVfxInstance>();
+                    p.children.Add(new RiotVfxInstance(child, random.Next())
+                    { UnitScale = UnitScale, BoundSize = BoundSize, GroundHeight = GroundHeight, ResolveChild = ResolveChild });
+                }
             if (d.textureMult != null && d.textureMult.Present)
             {
                 p.multOffset = RiotVfxEval.Vector2(d.textureMult.birthUvOffset, emitterTime, Vector2.zero, random);
@@ -204,6 +241,26 @@ namespace MidLane
             p.frame = d.startFrame + (d.randomStartFrame ? random.Next(frames) : 0);
             e.particles.Add(p);
             if (initialAge > 0) Step(e, p, initialAge);
+            TickChildren(e, p, 0);
+        }
+
+        // Angular velocities are pseudo-vectors: the X mirror flips their Y and Z.
+        static Vector3 Pseudo(Vector3 lol) { return new Vector3(lol.x, -lol.y, -lol.z); }
+
+        // A particle's children ride on it: their emitter frame is the particle's world pose.
+        void TickChildren(Emitter e, Particle p, float dt)
+        {
+            if (p.children == null) return;
+            RiotVfxPose frame = e.Bound ? pose : p.frameAtBirth;
+            var at = new RiotVfxPose(FramePoint(frame, p.position), frame.rotation);
+            foreach (RiotVfxInstance child in p.children) child.Tick(dt, at);
+        }
+
+        void ReleaseChildren(Particle p)
+        {
+            if (p.children == null) return;
+            foreach (RiotVfxInstance child in p.children) { child.Stop(); if (!child.Finished) orphans.Add(child); }
+            p.children = null;
         }
 
         Vector3 ShapePoint(RiotVfxEmitterData d)
@@ -232,7 +289,8 @@ namespace MidLane
             {
                 Particle p = e.particles[i];
                 Step(e, p, dt);
-                if (p.age >= p.life) e.particles.RemoveAt(i);
+                TickChildren(e, p, dt);
+                if (p.age >= p.life) { ReleaseChildren(p); e.particles.RemoveAt(i); }
             }
             for (int i = e.trail.Count - 1; i >= 0; i--)
             {
@@ -253,6 +311,8 @@ namespace MidLane
             if (p.drag != Vector3.zero)
                 p.velocity = new Vector3(p.velocity.x * Mathf.Exp(-p.drag.x * dt), p.velocity.y * Mathf.Exp(-p.drag.y * dt), p.velocity.z * Mathf.Exp(-p.drag.z * dt));
             p.position += (p.velocity + extra) * dt;
+            if (p.orbital != Vector3.zero)
+                p.position = Quaternion.AngleAxis(p.orbital.magnitude * dt * Mathf.Rad2Deg, p.orbital) * p.position;
             p.uvOffset += RiotVfxEval.Vector2(d.uvScroll, t, Vector2.zero) * dt + p.uvRate * dt;
             p.multOffset += p.multRate * dt;
             p.age += dt;
@@ -265,12 +325,23 @@ namespace MidLane
         public void Collect(List<RiotVfxDraw> draws, RiotVfxView view)
         {
             TrailPositions.Clear(); TrailUvs.Clear(); TrailColors.Clear();
+            CollectInto(draws, view, this);
+        }
+
+        // Children write their trail vertices into the root instance, which the renderer reads.
+        void CollectInto(List<RiotVfxDraw> draws, RiotVfxView view, RiotVfxInstance root)
+        {
             if (!posed) return;
             foreach (Emitter e in emitters)
             {
-                if (e.data.IsTrail) { CollectTrail(e, draws, view); continue; }
-                foreach (Particle p in e.particles) draws.Add(Draw(e, p, view));
+                if (e.data.IsTrail) { CollectTrail(e, draws, view, root); continue; }
+                foreach (Particle p in e.particles)
+                {
+                    draws.Add(Draw(e, p, view));
+                    if (p.children != null) foreach (RiotVfxInstance child in p.children) child.CollectInto(draws, view, root);
+                }
             }
+            foreach (RiotVfxInstance child in orphans) child.CollectInto(draws, view, root);
         }
 
         RiotVfxDraw Draw(Emitter e, Particle p, RiotVfxView view)
@@ -290,6 +361,34 @@ namespace MidLane
                 emitter = d, color = color, uv = UvTransform(d, p, t), uv2 = MultTransform(d, p),
                 erosion = d.erosion != null && !string.IsNullOrEmpty(d.erosion.map) ? RiotVfxEval.Float(d.erosion.drive, t, 0) : 0
             };
+            if (d.IsBeam)
+            {
+                // The beam mesh (authored along Z, beamLength long, centered) spans emitter -> target.
+                Vector3 end = pose.hasTarget ? pose.target : center;
+                if (d.groundLayer) { center.y = GroundHeight + .02f; end.y = GroundHeight + .02f; }
+                Vector3 span = end - center; float distance = span.magnitude;
+                Vector3 axis = distance > 1e-4f ? span / distance : frame.rotation * Vector3.forward;
+                float length = d.beamLength > 1e-3f ? d.beamLength : 1;
+                draw.kind = RiotVfxDrawKind.Mesh;
+                draw.matrix = Matrix4x4.TRS((center + end) * .5f, Quaternion.LookRotation(axis, Vector3.up),
+                    new Vector3(size.x * UnitScale, size.y * UnitScale, distance / length));
+                return draw;
+            }
+            if (d.IsRay)
+            {
+                // Starts at the particle and runs along its rotated +Z, turned to face the camera.
+                Vector3 along = orientation * RiotVfxEval.Rotation(euler) * Vector3.forward;
+                Vector3 across = Vector3.Cross(along, view.forward);
+                across = across.sqrMagnitude > 1e-6f ? across.normalized : view.right;
+                float rayLength = size.y * UnitScale;
+                var ray = new Matrix4x4();
+                ray.SetColumn(0, ToVector4(across * (size.x * UnitScale), 0));
+                ray.SetColumn(1, ToVector4(along * (rayLength * .5f), 0));
+                ray.SetColumn(2, ToVector4(Vector3.Cross(across, along).normalized, 0));
+                ray.SetColumn(3, ToVector4(center + along * (rayLength * .5f), 1));
+                draw.kind = RiotVfxDrawKind.Quad; draw.matrix = ray;
+                return draw;
+            }
             if (d.primitive == "mesh" || d.primitive == "attachedMesh")
             {
                 draw.kind = d.primitive == "mesh" ? RiotVfxDrawKind.Mesh : RiotVfxDrawKind.AttachedMesh;
@@ -364,14 +463,15 @@ namespace MidLane
             return new Vector4(1 / columns, 1 / rows, p.multOffset.x, p.multOffset.y);
         }
 
-        void CollectTrail(Emitter e, List<RiotVfxDraw> draws, RiotVfxView view)
+        void CollectTrail(Emitter e, List<RiotVfxDraw> draws, RiotVfxView view, RiotVfxInstance root)
         {
             RiotVfxEmitterData d = e.data;
             if (e.trail.Count < 2) return;
             float tiling = Mathf.Max(1, RiotVfxEval.Vector3(d.trailTiling, 0, Vector3.zero).x);
             Vector2 scroll = RiotVfxEval.Vector2(d.birthUvScroll, 0, Vector2.zero);
             Vector3 frameUp = pose.rotation * Vector3.up;
-            int start = TrailPositions.Count;
+            List<Vector3> positions = root.TrailPositions; List<Vector2> uvs = root.TrailUvs; List<Color> colors = root.TrailColors;
+            int start = positions.Count;
             float distance = 0;
             // Newest point first: the head of the ribbon is at the emitter.
             for (int i = e.trail.Count - 1; i >= 0; i--)
@@ -388,13 +488,13 @@ namespace MidLane
                 float width = RiotVfxEval.Vector3(d.birthScale, 0, Vector3.one).x * RiotVfxEval.Vector3(d.scale, t, Vector3.one).x * UnitScale;
                 Color color = RiotVfxEval.Color(d.birthColor, 0, Color.white) * RiotVfxEval.Color(d.color, t, Color.white);
                 float u = distance / tiling + scroll.x * Age;
-                TrailPositions.Add(point.position + axis * (width * .5f)); TrailUvs.Add(new Vector2(u, 0)); TrailColors.Add(color);
-                TrailPositions.Add(point.position - axis * (width * .5f)); TrailUvs.Add(new Vector2(u, 1)); TrailColors.Add(color);
+                positions.Add(point.position + axis * (width * .5f)); uvs.Add(new Vector2(u, 0)); colors.Add(color);
+                positions.Add(point.position - axis * (width * .5f)); uvs.Add(new Vector2(u, 1)); colors.Add(color);
             }
             draws.Add(new RiotVfxDraw
             {
                 kind = RiotVfxDrawKind.Trail, emitter = d, matrix = Matrix4x4.identity, color = Color.white,
-                uv = new Vector4(1, 1, 0, 0), uv2 = new Vector4(1, 1, 0, 0), trailStart = start, trailCount = TrailPositions.Count - start
+                uv = new Vector4(1, 1, 0, 0), uv2 = new Vector4(1, 1, 0, 0), trailStart = start, trailCount = positions.Count - start
             });
         }
     }

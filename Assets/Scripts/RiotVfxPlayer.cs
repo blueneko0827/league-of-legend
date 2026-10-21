@@ -53,7 +53,8 @@ namespace MidLane
             var player = root.AddComponent<RiotVfxPlayer>();
             player.world = world; player.library = library; player.poseSource = source; player.TimeScale = timeScale;
             player.attachedVisual = attached;
-            player.Instance = new RiotVfxInstance(data, seed = seed * 31 + 17) { UnitScale = UnitScale(world), BoundSize = boundSize };
+            player.Instance = new RiotVfxInstance(data, seed = seed * 31 + 17)
+            { UnitScale = UnitScale(world), BoundSize = boundSize, ResolveChild = library.FindSystem };
             player.pose = source();
             player.block = new MaterialPropertyBlock();
             if (Started != null) Started(player);
