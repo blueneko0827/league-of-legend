@@ -28,7 +28,7 @@ namespace MidLane
         [Min(0.1f)] public float eBladeVisualMultiplier = 2;
         public float eRange = PracticeAbilityGeometry.IreliaEPlacementRange, eMana = 50, ePlacementTime = 0.25f;
         public float eRecastLock = 0.25f, eSecondCastTime = 0.125f, eRecastWindow = 3.5f;
-        public float eConvergeTime = 0.25f, eHalfWidth = PracticeAbilityGeometry.IreliaEHalfWidth, eStun = 0.75f, markDuration = 5;
+        public float eConvergeTime = 0.35f, eHalfWidth = PracticeAbilityGeometry.IreliaEHalfWidth, eStun = 0.75f, markDuration = 5;
         [Header("R")]
         public float rRange = PracticeAbilityGeometry.IreliaRRange, rMana = 100, rCastTime = 0.4f, rSpeed = 20, rHalfWidth = PracticeAbilityGeometry.IreliaRHalfWidth;
         public float rWallLifetime = PracticeAbilityGeometry.IreliaRWallLifetime, rWallSlowDuration = 1.5f;

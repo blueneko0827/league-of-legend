@@ -91,7 +91,10 @@ Shader "MidLane/RiotParticle"
                 }
                 // Quads never show their rectangle: a soft border, or an elliptical fade for
                 // scrolled/tiled textures whose content does not fade out at the quad's edge.
-                if (_EdgeFade > 0.5)
+                // Beams: the mesh's u runs 0 (ends) .. 1/3 (middle); the band fades out at its ends
+                // under the blades instead of stopping on a straight edge.
+                if (_EdgeFade > 2.5) color.a *= smoothstep(0, 0.07, i.raw.x);
+                else if (_EdgeFade > 0.5)
                 {
                     float2 d = abs(i.raw - 0.5) * 2;
                     half fade = _EdgeFade > 1.5 ? saturate((1 - length(d)) / 0.45)

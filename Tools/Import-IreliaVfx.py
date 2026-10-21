@@ -483,14 +483,29 @@ for name in sorted(systems):
     library['systems'].append({'name': name, 'sound': entry.get('soundOnCreateDefault', ''),
                                'emitters': emitters})
 
-# E_Beam 'Dark_beam' pairs an additive mode with an opaque, almost black '*_dark' texture: added,
-# it would only leave its two thin edges, while LoL shows a dark band. Drawn alpha-blended.
+# Matched by eye to in-game footage (W charging, Handoff/ARTIST_NOTES.md), where our reading of a
+# field still differs from LoL: the shield bubble keeps its filled look and rim for most of its
+# life (its erosion runs slower), and the ghost blade images around it stay faint.
+ARTIST_TWEAKS = {
+    ('Irelia_Base_W_DR', 'Ripple'): {'erosionDrive': .6},
+    ('Irelia_Base_W_DR', 'top2'): {'alpha': .45},
+}
 for system in library['systems']:
     for e in system['emitters']:
-        info = textures.get(e.get('texture') or '')
-        if e.get('blend') in (0, 4, 6, 7) and info and info['opaqueAlpha'] and e['texture'].endswith('_dark'):
-            e['blend'] = 1
-            notes.append(f"{system['name']}/{e['name']}: opaque dark texture in an additive mode, drawn as a dark band.")
+        tweak = ARTIST_TWEAKS.get((system['name'], e['name']))
+        if not tweak:
+            continue
+        if 'erosionDrive' in tweak and e.get('erosion'):
+            drive = e['erosion']['drive']
+            drive['c'] = [v * tweak['erosionDrive'] for v in drive.get('c') or []]
+            drive['v'] = [v * tweak['erosionDrive'] for v in drive.get('v') or []]
+        if 'alpha' in tweak:
+            curve = e.get('color')
+            if curve:
+                curve['c'][3] *= tweak['alpha']
+                curve['v'] = [v * tweak['alpha'] if i % 4 == 3 else v for i, v in enumerate(curve.get('v') or [])]
+        notes.append(f"{system['name']}/{e['name']}: adjusted to match in-game footage {tweak}.")
+
 
 # Animation graph particle events (which clip spawns which swipe, on which frame).
 anm_paths = {}

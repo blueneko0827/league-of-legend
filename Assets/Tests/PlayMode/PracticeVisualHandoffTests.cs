@@ -146,7 +146,8 @@ namespace MidLane.Tests
                 Assert.IsTrue(world.Player.Cast(2, dummy.Home - Vector3.forward * 2));
                 yield return new WaitForSeconds(.4f);
                 Assert.IsTrue(world.Player.Cast(2, dummy.Home + Vector3.forward * 2));
-                yield return new WaitForSeconds(.8f);
+                // Second throw (0.125 + 0.25 s), then the hold before the blades meet (0.35 s).
+                yield return new WaitForSeconds(1f);
                 foreach (string name in new[] { "Irelia_Base_E_cas", "Irelia_Base_E_Mis_01", "Irelia_Base_E_Blades", "Irelia_Base_E_Team_Indicator",
                     "Irelia_Base_E_cas_02", "Irelia_Base_E_Mis_02", "Irelia_Base_E_Beam", "Irelia_Base_E_Hit", "Irelia_Base_E_hit_Avatar" })
                     Assert.Contains(name, started, name);

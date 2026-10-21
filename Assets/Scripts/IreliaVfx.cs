@@ -42,6 +42,8 @@ namespace MidLane
         int observedE;
         readonly Dictionary<BladeLink, EVfx> eLinks = new Dictionary<BladeLink, EVfx>();
         readonly List<BladeLink> eFinished = new List<BladeLink>();
+        // Effects that end on their own time (the converging blades after they reach the far end).
+        readonly List<KeyValuePair<RiotVfxPlayer, float>> timedStops = new List<KeyValuePair<RiotVfxPlayer, float>>();
 
         sealed class EVfx
         {
@@ -53,12 +55,14 @@ namespace MidLane
             public void Stop()
             {
                 Finish();
-                if (beam != null) beam.Stop();
+                foreach (RiotVfxPlayer player in new[] { beam, converge1, converge2 })
+                    if (player != null) player.Stop();
             }
-            // The blades met: the beam plays out on its own (its delayed dark slash comes after the hit).
+            // The blades met: the beam plays out on its own (its delayed dark slash comes after the
+            // hit) and the flying blades finish crossing to the far end.
             public void Finish()
             {
-                foreach (RiotVfxPlayer player in new[] { missile1, missile2, blades1, blades2, indicator1, indicator2, sparks, converge1, converge2 })
+                foreach (RiotVfxPlayer player in new[] { missile1, missile2, blades1, blades2, indicator1, indicator2, sparks })
                     if (player != null) player.Stop();
             }
         }
@@ -100,6 +104,12 @@ namespace MidLane
             ObservePassive();
             ObserveW();
             ObserveE();
+            for (int i = timedStops.Count - 1; i >= 0; i--)
+            {
+                if (Time.time < timedStops[i].Value) continue;
+                if (timedStops[i].Key != null) timedStops[i].Key.Stop();
+                timedStops.RemoveAt(i);
+            }
             for (int i = pending.Count - 1; i >= 0; i--)
             {
                 if (Time.time < pending[i].at) continue;
@@ -272,8 +282,8 @@ namespace MidLane
                 e.sparks = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Warning_Sparks_Enemy" : "Irelia_Base_E_Beam_Warning_Sparks",
                     () => sparksPose);
             }
-            // The standing blades leave their points and fly to the middle (E_Mis_02, with its
-            // shard trail) during the last moment before the hit, as in LoL.
+            // The standing blades leave their points and fly at each other (E_Mis_02, with its shard
+            // trail): they cross in the middle at the hit and fade at the far end, as in LoL.
             if (e.secondLanded && !e.converging && now >= ConvergeStart(link))
             {
                 e.converging = true;
@@ -281,19 +291,28 @@ namespace MidLane
                 if (e.blades2 != null) e.blades2.Stop();
                 e.converge1 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_02", ConvergePose(e, true));
                 e.converge2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_02", ConvergePose(e, false));
+                float fade = ConvergeArrival(link) + EConvergeFade;
+                if (e.converge1 != null) timedStops.Add(new KeyValuePair<RiotVfxPlayer, float>(e.converge1, fade));
+                if (e.converge2 != null) timedStops.Add(new KeyValuePair<RiotVfxPlayer, float>(e.converge2, fade));
             }
         }
 
-        const float EConvergeFlight = .15f;
-        static float ConvergeStart(BladeLink link) { return Mathf.Max(link.ConvergeAt, link.ImpactAt - EConvergeFlight); }
+        // Measured on in-game footage: each blade takes about 0.14 s from its point to the other
+        // one, crossing the middle when the stun lands, and its image fades just after arriving.
+        const float EConvergeHalfFlight = .07f, EConvergeFade = .06f;
+        static float ConvergeStart(BladeLink link) { return Mathf.Max(link.ConvergeAt, link.ImpactAt - EConvergeHalfFlight); }
+        static float ConvergeArrival(BladeLink link) { return 2 * link.ImpactAt - ConvergeStart(link); }
 
         System.Func<RiotVfxPose> ConvergePose(EVfx e, bool first)
         {
             BladeLink link = e.link;
-            Vector3 from = first ? link.First : link.Second, center = (link.First + link.Second) * .5f;
-            float start = ConvergeStart(link), end = link.ImpactAt;
-            Quaternion facing = Quaternion.LookRotation(Flat(center - from));
-            return () => new RiotVfxPose(Vector3.Lerp(from, center, (Time.time - start) / Mathf.Max(.01f, end - start)), facing);
+            Vector3 from = first ? link.First : link.Second, to = first ? link.Second : link.First;
+            float start = ConvergeStart(link), end = ConvergeArrival(link);
+            // In LoL the flying blades lie along the line (mesh Y forward, flat across the band),
+            // not standing up: the fans sweep along the beam.
+            Vector3 along = Flat(to - from);
+            Quaternion facing = Quaternion.LookRotation(Vector3.Cross(Vector3.up, along), along);
+            return () => new RiotVfxPose(Vector3.Lerp(from, to, (Time.time - start) / Mathf.Max(.01f, end - start)), facing);
         }
 
         // The blade flies from Irelia's position at the cast to its point.
@@ -504,6 +523,8 @@ namespace MidLane
             buff = null;
             if (dash != null) dash.Instance.StopBound();
             dash = null;
+            foreach (KeyValuePair<RiotVfxPlayer, float> stop in timedStops) if (stop.Key != null) stop.Key.Stop();
+            timedStops.Clear();
         }
     }
 }

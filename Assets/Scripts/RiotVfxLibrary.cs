@@ -190,6 +190,7 @@ namespace MidLane
         // textures tile across the quad, so they get an elliptical fade (the passive aura).
         static float EdgeFadeMode(RiotVfxEmitterData e)
         {
+            if (e.IsBeam) return 3;
             if (e.primitive != "billboard" && e.primitive != "quad" && e.primitive != "ray") return 0;
             bool tiled = e.uvMode == 2 || (e.textureMult != null && e.textureMult.Present) ||
                 (e.uvScroll != null && e.uvScroll.Present) || (e.birthUvScroll != null && e.birthUvScroll.Present) ||

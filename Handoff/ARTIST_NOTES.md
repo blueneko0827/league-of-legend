@@ -30,21 +30,28 @@
   - **E:** `E_cas` / `E_cas_02` (giro al lanzar), `E_Mis_01` (vuelo de cada cuchilla desde
     Irelia hasta su punto), `E_Blades` (cuchilla suspendida con su columna de luz) y
     `E_Team_Indicator` (anillo en el suelo; versión roja para una Irelia enemiga), `E_Beam`
-    (franja oscura entre los dos puntos) y `E_Beam_Warning_Sparks` (rayos sobre la franja),
-    `E_Mis_02` (en los últimos 0,15 s antes del impacto las cuchillas dejan su punto y vuelan
-    al centro con su estela de fragmentos), y al impactar `E_Hit` / `E_Hit_minion` en cada
-    unidad y `E_hit_Avatar` (silueta) en el campeón aturdido. El haz termina solo después del
-    impacto: su corte rojo y la línea oscura que queda en el camino salen como en LoL.
+    (franja translúcida entre los dos puntos, con bordes azules y fragmentos en punta que
+    corren por ella; se desvanece en los extremos, debajo de las cuchillas) y
+    `E_Beam_Warning_Sparks` (rayos sobre la franja), `E_Mis_02` (las cuchillas dejan su punto
+    y vuelan una hacia la otra, tendidas a lo largo de la línea: se cruzan en el centro en el
+    momento del aturdimiento y se apagan en el extremo opuesto, unos 0,14 s en total, medido en
+    el juego), y al impactar `E_Hit` / `E_Hit_minion` en cada unidad y `E_hit_Avatar` (silueta)
+    en el campeón aturdido. El haz termina solo después del impacto: su corte rojo y la línea
+    oscura que queda en el camino salen como en LoL.
+  - **Tiempo de la E:** entre la llegada de la segunda cuchilla y el impacto ahora pasan 0,35 s
+    (antes 0,25 s), como en el juego (medido en las grabaciones: unos 0,33–0,37 s).
   - Ajustes generales tras comparar con LoL: los efectos del suelo (anillos, discos, franjas) se
     dibujan antes que el resto, como en LoL (antes el disco oscuro de `W_FullPower` tapaba el
     escudo); la paleta de color (corte dorado de la W) se lee sin mipmaps, para que el color no
-    se mezcle con las filas vecinas al alejar la cámara; la franja `E_Beam/Dark_beam` (textura
-    casi negra y opaca en modo aditivo, que solo dejaba ver sus dos bordes) se dibuja como franja
-    oscura; cada emisor continuo suelta su primera partícula al empezar (antes, una fracción de
-    segundo después: el escudo de la W tardaba en aparecer).
+    se mezcle con las filas vecinas al alejar la cámara; cada emisor continuo suelta su primera
+    partícula al empezar (antes, una fracción de segundo después: el escudo de la W tardaba en
+    aparecer).
   - **Escudo de la W:** sus esferas (`W_DR/Ripple`, varias capas a la vez, de distinto tamaño)
     usan el tamaño de Irelia (`FlexShape`), así que ahora la rodean como en LoL; antes eran
-    del tamaño de un objeto genérico y quedaban casi ocultas dentro del modelo.
+    del tamaño de un objeto genérico y quedaban casi ocultas dentro del modelo. Ajustado a ojo
+    contra el juego (en `Tools/Import-IreliaVfx.py`, `ARTIST_TWEAKS`): la burbuja conserva su
+    relleno violeta y su borde la mayor parte de su vida, y las imágenes de cuchillas que giran
+    alrededor (`top2`) quedan tenues, como en LoL.
   - **Indicador de la W** (`IreliaWIndicator.cs`, nuevo): círculo alrededor de Irelia (brillo
     verde azulado con borde blanco), las dos líneas finas del área de golpe, la flecha brillante
     con la mira y la punta en forma de hoja, con las proporciones medidas en el juego. Las
@@ -78,7 +85,9 @@
   - `BladeWave.cs`: avisa cada impacto de la W (no de la R); oculta su barra con `official_vfx`.
   - `BladeLink.cs`: expone su línea de tiempo (orígenes, lanzamientos, convergencia, impacto)
     para los efectos; crea las cuchillas de malla y su haz solo sin `official_vfx`; reproduce el
-    sonido de llegada de cada cuchilla. Daño, aturdimiento, marca y tiempos no cambian.
+    sonido de llegada de cada cuchilla. Daño, aturdimiento y marca no cambian.
+  - `BladeTuning.cs` / `BladeTuning.asset`: `eConvergeTime` 0,25 → 0,35 s (el impacto de la E
+    llega 0,1 s más tarde, como en LoL).
   - `IreliaModelAnimation.cs`: las cuchillas de guardia de la W solo sin `official_vfx`.
   - `IreliaAudio.cs`: señales `EBladeLand` y `ESparkles` (al final del enum).
   - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva `OfficialWAndEEffectsPlay`.
@@ -91,9 +100,9 @@
     La malla `W_Swipe_Empowered/mesh_dustup` es de otra skin y tampoco está.
   - Varios campos de los emisores de W/E no tienen nombre conocido (p. ej. el modo de los haces);
     se dejaron en su valor por defecto.
-  - El dibujado de `Dark_beam` como franja oscura es una deducción (el modo de mezcla 4 de LoL
-    con esa textura); los tiempos de juego de la E no cambian, así que la espera entre la
-    llegada de la segunda cuchilla y el impacto es la de la simulación (0,25 s).
+  - La orientación de las cuchillas que se cruzan (`E_Mis_02`), su recorrido completo y los
+    ajustes del escudo de la W salen de comparar con las grabaciones del juego, no de un campo
+    de los datos.
   - El zumbido largo de la cuchilla en espera no se reproduce en bucle (se recorta, ver arriba).
   - El evento de sonido `FUTURE_IreliaE_foley` de la animación no está en el banco base.
 
