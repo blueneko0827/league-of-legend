@@ -27,7 +27,7 @@ namespace MidLane
         static readonly int UseErosion = Shader.PropertyToID("_UseErosion"), AlphaClip = Shader.PropertyToID("_AlphaClip");
         static readonly int Inflate = Shader.PropertyToID("_Inflate");
         static readonly int MultTex = Shader.PropertyToID("_MultTex"), UseMult = Shader.PropertyToID("_UseMult");
-        static readonly int VertexColor = Shader.PropertyToID("_VertexColor");
+        static readonly int VertexColor = Shader.PropertyToID("_VertexColor"), Linearize = Shader.PropertyToID("_Linearize");
 
         public static RiotVfxLibrary For(LaneWorld world)
         {
@@ -149,6 +149,10 @@ namespace MidLane
             }
             material.SetFloat(SrcBlend, (float)src); material.SetFloat(DstBlend, (float)dst);
             material.SetFloat(Premultiply, premultiply ? 1 : 0);
+            // LoL blends in gamma space. Additive glows keep their raw values (on mid-tone ground this
+            // matches LoL's brightness); alpha-type blends are converted to linear exactly.
+            bool additive = emitter.blend == 0 || emitter.blend == 4 || emitter.blend == 6 || emitter.blend == 7;
+            material.SetFloat(Linearize, additive ? 0 : 1);
             // Riot meshes and quads are authored for both sides unless culling is explicit;
             // the X mirror also flips their winding, so draw both faces.
             material.SetFloat(Cull, (float)CullMode.Off);

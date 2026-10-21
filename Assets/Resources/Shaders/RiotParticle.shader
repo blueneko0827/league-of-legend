@@ -2,6 +2,7 @@ Shader "MidLane/RiotParticle"
 {
     // Unlit particle shader for the official Riot emitters (RiotVfxPlayer).
     // UVs arrive in LoL texture space (v down) and are flipped here for Unity textures.
+    // Colors are computed in gamma space like LoL; see _Linearize.
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
@@ -17,6 +18,7 @@ Shader "MidLane/RiotParticle"
         _AlphaClip ("Alpha clip", Float) = 0
         _Inflate ("Normal inflate (world units)", Float) = 0
         _VertexColor ("Use vertex color", Float) = 1
+        _Linearize ("Convert gamma color to linear", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src blend", Float) = 5
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst blend", Float) = 10
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
@@ -41,7 +43,7 @@ Shader "MidLane/RiotParticle"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST; float4 _ErosionTex_ST; float4 _MultTex_ST;
                 float4 _Color; float4 _UV; float4 _UV2; float4 _Erosion;
-                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor;
+                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize;
                 float _SrcBlend; float _DstBlend; float _Cull;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
@@ -74,6 +76,8 @@ Shader "MidLane/RiotParticle"
                     color.a *= saturate((value - threshold + feather) / feather);
                 }
                 clip(color.a - _AlphaClip);
+                // Textures (sRGB off), colors and vertex colors are raw gamma values, as in LoL.
+                if (_Linearize > 0.5) color.rgb = pow(max(color.rgb, 0), 2.2);
                 if (_Premultiply > 0.5) color.rgb *= color.a;
                 return color;
             }

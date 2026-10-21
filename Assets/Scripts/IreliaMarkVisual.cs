@@ -36,7 +36,7 @@ namespace MidLane
             // The official mark loops for its authored 6 s; restart it while the mark lasts.
             if (marked && official == null && world.Presentation.official_vfx)
                 official = RiotVfxPlayer.Play(world, "Irelia_Base_Q_Mark_SelfOnly",
-                    IreliaVfx.TargetBonePose(actor, "C_Buffbone_Glb_Overhead_Loc", Vector3.forward));
+                    IreliaVfx.TargetBonePose(actor, "C_Buffbone_Glb_Chest_Loc", Vector3.forward), 1, null, MarkBoundSize());
             if (!marked && official != null) { official.Stop(); official = null; }
             outline.enabled = marked && official == null;
             if (!outline.enabled) return;
@@ -44,6 +44,9 @@ namespace MidLane
             if (world.View != null) glyph.rotation = world.View.transform.rotation;
         }
         // The official mark lives under the world, so it must stop when this unit is hidden.
+        // LoL draws the mark around the marked unit's upper body, about as wide as the unit is tall.
+        // The mark scales with its FlexShape bound size (40 × 0.01 × size half-width).
+        float MarkBoundSize() { return 1.125f * actor.VisualHeight / RiotVfxPlayer.UnitScale(world); }
         void OnDisable() { if (official != null) official.Stop(); official = null; }
         void OnDestroy()
         {

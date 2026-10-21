@@ -85,8 +85,13 @@
   - El simulador decide el crítico al impactar, no al iniciar el ataque; por eso se usa el
     impacto y el sonido críticos, pero no la animación/sonido de lanzamiento crítico.
   - El sonido `Q_Hit_reset` no está en el banco base (igual que antes).
-  - El proyecto trabaja en espacio de color lineal: los efectos aditivos pueden verse algo
-    más intensos que en LoL.
+  - LoL mezcla en espacio gamma y el proyecto es lineal: las texturas de efectos se importan
+    sin sRGB y el shader convierte a lineal solo las mezclas alfa; los aditivos usan su valor
+    original, que sobre el suelo se acerca al brillo de LoL (fondos muy claros: algo más).
+- **Ajustes tras comparar con LoL (video del cliente):** la marca de Q se dibuja alrededor del
+  torso del objetivo y escala con su altura (antes era pequeña sobre la cabeza); la estela de la
+  Q queda plana sobre el camino, visible desde la cámara; los efectos aditivos ya no se ven
+  apagados por la conversión lineal.
 
 ## Hito 1 · Escala, cámara, iluminación, sombras, suelo, rocas y barras de vida
 

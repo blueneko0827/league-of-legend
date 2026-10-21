@@ -464,6 +464,8 @@ folder_meta(OUTPUT.parent); folder_meta(OUTPUT); folder_meta(TEXTURES)
 template = (ROOT / 'Assets/Resources/Models/IreliaOfficial/E/Trail.png.meta').read_text(encoding='utf-8-sig')
 # Particle textures tile (UV scroll) and keep their authored alpha.
 template = template.replace('    wrapU: 1\n    wrapV: 1\n    wrapW: 1', '    wrapU: 0\n    wrapV: 0\n    wrapW: 0')
+# Raw (gamma) values: RiotParticle.shader reproduces LoL's gamma-space look (see shader).
+template = template.replace('    sRGBTexture: 1', '    sRGBTexture: 0')
 for name, info in sorted(textures.items()):
     if not info:
         continue

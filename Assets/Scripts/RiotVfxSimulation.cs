@@ -381,8 +381,10 @@ namespace MidLane
                 Vector3 neighbour = i > 0 ? e.trail[i - 1].position : e.trail[i + 1].position;
                 Vector3 tangent = i > 0 ? point.position - neighbour : neighbour - point.position;
                 float t = Mathf.Clamp01(point.age / point.life);
-                Vector3 axis = d.primitive == "cameraTrail" ? Vector3.Cross(tangent, view.forward) : frameUp;
-                axis = axis.sqrMagnitude > 1e-8f ? axis.normalized : frameUp;
+                // Camera trails face the view; arbitrary trails (the Q streak) lie flat across the
+                // path, which is how the LoL top-down view shows them.
+                Vector3 axis = d.primitive == "cameraTrail" ? Vector3.Cross(tangent, view.forward) : Vector3.Cross(frameUp, tangent);
+                axis = axis.sqrMagnitude > 1e-8f ? axis.normalized : pose.rotation * Vector3.right;
                 float width = RiotVfxEval.Vector3(d.birthScale, 0, Vector3.one).x * RiotVfxEval.Vector3(d.scale, t, Vector3.one).x * UnitScale;
                 Color color = RiotVfxEval.Color(d.birthColor, 0, Color.white) * RiotVfxEval.Color(d.color, t, Color.white);
                 float u = distance / tiling + scroll.x * Age;

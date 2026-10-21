@@ -38,7 +38,8 @@ namespace MidLane
             return world.Presentation.ChampionVisualHeight / OfficialIreliaHeight * world.Presentation.vfx_scale;
         }
 
-        public static RiotVfxPlayer Play(LaneWorld world, string system, Func<RiotVfxPose> source, float timeScale = 1, GameObject attached = null)
+        // boundSize: FlexShape "bound object size" in LoL units (scales marks to their target).
+        public static RiotVfxPlayer Play(LaneWorld world, string system, Func<RiotVfxPose> source, float timeScale = 1, GameObject attached = null, float boundSize = 100)
         {
             if (world == null || source == null || !world.Presentation.official_vfx) return null;
             RiotVfxLibrary library = RiotVfxLibrary.For(world);
@@ -49,7 +50,7 @@ namespace MidLane
             var player = root.AddComponent<RiotVfxPlayer>();
             player.world = world; player.library = library; player.poseSource = source; player.TimeScale = timeScale;
             player.attachedVisual = attached;
-            player.Instance = new RiotVfxInstance(data, seed = seed * 31 + 17) { UnitScale = UnitScale(world) };
+            player.Instance = new RiotVfxInstance(data, seed = seed * 31 + 17) { UnitScale = UnitScale(world), BoundSize = boundSize };
             player.pose = source();
             player.block = new MaterialPropertyBlock();
             if (Started != null) Started(player);
@@ -107,7 +108,7 @@ namespace MidLane
                 Mesh mesh = draw.kind == RiotVfxDrawKind.Mesh ? library.GetMesh(draw.emitter.mesh) :
                     draw.kind == RiotVfxDrawKind.Trail ? TrailMesh(trail++, draw) : library.Quad;
                 if (mesh == null) continue;
-                block.SetColor(ColorId, draw.color); block.SetVector(UvId, draw.uv); block.SetVector(Uv2Id, draw.uv2);
+                block.SetVector(ColorId, (Vector4)draw.color); block.SetVector(UvId, draw.uv); block.SetVector(Uv2Id, draw.uv2);
                 block.SetVector(ErosionId, Erosion(draw));
                 Graphics.DrawMesh(mesh, draw.matrix, library.GetMaterial(draw.emitter), gameObject.layer, null, 0, block,
                     ShadowCastingMode.Off, false);
@@ -178,7 +179,7 @@ namespace MidLane
                 Renderer source = proxy.transform.parent != null ? proxy.transform.parent.GetComponent<Renderer>() : null;
                 proxy.enabled = visible && source != null && source.enabled && source.gameObject.activeInHierarchy;
                 if (!proxy.enabled) continue;
-                block.Clear(); block.SetColor(ColorId, color); block.SetVector(UvId, new Vector4(1, 1, 0, 0)); block.SetVector(Uv2Id, new Vector4(1, 1, 0, 0));
+                block.Clear(); block.SetVector(ColorId, (Vector4)color); block.SetVector(UvId, new Vector4(1, 1, 0, 0)); block.SetVector(Uv2Id, new Vector4(1, 1, 0, 0));
                 block.SetVector(ErosionId, new Vector4(0, 0, .1f, 0));
                 proxy.SetPropertyBlock(block);
             }
