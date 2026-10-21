@@ -5,9 +5,21 @@
   "camera_pitch_degrees": 55.0,
   "camera_yaw_degrees": 45,
   "camera_distance": 34.30844573821068,
+  "camera_zoom": 1.0,
   "model_tilt_degrees": 15,
   "melee_height_ratio": 0.6,
   "caster_height_ratio": 0.6,
   "cannon_height_ratio": 0.6,
-  "tower_height_ratio": 3.0
+  "tower_height_ratio": 2.7,
+  "dummy_height_ratio": 0.86,
+  "sun_pitch_degrees": 50.0,
+  "sun_yaw_degrees": 120.0,
+  "sun_intensity": 1.0,
+  "sun_color": { "r": 1.0, "g": 0.96, "b": 0.88, "a": 1.0 },
+  "shadow_strength": 0.8,
+  "ambient_color": { "r": 0.5, "g": 0.56, "b": 0.68, "a": 1.0 },
+  "unit_shadows": true,
+  "official_vfx": true,
+  "vfx_scale": 1.0,
+  "champion_bar_lift": 0.36
 }

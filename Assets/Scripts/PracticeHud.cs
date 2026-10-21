@@ -32,14 +32,14 @@ namespace MidLane
             for (int slot = 0; slot < 4; slot++) if (AbilityRect(slot).Contains(point)) return slot;
             return -1;
         }
-        Rect DiagnosticsRect { get { return new Rect(20, panelExpanded ? 130 : 240, 350, 180); } }
+        Rect DiagnosticsRect { get { return new Rect(20, panelExpanded ? 130 : 240, 350, 228); } }
         Rect StatsRect { get { return new Rect(20, diagnostics ? DiagnosticsRect.yMax + 10 : panelExpanded ? 185 : 240, 350, 214); } }
         GUIStyle title, label, small, button, passiveStackNumber, gritLabel;
         static readonly Color Panel = new Color(0.035f, 0.055f, 0.085f, 0.96f);
         public void Initialize(LaneWorld lane) { world = lane; active = this; }
         public void TogglePanel() { if (LatencyFieldFocused) EndLatencyEdit(); panelExpanded = !panelExpanded; }
         public void CollapsePanel() { if (LatencyFieldFocused) EndLatencyEdit(); panelExpanded = false; }
-        public void ResetShieldBars() { shieldBarPeaks.Clear(); }
+        public void ResetShieldBars() { shieldBarPeaks.Clear(); ResetPracticeDummyModelHold(); }
         public float ShieldBarFraction(Combatant unit)
         {
             if (unit == null) return 0;
@@ -54,6 +54,7 @@ namespace MidLane
         public static bool BlocksPointer(Vector2 screenPoint)
         {
             Vector2 point = new Vector2(screenPoint.x * 1280 / Screen.width, screenPoint.y * 720 / Screen.height);
+            if (VisualTuningPanel.BlocksPointer(point)) return true;
             if (ChampionHudLayout.Body.Contains(point) || ChampionHudLayout.InventoryPanel.Contains(point)) return true;
             if (ChampionHudLayout.AddGold.Contains(point) || ChampionHudLayout.LevelUp.Contains(point)) return true;
             if (active != null) for (int i = 0; i < 4; i++)
@@ -70,6 +71,7 @@ namespace MidLane
             if (active.diagnostics && active.world.Opponent != null && active.DiagnosticsRect.Contains(point)) return true;
             return active.showStats && !ShopHud.Open && active.StatsRect.Contains(point);
         }
+        GUIStyle headerStyle, clockStyle, centeredLabel, centeredSmall, tooltipStyle, noticeStyle, purchaseStyle;
         void Styles()
         {
             if (title != null) return;
@@ -77,11 +79,19 @@ namespace MidLane
             label = new GUIStyle(GUI.skin.label) { fontSize = 16 };
             small = new GUIStyle(GUI.skin.label) { fontSize = 13 };
             button = new GUIStyle(GUI.skin.button) { fontSize = 14 };
-            passiveStackNumber = new GUIStyle(small) { fontSize = 17, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+            passiveStackNumber = new GUIStyle(small) { fontSize = 11, fontStyle = FontStyle.Bold, alignment = TextAnchor.LowerRight, padding = new RectOffset(), clipping = TextClipping.Overflow };
             gritLabel = new GUIStyle(small) { fontSize = 10, alignment = TextAnchor.MiddleCenter };
+            headerStyle = new GUIStyle(title) { fontSize = 21, alignment = TextAnchor.MiddleLeft };
+            clockStyle = new GUIStyle(label) { fontSize = 20, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            centeredLabel = new GUIStyle(label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            centeredSmall = new GUIStyle(small) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            tooltipStyle = new GUIStyle(small) { fontSize = 13, wordWrap = true };
+            noticeStyle = new GUIStyle(label) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+            purchaseStyle = new GUIStyle(small) { fontSize = 11, wordWrap = true };
         }
         void Update()
         {
+            UpdatePracticeMarkInput();
             if (LatencyFieldFocused) return;
             if (Input.GetKeyDown(KeyCode.Tab)) diagnostics = !diagnostics;
             if (Input.GetKeyDown(KeyCode.C) && !ShopHud.Open) showStats = !showStats;
@@ -100,9 +110,9 @@ namespace MidLane
             FlushLatencyFocus();
             Box(panelExpanded ? new Rect(0, 0, 1280, 115) : CompactHeader, Panel);
             if (GUI.Button(CompactHeader, new GUIContent("MidLane / Práctica", "Mostrar u ocultar el panel de práctica"),
-                new GUIStyle(title) { fontSize = 21, alignment = TextAnchor.MiddleLeft })) TogglePanel();
+                headerStyle)) TogglePanel();
             Box(MatchClock, Panel);
-            GUI.Label(MatchClock, ClockText, new GUIStyle(label) { fontSize = 20, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold });
+            GUI.Label(MatchClock, ClockText, clockStyle);
             if (panelExpanded)
             {
                 GUI.Label(new Rect(20, 48, 370, 26), world.PracticeModeActive ? "Irelia · nivel " + world.Player.Level + " · práctica con dummies" : "Irelia " + world.Player.Level + " · equipo " + (world.Player.Team == Team.Blue ? "azul" : "rojo") + " vs. " + world.Opponent.DisplayName + " " + world.Opponent.Level, small);
@@ -119,6 +129,7 @@ namespace MidLane
             if (!ShopHud.Open) DrawWorldBars();
             DrawNotices();
             DrawHoveredTarget();
+            DrawPracticeDummyModelHold();
             DrawChampionHud();
             bool previousEnabled = GUI.enabled;
             GUI.enabled = previousEnabled && !world.Paused;
@@ -159,7 +170,12 @@ namespace MidLane
                 GUI.Label(new Rect(30, y + 86, 340, 24), "Rangos rival: Q " + enemySkills.Rank(0) + " · W " + enemySkills.Rank(1) + " · E " + enemySkills.Rank(2) + " · R " + enemySkills.Rank(3), small);
                 GUI.Label(new Rect(30, y + 112, 340, 24), world.PvpModeActive ? "PvP: " + world.PvpDeaths + " bajas · nivel " + world.PvpLevel + "/18" :
                     "Progreso: " + (world.NormalplayModeActive ? "nivel y oro por tabla · EXP normal" : world.Settings.keepOpponentProgress ? "XP y oro generado parejos" : "natural"), small);
-                GUI.Label(new Rect(30, y + 140, 325, 32), brain.PurchaseDecision, new GUIStyle(small) { fontSize = 11, wordWrap = true });
+                GUI.Label(new Rect(30, y + 140, 325, 32), brain.PurchaseDecision, purchaseStyle);
+                if (brain.Human != null)
+                {
+                    GUI.Label(new Rect(30, y + 176, 325, 22), "Humano · " + brain.Human.Profile.Name + " · Foco: " + brain.Human.Focus, small);
+                    GUI.Label(new Rect(30, y + 200, 325, 22), "Tilt " + (brain.Human.Tilt*100).ToString("0") + "% · Confianza " + (brain.Human.Confidence*100).ToString("0") + "%", small);
+                }
             }
             if (showStats && !ShopHud.Open)
             {
@@ -212,7 +228,10 @@ namespace MidLane
         void DrawAbilityTooltip(int slot)
         {
             string text = IreliaAbilityHelp.Describe(world.Player, slot);
-            var style = new GUIStyle(small) { fontSize = 13, wordWrap = true };
+            if (slot == 2 && world.PracticeModeActive)
+                text += world.PermanentPracticeMarks ? "\n\nPráctica: marcas infinitas y E sin enfriamiento. Mantené el clic izquierdo aquí durante 2 s para desactivar ambos efectos." :
+                    "\n\nPráctica: mantené el clic izquierdo sobre este icono durante 2 s para activar marcas infinitas en todos los dummies y E sin enfriamiento.";
+            var style = tooltipStyle;
             float height = Mathf.Max(208, style.CalcHeight(new GUIContent(text), 372) + 22);
             Rect rect = new Rect(Mathf.Clamp(AbilityRect(slot).x - 75, 20, 860), ChampionHudLayout.Origin.y - height - 8, 400, height);
             Box(rect, Panel);
@@ -230,7 +249,7 @@ namespace MidLane
                 Rect rect = new Rect(screen.x * 1280 / Screen.width - 120, (Screen.height - screen.y) * 720 / Screen.height - 48 - i * 36, 240, 36);
                 if (rect.y < 0 || rect.yMax > 720) continue;
                 float alpha = Mathf.Clamp01(2.5f - age);
-                var style = new GUIStyle(label) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+                var style = noticeStyle;
                 style.normal.textColor = new Color(0, 0, 0, alpha);
                 GUI.Label(new Rect(rect.x + 2, rect.y + 2, rect.width, rect.height), notice.Text, style);
                 style.normal.textColor = new Color(notice.Color.r, notice.Color.g, notice.Color.b, alpha);
@@ -242,10 +261,11 @@ namespace MidLane
             Combatant player = world.Player, enemy = world.Opponent;
             Box(CompactScore, Panel);
             GUI.Label(CompactScore, "K / D / A   " + player.Kills + " / " + player.Deaths + " / " + player.Assists,
-                new GUIStyle(label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold });
+                centeredLabel);
             Box(CompactOpponent, Panel);
             GUI.Label(PvpModeButton, "Práctica · edición visual", small);
             DrawPracticeOptions();
+            if (InspectedTarget != null) { DrawInspectedVitals(); return; }
             if (enemy == null)
             {
                 GUI.Label(new Rect(20, 49, 224, 19), "Práctica · " + world.PracticeDummies.Count + " dummies · 0 AR / RM", small);
@@ -264,71 +284,71 @@ namespace MidLane
             }
             GUI.Label(new Rect(20, 96, 224, 19), "Oro: " + enemy.Gold, small);
         }
-        void DrawWorldBars()
-        {
-            foreach (Combatant unit in world.Units)
-            {
-                if (unit == null || !unit.Alive) continue;
-                Vector3 screen = world.View.WorldToScreenPoint(unit.VisualTop + Vector3.up * .3f);
-                if (screen.z <= 0) continue;
-                float x = screen.x * 1280 / Screen.width, y = (Screen.height - screen.y) * 720 / Screen.height;
-                if (y < 0 || y > 720 || x < 0 || x > 1280 || BlocksPointer(new Vector2(screen.x, Screen.height - screen.y))) continue;
-                float width = unit.Kind == UnitKind.Champion ? 110 : 65;
-                Bar(new Rect(x - width / 2, y, width, 8), unit.Health / unit.MaxHealth, unit.Color);
-                if (unit.Kind == UnitKind.Tower)
-                    GUI.Label(new Rect(x - 55, y - 22, 160, 22), "Torre · Indestructible", small);
-                if (unit.Kind == UnitKind.Champion)
-                {
-                    if (unit.Dummy != null) DrawDummyDamage(unit.Dummy, x, y);
-                    else GUI.Label(new Rect(x - 55, y - 22, 180, 22), unit.IsInStasis ? "ESTASIS · " + unit.ItemEffects.StasisRemaining.ToString("0.0") + " s" : unit.DisplayName + " · " + unit.Level + (unit.Marked ? " ◇" : ""), small);
-                    if (unit.Sett != null)
-                    {
-                        Color gritColor = GritBarColor(unit.Sett.GritFraction);
-                        Bar(new Rect(x - 55, y + 10, 110, 5), unit.Sett.GritFraction, gritColor);
-                        Color previous = GUI.color; GUI.color = gritColor;
-                        GUI.Label(new Rect(x - 65, y - 40, 130, 16), "GRIT " + unit.Sett.Grit.ToString("0") + " / " + unit.Sett.MaxGrit.ToString("0"), gritLabel);
-                        GUI.color = previous;
-                    }
-                    if (unit.TotalShield > 0)
-                    {
-                        float shieldY = y + (unit.Sett != null ? 17 : 10);
-                        Bar(new Rect(x - 55, shieldY, 110, 4), ShieldBarFraction(unit), Color.white);
-                        GUI.Label(new Rect(x + 58, shieldY - 6, 55, 16), unit.TotalShield.ToString("0"), gritLabel);
-                    }
-                }
-            }
-        }
-        void DrawDummyDamage(TrainingDummy dummy, float x, float y)
-        {
-            var style = new GUIStyle(small) { fontSize = 15, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
-            DamageLabel(new Rect(x - 100, y - 54, 200, 23), (dummy.PermanentMark ? "Q" : dummy.Patrolling ? "Aleatorio" : dummy.Mobile ? "Evasivo" : "Fijo") + " · Total: " + dummy.TotalDamage.ToString("0.#"), new Color(1, .85f, .35f), style);
-            for (int i = 0; i < dummy.Notices.Count; i++)
-            {
-                var hit = dummy.Notices[i]; float age = Time.time - hit.StartedAt;
-                Color color = hit.Type == DamageType.Magic ? new Color(.55f, .8f, 1) : hit.Type == DamageType.True ? Color.white : new Color(1, .65f, .35f);
-                color.a = Mathf.Clamp01((1.5f - age) * 2);
-                DamageLabel(new Rect(x - 110, y - 78 - (dummy.Notices.Count - 1 - i) * 21 - age * 18, 220, 23), hit.Label + "  " + hit.Amount.ToString("0.#"), color, style);
-            }
-        }
         static void DamageLabel(Rect rect, string text, Color color, GUIStyle style)
         {
             style.normal.textColor = new Color(0, 0, 0, color.a);
             GUI.Label(new Rect(rect.x + 1, rect.y + 1, rect.width, rect.height), text, style);
             style.normal.textColor = color; GUI.Label(rect, text, style);
         }
+        // Ionian Fervor as the LoL client shows it in the buff bar: the official passive icon,
+        // a clockwise sweep that darkens as the stacks' duration runs out, a thin teal frame and
+        // the stack count in the lower-right corner.
         void DrawPlayerPassiveStacks()
         {
             int stacks = world.Player.Stacks;
             if (!world.Player.Alive || stacks == 0) return;
             Rect badge = ChampionHudLayout.PassiveStacks;
-            Box(badge, Panel);
-            HudIcons.Draw(new Rect(badge.x + 2, badge.y + 2, badge.width - 4, badge.height - 4), "Passive");
-            Box(badge, new Color(0, 0, 0, .25f));
-            HudFrame(badge, stacks == 4 ? new Color(1, .83f, .3f) : new Color(.3f, .8f, .85f), 1.5f);
+            Box(badge, new Color(.01f, .03f, .04f, .95f));
+            var icon = new Rect(badge.x + 1, badge.y + 1, badge.width - 2, badge.height - 2);
+            HudIcons.Draw(icon, "Passive");
+            BladeDuelist blade = world.Player.Blade;
+            // Defiant Dance pauses the duration: the sweep holds while W charges.
+            if (blade != null && !blade.IsCharging && blade.Tuning != null && blade.Tuning.passiveDuration > 0)
+                passiveElapsed = 1 - Mathf.Clamp01(blade.PassiveRemaining / blade.Tuning.passiveDuration);
+            GUI.DrawTexture(icon, BuffSweep(passiveElapsed), ScaleMode.StretchToFill);
+            HudFrame(badge, new Color(.29f, .66f, .64f), 1);
+            var number = new Rect(badge.x, badge.y, badge.width - 1.5f, badge.height - .5f);
             passiveStackNumber.normal.textColor = Color.black;
-            GUI.Label(new Rect(badge.x + 1, badge.y + 1, badge.width, badge.height), stacks.ToString(), passiveStackNumber);
+            foreach (Vector2 offset in StackOutline)
+                GUI.Label(new Rect(number.x + offset.x, number.y + offset.y, number.width, number.height), stacks.ToString(), passiveStackNumber);
             passiveStackNumber.normal.textColor = Color.white;
-            GUI.Label(badge, stacks.ToString(), passiveStackNumber);
+            GUI.Label(number, stacks.ToString(), passiveStackNumber);
+        }
+        float passiveElapsed;
+        static readonly Vector2[] StackOutline = { new Vector2(-1, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(0, 1) };
+        const int SweepSteps = 48, SweepSize = 64;
+        static Texture2D[] sweepTextures;
+        // Elapsed part of a buff timer, darkened clockwise from 12 o'clock with a light edge.
+        // One small texture per step, built on first use.
+        static Texture2D BuffSweep(float elapsed)
+        {
+            if (sweepTextures == null) sweepTextures = new Texture2D[SweepSteps + 1];
+            int step = Mathf.Clamp(Mathf.RoundToInt(elapsed * SweepSteps), 0, SweepSteps);
+            if (sweepTextures[step] != null) return sweepTextures[step];
+            var texture = new Texture2D(SweepSize, SweepSize, TextureFormat.RGBA32, false)
+            { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.HideAndDontSave };
+            float limit = step * 360f / SweepSteps;
+            float edgeSin = Mathf.Sin(limit * Mathf.Deg2Rad), edgeCos = Mathf.Cos(limit * Mathf.Deg2Rad);
+            var pixels = new Color32[SweepSize * SweepSize];
+            for (int y = 0; y < SweepSize; y++)
+                for (int x = 0; x < SweepSize; x++)
+                {
+                    float shade = 0;
+                    for (int s = 0; s < 4; s++)
+                    {
+                        float dx = x + .25f + .5f * (s % 2) - SweepSize / 2f, dy = y + .25f + .5f * (s / 2) - SweepSize / 2f;
+                        float angle = Mathf.Atan2(dx, dy) * Mathf.Rad2Deg; if (angle < 0) angle += 360;
+                        if (angle < limit) shade += .25f;
+                    }
+                    float cx = x + .5f - SweepSize / 2f, cy = y + .5f - SweepSize / 2f;
+                    float edge = step > 0 && step < SweepSteps && cx * edgeSin + cy * edgeCos > 0 ?
+                        Mathf.Clamp01(1.2f - Mathf.Abs(cx * edgeCos - cy * edgeSin)) : 0;
+                    float alpha = Mathf.Max(shade * .6f, edge * .85f);
+                    byte light = (byte)(255 * (alpha > 0 ? edge * .85f / alpha : 0));
+                    pixels[y * SweepSize + x] = new Color32(light, light, light, (byte)(255 * alpha));
+                }
+            texture.SetPixels32(pixels); texture.Apply(false, true);
+            return sweepTextures[step] = texture;
         }
         void DrawHoveredTarget()
         {

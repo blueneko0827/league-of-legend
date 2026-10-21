@@ -17,6 +17,9 @@ namespace MidLane
         public Vector3 NeutralSpacingPoint { get; private set; }
         public float SpacingNoiseUpdatedAt { get; private set; }
         public int FinancialDecisionCount { get; private set; }
+        public Combatant PreparedFarmTarget { get; private set; }
+        public Vector3 FinancialLaneAnchor { get; private set; }
+        Vector3 financialTradeOrigin;
         float financialStartedAt, financialBaseReaction, nextSpacingNoise;
         Vector3 spacingNoise;
         bool financialDead;
@@ -35,7 +38,7 @@ namespace MidLane
         void ResetFinancialPlan()
         {
             if (FinancialConfig == null || financialDead) return;
-            financialDead = true; GoldTrapMinion = dashCueTarget = null; nextSpacingNoise = 0;
+            financialDead = true; GoldTrapMinion = dashCueTarget = PreparedFarmTarget = null; nextSpacingNoise = 0;
             LastHitUtility = PokeUtility = GoldTrapUtility = AllInUtility = AllInRoi = KillProbability = DeathProbability = 0;
         }
         void ObserveFinancialDash(Combatant player)
@@ -51,6 +54,7 @@ namespace MidLane
         }
         void UpdateFinancialBrain()
         {
+            MaintainFinancialFarmAttack();
             if (financialDead)
             {
                 financialDead = false; financialStartedAt = Time.time; financialBaseReaction = SampleFinancialReaction();
@@ -67,8 +71,8 @@ namespace MidLane
             for (int i = 0; i < 4; i++)
                 if (observeAt[i] > 0 && Time.time >= observeAt[i]) { observedReady[i] = pendingReady[i]; observeAt[i] = 0; }
             if (dashCueTarget != null && (!world.Player.Targetable || world.Player.Deaths != dashCueLife || Time.time > dashCueAt + 0.8f)) dashCueTarget = null;
-            float dashDelay = FinancialUtility.Reaction(dashCueBaseReaction, self.Health / self.MaxHealth,
-                FinancialConfig.panic_health_threshold, FinancialConfig.panic_reaction_multiplier);
+            float dashDelay = HumanReaction(FinancialUtility.Reaction(dashCueBaseReaction, self.Health / self.MaxHealth,
+                FinancialConfig.panic_health_threshold, FinancialConfig.panic_reaction_multiplier), true);
             bool dashDue = dashCueTarget != null && !dashCueMatured && Time.time >= dashCueAt + dashDelay;
             if (Time.time < financialStartedAt + Reaction && !dashDue) return;
             if (!self.CanAct) return;
@@ -86,9 +90,8 @@ namespace MidLane
             if (DuelModeActive) { ThinkDuel(); return; }
             Combatant player = world.Player, tower = EnemyTower();
             float distance = Vector3.Distance(self.Position, player.Position), health = self.Health / self.MaxHealth;
-            if (recovering && health >= 0.85f) recovering = false;
-            if (health < 0.26f) recovering = true;
-            if (recovering) { Recover(player, distance); return; }
+            UpdateLaneWavePlan(player);
+            if (TryLaneDefense(player)) return;
             bool inTower = TowerRange(tower, self.Position);
             if (inTower && (TowerTargetsUs(tower) || !CanSiege(tower, player)))
             {
@@ -101,12 +104,15 @@ namespace MidLane
             PlayerAttractionGold = FinancialConfig.champion_kill_gold; GoldTrapMinion = null;
             Combatant lastHit, wave;
             FindFinancialFarm(player, tower, out lastHit, out wave);
-            GoldTrapMinion = FindGoldTrap(player);
+            if (lastHit != null && !HumanNoticedFarm(lastHit)) lastHit = null;
+            FinancialLaneAnchor = FinancialFarmAnchor(wave);
+            GoldTrapMinion = Human != null && Human.SimplifyCombos ? null : FindGoldTrap(player);
             if (GoldTrapMinion != null) PlayerAttractionGold += FinancialConfig.q_bait_attraction_gold;
             bool imminent;
             EvaluateFinancialCombat(player, tower, lastHit, out imminent);
             GoldTrapUtility = EvaluateGoldTrapUtility(player, tower);
-            bool profitableKill = KillProbability >= 0.65f && AllInRoi >= FinancialConfig.all_in_roi_threshold && AllInUtility > 0;
+            bool profitableKill = KillProbability >= 0.65f && AllInRoi >= FinancialConfig.all_in_roi_threshold * HumanRiskThreshold && AllInUtility > 0 &&
+                (imminent || WithinFinancialLane(player.Position));
             if (lastHit != null && !(imminent && profitableKill))
             {
                 tradeUntil = 0; Plan(LaneTactic.Farm, lastHit.MinionType == MinionType.Cannon ? "Asegurar cañón · utilidad de oro" : "Último golpe · utilidad de oro");
@@ -119,9 +125,19 @@ namespace MidLane
             { Plan(LaneTactic.Zone, "Esperar el remate de Ignite"); MoveAway(player, self.AttackReach(player) + 2); return; }
             if (profitableKill && (imminent || AllInUtility > Mathf.Max(PokeUtility, GoldTrapUtility)))
             { Plan(LaneTactic.AllIn, "All-in rentable · ROI " + AllInRoi.ToString("F2")); Fight(player, true); return; }
+            if (PreparedFarmTarget != null)
+            {
+                tradeUntil = 0;
+                Plan(LaneTactic.Farm, "Preparar próximo último golpe · no adelantar el ataque");
+                ApproachFarm(PreparedFarmTarget); return;
+            }
+            if (TryLaneWaveClear(player)) return;
+            if (WavePlan == LaneWavePlan.Freeze && TryLaneWavePosition(player)) return;
             if (GoldTrapUtility > 0 && GoldTrapUtility >= PokeUtility && TryGoldTrap(player, tower)) return;
 
-            bool safe = FinancialTradeSafe(player, tower);
+            bool tradeSafe = FinancialTradeSafe(player, tower);
+            bool safe = tradeSafe && WithinFinancialLane(player.Position);
+            if (tradeUntil > 0 && Vector3.Distance(self.Position, financialTradeOrigin) > 2.5f) safe = false;
             if (tradeUntil > 0 && (Time.time >= tradeUntil || !safe || PokeUtility <= 0))
             { tradeUntil = 0; tradeRestUntil = Time.time + 1.2f; }
             if (Time.time < tradeUntil)
@@ -131,9 +147,10 @@ namespace MidLane
             if (safe && PokeUtility > 0 && distance <= self.AttackReach(player) + 0.9f)
             {
                 tradeUntil = Time.time + Mathf.Clamp(2 / self.BaseAttackSpeed, 1.5f, 2.8f); tradeSpellCount = 0;
+                financialTradeOrigin = self.Position;
                 Plan(LaneTactic.Trade, "Poke rentable sin perder último golpe"); Fight(player, false); return;
             }
-            if (player.Targetable && !safe && distance < 7)
+            if (player.Targetable && !tradeSafe && distance < 7)
             {
                 Plan(LaneTactic.Zone, "Ceder oro para evitar una pérdida mayor");
                 if (health < 0.42f) { recovering = true; Recover(player, distance); } else FinancialSpacing(player, wave);
@@ -149,25 +166,58 @@ namespace MidLane
                 { Plan(LaneTactic.Push, "Presionar torre con protección rentable"); self.OrderAttack(tower); return; }
                 siegeUntil = 0; siegeRestUntil = Time.time + 4;
             }
-            if (tower != null && (inTower || (!player.Alive && player.RespawnRemaining < 6)))
+            if (tower != null && (inTower || (!player.Alive && player.RespawnRemaining < 6 &&
+                self.Position.x * Forward > TowerExit(tower).x * Forward)))
             { Plan(LaneTactic.Retreat, "Salir antes de la reaparición rival"); self.MoveTo(TowerExit(tower)); return; }
             Plan(LaneTactic.Farm, "Spacing financiero · esperar oro seguro");
+            if (TryLaneWavePosition(player)) return;
             if (player.Targetable && distance < 14) FinancialSpacing(player, wave);
-            else MoveOrHold(new Vector3(absent && tower != null ? TowerExit(tower).x : -Forward * 3, 0, 0));
+            else MoveOrHold(FinancialLaneAnchor);
         }
 
         void FinancialSpacing(Combatant player, Combatant wave = null)
         {
             Vector3 away = self.Position - player.Position; away.y = 0;
             if (away.sqrMagnitude < 0.01f) away = Vector3.left * Forward;
-            Vector3 point = world.AvoidTower(self, player.Position + away.normalized * (FinancialConfig.neutral_spacing_units * 0.01f) + spacingNoise);
+            Vector3 point = world.AvoidTower(self, player.Position + away.normalized * (FinancialConfig.neutral_spacing_units * 0.01f * HumanTether) + spacingNoise);
             // Spacing is a neutral preference, not an order to follow a fleeing champion
             // out of last-hit range of our own available farm.
             if (wave != null && Vector3.Distance(point, wave.Position) > self.AttackReach(wave) - 0.08f)
                 point = world.AvoidTower(self, FarmPoint(wave));
+            point = FinancialLaneAnchor + Vector3.ClampMagnitude(point - FinancialLaneAnchor, FinancialConfig.lane_leash_units * .01f);
+            point = world.AvoidTower(self, point);
             Combatant tower = EnemyTower();
             if (TowerRange(tower, point)) point = TowerExit(tower);
             NeutralSpacingPoint = point; MoveOrHold(point);
+        }
+
+        bool WithinFinancialLane(Vector3 point)
+        { return Vector3.Distance(point, FinancialLaneAnchor) <= FinancialConfig.lane_leash_units * .01f; }
+
+        Vector3 FinancialFarmAnchor(Combatant wave)
+        {
+            if (wave != null) return FarmPoint(wave);
+            Combatant front = null;
+            foreach (Combatant minion in world.Units)
+                if (minion != null && minion.Alive && minion.Kind == UnitKind.Minion && minion.Team == self.Team &&
+                    Vector3.Distance(self.Position, minion.Position) <= 14 &&
+                    (front == null || minion.Position.x * Forward > front.Position.x * Forward)) front = minion;
+            if (front == null) return new Vector3(-Forward * 3, 0, 0);
+            Vector3 point = front.Position - Vector3.right * Forward * 2;
+            // Without a hostile wave, advance behind our own screen only as far as mid.
+            point.x = Forward > 0 ? Mathf.Min(0, point.x) : Mathf.Max(0, point.x);
+            return world.AvoidTower(self, point);
+        }
+
+        void MaintainFinancialFarmAttack()
+        {
+            if (DuelModeActive || Tactic != LaneTactic.Farm || self.IsWindingAttack || !self.CanAct) return;
+            Combatant minion = self.AttackTarget;
+            if (minion == null || minion.Kind != UnitKind.Minion || !self.ValidEnemy(minion)) return;
+            float arrival = Mathf.Max(self.AttackCooldownRemaining,
+                Mathf.Max(0, Vector3.Distance(self.Position, minion.Position) - self.AttackReach(minion)) / self.MoveSpeed) + self.AttackWindupDuration;
+            float hp = PredictMinionHealth(minion, arrival);
+            if (hp <= 0 || hp > Physical(self, minion, self.Sett.PreviewAttackDamage(minion))) self.Stop();
         }
     }
 }

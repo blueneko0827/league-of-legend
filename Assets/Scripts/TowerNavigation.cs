@@ -8,7 +8,7 @@ namespace MidLane
         readonly Dictionary<Combatant, Detour> routes = new Dictionary<Combatant, Detour>();
         public void Clear() { routes.Clear(); }
         public void Forget(Combatant actor) { routes.Remove(actor); }
-        public Vector3 Step(LaneWorld world, Combatant actor, Vector3 goal, float distance, bool routeAroundCrowd = false)
+        public Vector3 Step(LaneWorld world, Combatant actor, Vector3 goal, float distance)
         {
             Detour route;
             if (routes.TryGetValue(actor, out route) && (route.Tower == null || !route.Tower.Alive || Vector3.Distance(goal, route.Goal) > 2))
@@ -45,7 +45,7 @@ namespace MidLane
                 if (route.PassedEntry && Vector3.Distance(actor.Position, route.Exit) <= distance + 0.05f)
                 { routes.Remove(actor); waypoint = goal; }
             }
-            return world.Spacing.Step(world, actor, world.Clamp(waypoint, actor.Radius), distance, routeAroundCrowd);
+            return world.Spacing.Step(world, actor, world.Clamp(waypoint, actor.Radius), distance);
         }
     }
 }

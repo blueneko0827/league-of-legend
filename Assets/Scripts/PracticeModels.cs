@@ -43,6 +43,7 @@ namespace MidLane
             if (sett) parent.gameObject.AddComponent<SettModelAnimation>().Configure(visual);
             if (mel) parent.gameObject.AddComponent<MelModelAnimation>().Configure(visual);
             geometry.gameObject.AddComponent<CameraFacingVisualTilt>().Initialize(world, crimson);
+            UnitShadows.Attach(world, visual);
             return body;
         }
         public static void CreateTower(LaneWorld world, Transform parent, Team team)
@@ -57,6 +58,7 @@ namespace MidLane
             float factor = world.Presentation.TowerVisualHeight / Mathf.Max(.001f, top.y);
             tower.transform.localScale *= factor;
             tower.transform.localPosition = new Vector3(-top.x, 0, -top.z) * factor;
+            UnitShadows.Attach(world, tower);
         }
         public static GameObject CreateSpellBlade(LaneWorld world, Transform parent, Team team, string label, Vector3 position)
         {

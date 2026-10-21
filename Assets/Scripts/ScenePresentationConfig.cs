@@ -12,38 +12,78 @@ namespace MidLane
         public float camera_fov_degrees = 32.5f;
         public float camera_pitch_degrees = 55;
         public float camera_yaw_degrees = 45;
+        // Informative only: recalculated from the FOV and camera_zoom when loading.
         public float camera_distance = 34.3084457f;
+        // Multiplies the derived camera distance. 1 keeps the original framing.
+        public float camera_zoom = 1;
 
         public float model_tilt_degrees = 15;
         public float melee_height_ratio = .6f;
         public float caster_height_ratio = .6f;
         public float cannon_height_ratio = .6f;
-        public float tower_height_ratio = 3f;
+        public float tower_height_ratio = 2.7f;
+        // Training dummy height relative to the champion's visual height. Measured from the
+        // LoL Practice Tool references (References/imagelol3.jpg): a dummy is ~0.86 of Irelia.
+        public float dummy_height_ratio = .86f;
+
+        // Lighting only affects lit surfaces (ground, rocks). Champion, dummy and tower
+        // materials are unlit, so their colors stay as authored; they only cast shadows.
+        public float sun_pitch_degrees = 50;
+        public float sun_yaw_degrees = 120;
+        public float sun_intensity = 1;
+        public Color sun_color = new Color(1, .96f, .88f, 1);
+        public float shadow_strength = .8f;
+        public Color ambient_color = new Color(.5f, .56f, .68f, 1);
+        public bool unit_shadows = true;
+        // Official Riot particle systems (basic attack, passive, Q). vfx_scale multiplies their
+        // size around the attachment point; 1 keeps the proportion of the enlarged champion.
+        public bool official_vfx = true;
+        public float vfx_scale = 1;
+        // Extra height of the champions' overhead bar, as a fraction of the champion's visual
+        // height. The official models (hair, floating blades) rise above the selection height,
+        // so without it the bar covers Irelia's face; LoL leaves a gap above the head.
+        public float champion_bar_lift = .36f;
+
         public float ChampionVisualHeight { get { return TowerToTowerRules.ChampionSelectionHeight * visual_mesh_multiplier; } }
         public float MinionVisualHeight(MinionType type)
         { return ChampionVisualHeight * (type == MinionType.Melee ? melee_height_ratio : type == MinionType.Caster ? caster_height_ratio : cannon_height_ratio); }
         public float TowerVisualHeight { get { return ChampionVisualHeight * tower_height_ratio; } }
+        public float DummyVisualHeight { get { return ChampionVisualHeight * dummy_height_ratio; } }
 
         public float CameraMinDistance { get { return 8.5f / Mathf.Tan(camera_fov_degrees * Mathf.Deg2Rad / 2); } }
         public float CameraMaxDistance { get { return 10 / Mathf.Tan(camera_fov_degrees * Mathf.Deg2Rad / 2); } }
+        public float CameraDistance { get { return CameraMaxDistance * camera_zoom; } }
 
         public static ScenePresentationConfig Load()
         {
             var config = new ScenePresentationConfig();
             TextAsset asset = Resources.Load<TextAsset>("ScenePresentation");
             if (asset != null) JsonUtility.FromJsonOverwrite(asset.text, config);
-            config.visual_mesh_multiplier = Mathf.Clamp(config.visual_mesh_multiplier, 0.1f, 4);
-            config.lane_width_unity = Mathf.Clamp(config.lane_width_unity, 15, 18);
-            config.camera_fov_degrees = Mathf.Clamp(config.camera_fov_degrees, 30, 35);
-            config.camera_pitch_degrees = Mathf.Clamp(config.camera_pitch_degrees, 45, 65);
-            config.model_tilt_degrees = Mathf.Clamp(config.model_tilt_degrees, 0, 20);
-            config.melee_height_ratio = Mathf.Clamp(config.melee_height_ratio, .4f, .8f);
-            config.caster_height_ratio = Mathf.Clamp(config.caster_height_ratio, .4f, .8f);
-            config.cannon_height_ratio = Mathf.Clamp(config.cannon_height_ratio, .4f, 1);
-            config.tower_height_ratio = Mathf.Clamp(config.tower_height_ratio, 2.5f, 3.5f);
-            // Fixed at the farthest framing previously reachable with the scroll wheel.
-            config.camera_distance = config.CameraMaxDistance;
+            config.Clamp();
             return config;
+        }
+
+        // Shared by Load and the in-game tuning panel (F8), so both accept the same ranges.
+        public void Clamp()
+        {
+            visual_mesh_multiplier = Mathf.Clamp(visual_mesh_multiplier, 0.1f, 4);
+            lane_width_unity = Mathf.Clamp(lane_width_unity, 15, 18);
+            camera_fov_degrees = Mathf.Clamp(camera_fov_degrees, 25, 45);
+            camera_pitch_degrees = Mathf.Clamp(camera_pitch_degrees, 45, 70);
+            camera_zoom = Mathf.Clamp(camera_zoom, .6f, 1.6f);
+            model_tilt_degrees = Mathf.Clamp(model_tilt_degrees, 0, 20);
+            melee_height_ratio = Mathf.Clamp(melee_height_ratio, .4f, .8f);
+            caster_height_ratio = Mathf.Clamp(caster_height_ratio, .4f, .8f);
+            cannon_height_ratio = Mathf.Clamp(cannon_height_ratio, .4f, 1);
+            tower_height_ratio = Mathf.Clamp(tower_height_ratio, 2.5f, 3.5f);
+            dummy_height_ratio = Mathf.Clamp(dummy_height_ratio, .5f, 1.2f);
+            sun_pitch_degrees = Mathf.Clamp(sun_pitch_degrees, 20, 89);
+            sun_intensity = Mathf.Clamp(sun_intensity, 0, 3);
+            shadow_strength = Mathf.Clamp01(shadow_strength);
+            vfx_scale = Mathf.Clamp(vfx_scale, .5f, 2);
+            champion_bar_lift = Mathf.Clamp(champion_bar_lift, 0, 1);
+            // Fixed at the farthest framing previously reachable with the scroll wheel, times the zoom.
+            camera_distance = CameraDistance;
         }
     }
 }

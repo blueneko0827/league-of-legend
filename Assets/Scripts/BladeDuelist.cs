@@ -18,6 +18,18 @@ namespace MidLane
         public float QDashProgress { get; private set; }
         public Vector3 QDirection { get; private set; }
         public Combatant DashTarget { get { return IsDashing ? dashTarget : null; } }
+        // Presentation hooks (official VFX). Raised after the gameplay result is applied;
+        // listeners only read state. OnHitLanded: target, passive empowered (4 stacks), crit, from Q.
+        public event System.Action<Combatant, bool, bool, bool> OnHitLanded;
+        // QLanded: target, cooldown refunded (marked target or kill).
+        public event System.Action<Combatant, bool> QLanded;
+        // Hito 2.2 presentation hooks (read-only): a W slash hit, an E convergence hit (stunned).
+        public event System.Action<Combatant> WLanded;
+        public event System.Action<Combatant, bool> ELanded;
+        internal void NotifyWHit(Combatant target)
+        { if (WLanded != null) try { WLanded(target); } catch (System.Exception e) { Debug.LogException(e); } }
+        internal void NotifyEHit(Combatant target, bool stunned)
+        { if (ELanded != null) try { ELanded(target, stunned); } catch (System.Exception e) { Debug.LogException(e); } }
         public Vector3 PredictDashPosition(float seconds)
         {
             if (!IsDashing || dashTarget == null) return self.Position;
@@ -97,6 +109,7 @@ namespace MidLane
         public float AbilityCost(int slot) { return Tuning.Cost(slot, Mathf.Max(1, Rank(slot))); }
         public float AbilityCooldown(int slot)
         {
+            if (slot == 2 && self == world.Player && world.PermanentPracticeMarks) return 0;
             float[] values = slot == 0 ? Tuning.qCooldown : slot == 1 ? Tuning.wCooldown : slot == 2 ? Tuning.eCooldown : Tuning.rCooldown;
             float raw = values[Mathf.Clamp(Rank(slot) - 1, 0, values.Length - 1)];
             if (slot == 0) raw -= 0.5f * Rank(3);
@@ -142,8 +155,10 @@ namespace MidLane
                 fullWChargeSoundPlayed = false;
                 if (self.Audio != null) self.Audio.WStart();
                 wReleasedAt = float.NegativeInfinity; WCastId = self.SpellCastId;
-                chargeVisual = world.Shape("Charging guard", PrimitiveType.Cylinder, transform, Vector3.up * 0.1f,
-                    new Vector3(2.2f, 0.035f, 2.2f), self.Color * 0.6f);
+                // The official W particles (IreliaVfx) replace this placeholder disc.
+                if (!world.Presentation.official_vfx)
+                    chargeVisual = world.Shape("Charging guard", PrimitiveType.Cylinder, transform, Vector3.up * 0.1f,
+                        new Vector3(2.2f, 0.035f, 2.2f), self.Color * 0.6f);
                 if (wIndicator==null) wIndicator=IreliaDirectionIndicator.Create(transform,"W · charge direction");
                 PresentWIndicator();
             }
@@ -294,12 +309,14 @@ namespace MidLane
             float raw = QRawDamage(victim);
             self.ApplyAttackHit(victim, raw, false);
             if (self.Audio != null) self.Audio.QImpact();
-            OnBasicAttackHit(victim); AwardSpellHits(new[] { victim });
+            OnBasicAttackHit(victim, false, true); AwardSpellHits(new[] { victim });
             self.Heal(self.AttackDamage * Tuning.qHealingRatio[Mathf.Clamp(Rank(0) - 1, 0, 4)]);
             // A lethal champion hit already cleared both champions' clocks in UnitDied.
             if ((marked || !victim.Alive) && self.Cooldowns.Remaining(0, Time.time) > 0)
                 self.Cooldowns.Start(0, Time.time, Tuning.qResetLock);
             victim.ClearMark();
+            if (QLanded != null)
+                try { QLanded(victim, marked || !victim.Alive); } catch (System.Exception e) { Debug.LogException(e); }
             self.ResetAttackTimer();
             if (attackAfterDash && victim.Targetable) self.OrderAttackAfterAbility(victim);
         }
@@ -318,6 +335,8 @@ namespace MidLane
             pendingLink = null;
         }
         public void ResetPassive() { CancelTransient(); Stacks = 0; passiveExpiresAt = 0; }
+        // Read-only, for the HUD buff timer.
+        public float PassiveRemaining { get { return Stacks > 0 ? Mathf.Max(0, passiveExpiresAt - Time.time) : 0; } }
         public float DamageReduction(DamageType type)
         {
             if ((!IsCharging && Time.time >= guardUntil) || type == DamageType.True) return 0;
@@ -325,14 +344,18 @@ namespace MidLane
             return Mathf.Clamp01(type == DamageType.Physical ? Mathf.Lerp(Tuning.wPhysicalReductionStart, Tuning.wPhysicalReductionEnd, level) + self.AbilityPower * 0.0008f :
                 Mathf.Lerp(Tuning.wMagicReductionStart, Tuning.wMagicReductionEnd, level) + self.AbilityPower * 0.0004f);
         }
-        public void OnBasicAttackHit(Combatant target)
+        public void OnBasicAttackHit(Combatant target, bool critical = false, bool fromQ = false)
         {
             if (Stacks > 0 && target.Kind != UnitKind.Tower) passiveExpiresAt = Time.time + Tuning.passiveDuration;
-            if (Stacks == 4 && target.Alive)
+            bool empowered = Stacks == 4 && target.Alive;
+            if (empowered)
             {
                 float damage = 10 + 3 * (Progress.Level - 1) + 0.2f * (self.AttackDamage - self.BaseStats.AttackDamage.At(Progress.Level));
                 self.DealAbilityDamage(target, damage * (target.Kind == UnitKind.Tower ? 0.5f : 1), DamageType.Magic, -1);
             }
+            // Presentation listeners can never interrupt the hit being resolved.
+            if (OnHitLanded != null)
+                try { OnHitLanded(target, empowered, critical, fromQ); } catch (System.Exception e) { Debug.LogException(e); }
         }
         public void AwardSpellHits(IEnumerable<Combatant> victims)
         {

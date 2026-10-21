@@ -7,6 +7,41 @@ namespace MidLane
         public bool PracticeModeActive { get { return Settings != null && Settings.practiceMode; } }
         public TrainingDummy PvpQDummy { get; private set; }
         public readonly List<TrainingDummy> PracticeDummies = new List<TrainingDummy>();
+        public bool PracticeMinionModelsActive { get; private set; }
+        internal void TogglePracticeMinionModels()
+        {
+            if (!PracticeModeActive || Paused || RoundOver) return;
+            bool enable = !PracticeMinionModelsActive;
+            foreach (var dummy in PracticeDummies)
+            {
+                if (dummy == null) continue;
+                bool center = !dummy.Mobile && dummy.Home.sqrMagnitude < .001f;
+                dummy.SetMinionAppearance(enable, center ? MinionType.Melee : MinionType.Caster);
+            }
+            PracticeMinionModelsActive = enable;
+        }
+        public bool PermanentPracticeMarks
+        {
+            get
+            {
+                if (!PracticeModeActive || PracticeDummies.Count == 0) return false;
+                foreach (var dummy in PracticeDummies)
+                    if (dummy == null || !dummy.PermanentMark) return false;
+                return true;
+            }
+        }
+        internal void TogglePermanentPracticeMarks()
+        {
+            if (!PracticeModeActive || Paused || RoundOver) return;
+            bool enable = !PermanentPracticeMarks;
+            foreach (var dummy in PracticeDummies)
+                if (dummy != null)
+                {
+                    if (enable) dummy.EnablePermanentMark();
+                    else dummy.DisablePermanentMark();
+                }
+            if (enable && Player != null) Player.Cooldowns.Reset(2);
+        }
         public const float PracticeCooldownResetSeconds = 3.5f;
         bool practiceResetArmed;
         float practiceResetAt;
@@ -49,16 +84,20 @@ namespace MidLane
         }
         public void PracticeAbilityUsed(Combatant actor)
         {
-            if (!PracticeModeActive || actor != Player) return;
+            if ((!PracticeModeActive && !PvpModeActive) || actor != Player) return;
             practiceResetArmed = true; practiceResetAt = Time.time + PracticeCooldownResetSeconds;
         }
         public void PracticeDamageDealt(Combatant source, float amount)
         {
-            if (PracticeModeActive && source == Player && amount > 0 && practiceResetArmed) practiceResetAt = Time.time + PracticeCooldownResetSeconds;
+            if ((PracticeModeActive || PvpModeActive) && source == Player && amount > 0 && practiceResetArmed) practiceResetAt = Time.time + PracticeCooldownResetSeconds;
         }
         void TickPracticeMode()
         {
-            if (!PracticeModeActive || Paused || !practiceResetArmed || Time.time < practiceResetAt) return;
+            if ((!PracticeModeActive && !PvpModeActive) || Paused || !practiceResetArmed) return;
+            // PvP uses the same player-only schedule; dead/reviving time must not carry over.
+            if (Player == null || !Player.Alive || Player.ItemEffects.IsReviving)
+            { practiceResetArmed = false; return; }
+            if (Time.time < practiceResetAt) return;
             Player.ResetAbilityCooldowns(); practiceResetArmed = false;
         }
     }

@@ -97,7 +97,7 @@ namespace MidLane
             if (string.IsNullOrEmpty(search) && GUI.GetNameOfFocusedControl() != "ShopSearch")
                 GUI.Label(new Rect(200, 178, 470, 20), "Type to search items or components...", smallText);
             if (GUI.Button(new Rect(1090, 132, 24, 25), "×", new GUIStyle(button) { fontSize = 23 })) Close();
-            GUI.Label(new Rect(784, 141, 292, 20), world.Player.CanBuy ? "SHOP AVAILABLE" : "RETURN TO RECOVERY TO SHOP", smallText);
+            GUI.Label(new Rect(784, 141, 292, 20), "SHOP AVAILABLE", smallText);
         }
         void DrawQuickItems()
         {

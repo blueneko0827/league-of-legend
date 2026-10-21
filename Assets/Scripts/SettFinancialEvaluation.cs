@@ -25,6 +25,9 @@ namespace MidLane
         void FindFinancialFarm(Combatant player, Combatant tower, out Combatant lastHit, out Combatant wave)
         {
             lastHit = wave = null; float nearest = float.PositiveInfinity;
+            Combatant previousPrepared = PreparedFarmTarget;
+            PreparedFarmTarget = null;
+            float preparedScore = float.PositiveInfinity;
             foreach (Combatant minion in world.Units)
             {
                 if (minion == null || minion.Kind != UnitKind.Minion || !self.ValidEnemy(minion)) continue;
@@ -35,7 +38,23 @@ namespace MidLane
                 float travel = Mathf.Max(0, distance - self.AttackReach(minion)) / self.MoveSpeed;
                 float horizon = Mathf.Max(travel, self.AttackCooldownRemaining) + self.AttackWindupDuration;
                 float hp = PredictMinionHealth(minion, horizon), damage = Physical(self, minion, self.Sett.PreviewAttackDamage(minion));
-                if (hp <= 0 || hp > damage || horizon > 2) continue;
+                if (hp <= 0 || horizon > FinancialConfig.farm_lookahead_seconds) continue;
+                if (hp > damage)
+                {
+                    // Wait for committed allied hits, not an invented stream of future damage.
+                    // Keep attacks manual until our actual arrival can secure the kill.
+                    for (float time = horizon + .1f; time <= FinancialConfig.farm_lookahead_seconds; time += .1f)
+                    {
+                        float future = PredictMinionHealth(minion, time);
+                        if (future <= 0) break;
+                        if (future > damage) continue;
+                        float score = time - (minion.MinionType == MinionType.Cannon ? .2f : 0)
+                            - (minion == previousPrepared ? .15f : 0);
+                        if (score < preparedScore) { preparedScore = score; PreparedFarmTarget = minion; }
+                        break;
+                    }
+                    continue;
+                }
                 float utility = FinancialConfig.lasthit_priority_over_poke * FinancialUtility.GoldPerMinute(
                     FinancialConfig.MinionGold(minion.MinionType), 0, horizon + Reaction);
                 if (utility <= LastHitUtility) continue;
@@ -83,6 +102,7 @@ namespace MidLane
             float pokeReward = PlayerAttractionGold * Mathf.Min(0.5f, pokeDamage / Mathf.Max(1, health));
             float pokeCost = FinancialConfig.estimated_death_loss_gold * counter / selfHealth;
             PokeUtility = (1 - FinancialConfig.lasthit_priority_over_poke) * FinancialUtility.GoldPerMinute(pokeReward, pokeCost, pokeSeconds);
+            if (PokeUtility > 0) PokeUtility *= HumanAggression;
             if (distance > self.AttackReach(player) + 0.9f && Time.time >= tradeUntil) PokeUtility = 0;
 
             if (world.Settings.testMode || self.Health < self.MaxHealth * 0.35f) return;

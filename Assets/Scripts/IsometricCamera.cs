@@ -18,11 +18,17 @@ namespace MidLane
         public void Initialize(LaneWorld lane)
         {
             world = lane; view = GetComponent<Camera>();
+            ApplyPresentation(); Locked = true;
+        }
+        // Also called by the tuning panel (F8) so FOV, angles and zoom update live.
+        public void ApplyPresentation()
+        {
             ScenePresentationConfig config = world.Presentation;
             view.orthographic = false; view.fieldOfView = config.camera_fov_degrees;
             // Unity positive X is the downward-looking pitch. Negative X would look skyward.
             transform.rotation = Quaternion.Euler(config.camera_pitch_degrees, config.camera_yaw_degrees, 0);
-            direction = -transform.forward; distance = config.CameraMaxDistance; Locked = true;
+            direction = -transform.forward; distance = config.CameraDistance;
+            if (world.Player != null) Apply();
         }
         public void Snap()
         {

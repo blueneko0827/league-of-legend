@@ -9,11 +9,13 @@ namespace MidLane
         public string Decision { get; private set; }
         public LaneTactic Tactic { get; private set; }
         public string PurchaseDecision { get; private set; }
-        public float Reaction { get { return FinancialConfig != null ? FinancialUtility.Reaction(financialBaseReaction,
-            self.Health / self.MaxHealth, FinancialConfig.panic_health_threshold, FinancialConfig.panic_reaction_multiplier) : self != null && self.Mel != null ? MelWReaction : CombatRules.Reaction(world.Settings.difficulty); } }
+        public float Reaction { get { return FinancialConfig != null ? HumanReaction(FinancialUtility.Reaction(financialBaseReaction,
+            self.Health / self.MaxHealth, FinancialConfig.panic_health_threshold, FinancialConfig.panic_reaction_multiplier)) : self != null && self.Mel != null ? MelWReaction : HumanReaction(CombatRules.Reaction(world.Settings.difficulty)); } }
         LaneWorld world;
         Combatant self;
         float nextThink, lastSampleAt;
+        int reviewedPurchaseGold = -1, reviewedPurchaseLevel = -1;
+        public int AutomaticPurchaseReviews { get; private set; }
         bool lastDuelMode;
         Vector3 lastPlayerPosition, estimatedVelocity;
         readonly float[] observedReady = new float[4];
@@ -25,11 +27,16 @@ namespace MidLane
             world = lane; self = actor; Decision = "Evaluando la línea";
             if (actor.Archetype == Archetype.Brawler) InitializeFinancialBrain();
             if (actor.Mel != null) ResetMelPlan();
+            InitializeHuman();
             nextThink = Time.time + Reaction; lastSampleAt = Time.time;
             lastPlayerPosition = world.Player.Position;
             world.OnAbilityUsed += ObserveCast;
         }
-        void OnDestroy() { if (world != null) world.OnAbilityUsed -= ObserveCast; }
+        void OnDestroy()
+        {
+            if (world == null) return;
+            world.OnAbilityUsed -= ObserveCast; world.OnObservedDamage -= ObserveHumanDamage; world.OnUnitDeath -= ObserveHumanDeath;
+        }
         public void ForgetObservedCooldowns()
         {
             for (int slot = 0; slot < 4; slot++)
@@ -37,14 +44,18 @@ namespace MidLane
         }
         void ObserveCast(Combatant actor, int slot, float readyAt)
         {
+            if (actor == self) { ObserveHumanOwnCast(slot); return; }
             if (actor != world.Player || Vector3.Distance(self.Position, actor.Position) > 14) return;
-            pendingReady[slot] = readyAt; observeAt[slot] = Time.time + Reaction;
+            pendingReady[slot] = readyAt; observeAt[slot] = Time.time + Reaction + (Human != null ? Human.PeripheralCombatDelay : 0);
             if (FinancialConfig != null && slot == 0) ObserveFinancialDash(actor);
         }
         void Update()
         {
             if (world.Paused) return;
-            PurchaseItems();
+            if (world.RoundOver) return;
+            TickHuman();
+            if (self.Alive) UseStartingHealthPotion();
+            ReviewPurchaseBudget();
             if (!self.Alive) { ResetLanePlan(); ResetFinancialPlan(); if (self.Mel != null) ResetMelPlan(); return; }
             if (lastDuelMode != DuelModeActive)
             {
@@ -70,11 +81,23 @@ namespace MidLane
             if (!self.CanAct) return;
             ThinkLane();
         }
+        void ReviewPurchaseBudget()
+        {
+            // Normalplay income arrives at half XP and level-up; PvP pays on level-up.
+            // Compare only the budget/level here, not recipes. Extra rune income and
+            // the level-18 gold button also deserve one review when the wallet changes.
+            // Leave pending income untouched while dead so it is spent after respawn.
+            if (world.Paused || !self.Alive || !self.CanBuy ||
+                (reviewedPurchaseGold == self.Gold && reviewedPurchaseLevel == self.Level)) return;
+            PurchaseItems();
+            reviewedPurchaseGold = self.Gold; reviewedPurchaseLevel = self.Level;
+            AutomaticPurchaseReviews++;
+        }
         public void PurchaseItems()
         {
             if (world.Paused) return;
             if (!self.Alive || !self.CanBuy)
-            { PurchaseDecision = "Compras: al volver a la fuente"; return; }
+            { PurchaseDecision = "Compras: esperar reaparición"; return; }
             string reason;
             if (self.Archetype == Archetype.Brawler || self.Archetype == Archetype.Prism)
             {
@@ -83,6 +106,11 @@ namespace MidLane
                 {
                     int id = build[index];
                     if (self.Inventory.Has(id)) continue;
+                    if (world.NormalplayModeActive && index >= 4)
+                    {
+                        int potion = self.Inventory.Items.FindIndex(item => item.id == 2003);
+                        if (potion >= 0) self.SellItem(potion); // An unused starting potion must not block the fifth item.
+                    }
                     if (index == 5) SellStarterForSixthItem(id);
                     for (int purchases = 0; purchases < 20; purchases++)
                     {
@@ -102,7 +130,7 @@ namespace MidLane
                 return;
             }
             int starter = 3112;
-            if (!self.Inventory.Has(starter) && self.Inventory.Items.Count == 0) self.BuyItem(starter, out reason);
+            if (!self.Inventory.Has(starter) && self.Inventory.Items.TrueForAll(item => item.id == 2003)) self.BuyItem(starter, out reason);
             bool boots = self.Inventory.Items.Exists(item => item.boots);
             if (!boots) self.BuyItem(1001, out reason);
             int completed = self.Archetype == Archetype.Brawler ? 3153 : 3089;

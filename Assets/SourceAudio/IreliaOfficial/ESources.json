@@ -1,0 +1,125 @@
+{
+  "source": "Assets/SourceAudio/IreliaOfficial",
+  "gain": 0.7890913156044405,
+  "events": [
+    {
+      "group": "EBladeLand",
+      "event": "Play_sfx_Irelia_IreliaE_missile_stop",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "EBladeLand_1.wav",
+          "seconds": 1.2,
+          "recipe": "Play_sfx_Irelia_IreliaE_missile_stop {r}.txtp",
+          "peak": 0.4930696151361947,
+          "sha256": "45bc5f772e750c52c89ea3a2e31857cadff46abcea940189b2b873dbc412087c"
+        }
+      ]
+    },
+    {
+      "group": "ESparkles",
+      "event": "Play_sfx_Irelia_IreliaESecondary_sparkles",
+      "default_switch": null,
+      "clips": [
+        {
+          "file": "ESparkles_1.wav",
+          "seconds": 1.000045351473923,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r1}.txtp",
+          "peak": 0.6489217271337692,
+          "sha256": "45220c7357783e3048aa9516993d398bdf76fa17fe8351603ae6a63af5dfe112"
+        },
+        {
+          "file": "ESparkles_2.wav",
+          "seconds": 0.9999773242630385,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r2}.txtp",
+          "peak": 0.6602227501967238,
+          "sha256": "5386e4da914355d7191f3d2c9fc0ed4e33136979c229cb1fb59fad8fc5ee5824"
+        },
+        {
+          "file": "ESparkles_3.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r3}.txtp",
+          "peak": 0.5323407596436266,
+          "sha256": "ceae2d8ef8987dea63dfcca1609f7345034852cbb52194d67e262da883a2d426"
+        },
+        {
+          "file": "ESparkles_4.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r4}.txtp",
+          "peak": 0.3267099118314818,
+          "sha256": "3ad80462a908a58698ba35ce4b10dcb3a975989805044e9db85d3482c6a39f21"
+        },
+        {
+          "file": "ESparkles_5.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r5}.txtp",
+          "peak": 0.5681638777116921,
+          "sha256": "c8fb8d2212aee529cce890af2c72b2f4086dff5df1764b995b3750874c579426"
+        },
+        {
+          "file": "ESparkles_6.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r6}.txtp",
+          "peak": 0.5474111891031185,
+          "sha256": "bfab46c92cc201eb77b2b4c3481e7171811a93ef9749be323dc333e4253d2623"
+        },
+        {
+          "file": "ESparkles_7.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r7}.txtp",
+          "peak": 0.7133651108213407,
+          "sha256": "49a139758ff2c2a38884b31f520b235613cf1c0e781961cc0a44ef5efb0d9ed7"
+        },
+        {
+          "file": "ESparkles_8.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r8}.txtp",
+          "peak": 0.7262985258312479,
+          "sha256": "9f650d9695e7ea2a14719e0944a51f7761717ae2cc0785397bf55354b089f6af"
+        },
+        {
+          "file": "ESparkles_9.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r9}.txtp",
+          "peak": 0.5586823458887714,
+          "sha256": "67b68446284731f0fd7a6bb20f436193fdfe0c64160663b1e545b155c9047d24"
+        },
+        {
+          "file": "ESparkles_10.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r10}.txtp",
+          "peak": 0.5737593130058144,
+          "sha256": "57794e0fc97fb5594ae952186f3301911568931874f61b087e4720bd6c9e2d24"
+        },
+        {
+          "file": "ESparkles_11.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r11}.txtp",
+          "peak": 0.5453446778813692,
+          "sha256": "96672872cfd43f6c74ea0b589da1013818252b8d16babf447a50da7f032ccf08"
+        },
+        {
+          "file": "ESparkles_12.wav",
+          "seconds": 1.0,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r12}.txtp",
+          "peak": 0.774330931026797,
+          "sha256": "87e23df0a3409f7e5f8407b99c80267f1f0febceff13a3e7707de5e0af4570d0"
+        },
+        {
+          "file": "ESparkles_13.wav",
+          "seconds": 0.999750566893424,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r13}.txtp",
+          "peak": 0.8321640374275819,
+          "sha256": "fc50a31389fe3d8e978019d7e6865c7594fe41d6ca4e6f323cc2269abb7980fc"
+        },
+        {
+          "file": "ESparkles_14.wav",
+          "seconds": 0.986938775510204,
+          "recipe": "Play_sfx_Irelia_IreliaESecondary_sparkles {r14}.txtp",
+          "peak": 0.4228305745128096,
+          "sha256": "a1e3902828f8d13801c35d8f37491e33ee3f9fad73ee35af361659dafcd024d6"
+        }
+      ]
+    }
+  ]
+}

@@ -17,7 +17,8 @@ namespace MidLane
         public static Rect InventoryPanel { get { return Map(new Rect(634, 14, 266, 190)); } }
         public static Rect Passive { get { return Map(new Rect(102, 66, 48, 48)); } }
         public static Rect Runes { get { return Map(new Rect(12,150,76,40)); } }
-        public static Rect PassiveStacks { get { return Map(new Rect(110, -44, 72, 72)); } }
+        // Buff bar slot above the passive, sized like the LoL client buff icons.
+        public static Rect PassiveStacks { get { return Map(new Rect(102, -24, 48, 48)); } }
         public static Rect Summoner(int slot) { return Map(new Rect(490 + slot * 62, 60, 52, 52)); }
         public static Rect Gold { get { return Map(new Rect(646, 158, 214, 32)); } }
         public static Rect AddGold { get { return new Rect(Body.xMax + 8, Body.yMax - 32, 118, 28); } }

@@ -35,6 +35,9 @@ namespace MidLane
             visual = ultimate ? IreliaRVisuals.CreateProjectile(transform) : world.Shape("W Danza de Insurrección", PrimitiveType.Cube, transform,
                 origin + Vector3.up * 0.65f, new Vector3(width * 2, 0.2f, 0.5f), blade.Actor.Color);
             visual.transform.rotation = Quaternion.LookRotation(direction); visual.SetActive(false);
+            // The official W slash particles (IreliaVfx) replace the placeholder bar.
+            if (!ultimate && world.Presentation.official_vfx)
+                foreach (Renderer renderer in visual.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
         }
         void Update()
         {
@@ -131,6 +134,7 @@ namespace MidLane
                 impactSoundPlayed = true;
                 if (ultimate) blade.Actor.Audio.RImpact(false); else blade.Actor.Audio.WImpact();
             }
+            if (!ultimate && reflectedOwner == null) blade.NotifyWHit(target);
             hit.Add(target); DamageOwner.DealAbilityDamage(target, damage * reflectionFactor,
                 ultimate || reflectedOwner != null ? DamageType.Magic : DamageType.Physical, castId, reflectedOwner != null ? 1 : ultimate ? 3 : 1);
             if (ultimate && target.Alive && target.Kind == UnitKind.Champion)
