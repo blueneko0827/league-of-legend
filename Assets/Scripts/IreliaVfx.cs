@@ -46,12 +46,19 @@ namespace MidLane
         sealed class EVfx
         {
             public BladeLink link;
-            public RiotVfxPlayer missile1, missile2, blades1, blades2, indicator1, indicator2, beam, sparks;
-            public bool firstLanded, secondLanded;
+            public RiotVfxPlayer missile1, missile2, blades1, blades2, indicator1, indicator2, beam, sparks, converge1, converge2;
+            public bool firstLanded, secondLanded, converging;
             public RiotVfxPose pose1, pose2;
+            // Irelia died or Practice restarted: everything goes.
             public void Stop()
             {
-                foreach (RiotVfxPlayer player in new[] { missile1, missile2, blades1, blades2, indicator1, indicator2, beam, sparks })
+                Finish();
+                if (beam != null) beam.Stop();
+            }
+            // The blades met: the beam plays out on its own (its delayed dark slash comes after the hit).
+            public void Finish()
+            {
+                foreach (RiotVfxPlayer player in new[] { missile1, missile2, blades1, blades2, indicator1, indicator2, sparks, converge1, converge2 })
                     if (player != null) player.Stop();
             }
         }
@@ -223,7 +230,7 @@ namespace MidLane
             foreach (KeyValuePair<BladeLink, EVfx> pair in eLinks)
             {
                 // The link is destroyed at the convergence impact (or when Irelia dies / Practice restarts).
-                if (pair.Key == null) { pair.Value.Stop(); eFinished.Add(pair.Key); continue; }
+                if (pair.Key == null) { pair.Value.Finish(); eFinished.Add(pair.Key); continue; }
                 UpdateE(pair.Value);
             }
             foreach (BladeLink link in eFinished) eLinks.Remove(link);
@@ -246,7 +253,7 @@ namespace MidLane
             }
             if (!link.HasSecond) return;
             if (e.missile2 == null && !e.secondLanded && now >= link.SecondLaunchedAt)
-                e.missile2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_02", MissilePose(e, false));
+                e.missile2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_01", MissilePose(e, false));
             if (!e.secondLanded && now >= link.SecondLaunchedAt + flight)
             {
                 e.secondLanded = true;
@@ -254,18 +261,35 @@ namespace MidLane
                 e.blades2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Blades", BladePose(e, false));
                 e.indicator2 = RiotVfxPlayer.PlayAt(world, hostile ? "Irelia_Base_E_Team_Indicator_Enemy" : "Irelia_Base_E_Team_Indicator",
                     link.Second, Quaternion.LookRotation(Flat(link.Second - link.SecondOrigin)));
-                // The beam joins the two blades and follows them as they converge.
-                e.beam = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Enemy" : "Irelia_Base_E_Beam", () =>
-                {
-                    RiotVfxPose a = BladePoseNow(e, true), b = BladePoseNow(e, false);
-                    return new RiotVfxPose(a.position, a.rotation, b.position);
-                });
-                e.sparks = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Warning_Sparks_Enemy" : "Irelia_Base_E_Beam_Warning_Sparks", () =>
-                {
-                    RiotVfxPose a = BladePoseNow(e, true), b = BladePoseNow(e, false);
-                    return new RiotVfxPose((a.position + b.position) * .5f, a.rotation);
-                });
+                // The beam spans the two points (it stays there while the blades fly to the middle).
+                var beamPose = new RiotVfxPose(link.First, Quaternion.LookRotation(Flat(link.Second - link.First)), link.Second);
+                e.beam = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Enemy" : "Irelia_Base_E_Beam", () => beamPose);
+                var sparksPose = new RiotVfxPose((link.First + link.Second) * .5f, beamPose.rotation);
+                e.sparks = RiotVfxPlayer.Play(world, hostile ? "Irelia_Base_E_Beam_Warning_Sparks_Enemy" : "Irelia_Base_E_Beam_Warning_Sparks",
+                    () => sparksPose);
             }
+            // The standing blades leave their points and fly to the middle (E_Mis_02, with its
+            // shard trail) during the last moment before the hit, as in LoL.
+            if (e.secondLanded && !e.converging && now >= ConvergeStart(link))
+            {
+                e.converging = true;
+                if (e.blades1 != null) e.blades1.Stop();
+                if (e.blades2 != null) e.blades2.Stop();
+                e.converge1 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_02", ConvergePose(e, true));
+                e.converge2 = RiotVfxPlayer.Play(world, "Irelia_Base_E_Mis_02", ConvergePose(e, false));
+            }
+        }
+
+        const float EConvergeFlight = .15f;
+        static float ConvergeStart(BladeLink link) { return Mathf.Max(link.ConvergeAt, link.ImpactAt - EConvergeFlight); }
+
+        System.Func<RiotVfxPose> ConvergePose(EVfx e, bool first)
+        {
+            BladeLink link = e.link;
+            Vector3 from = first ? link.First : link.Second, center = (link.First + link.Second) * .5f;
+            float start = ConvergeStart(link), end = link.ImpactAt;
+            Quaternion facing = Quaternion.LookRotation(Flat(center - from));
+            return () => new RiotVfxPose(Vector3.Lerp(from, center, (Time.time - start) / Mathf.Max(.01f, end - start)), facing);
         }
 
         // The blade flies from Irelia's position at the cast to its point.
@@ -286,15 +310,12 @@ namespace MidLane
 
         System.Func<RiotVfxPose> BladePose(EVfx e, bool first) { return () => BladePoseNow(e, first); }
 
-        // Standing blade: at its point, sliding to the middle while the pair converges.
+        // Standing blade at its point (it leaves as E_Mis_02 when the pair converges).
         RiotVfxPose BladePoseNow(EVfx e, bool first)
         {
             BladeLink link = e.link;
             if (link == null) return first ? e.pose1 : e.pose2;
             Vector3 point = first ? link.First : link.Second, origin = first ? link.FirstOrigin : link.SecondOrigin;
-            if (link.HasSecond && Time.time >= link.ConvergeAt)
-                point = Vector3.Lerp(point, (link.First + link.Second) * .5f,
-                    (Time.time - link.ConvergeAt) / Mathf.Max(.01f, link.ImpactAt - link.ConvergeAt));
             var pose = new RiotVfxPose(point, Quaternion.LookRotation(Flat(point - origin)));
             if (first) e.pose1 = pose; else e.pose2 = pose;
             return pose;

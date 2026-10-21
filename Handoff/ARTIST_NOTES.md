@@ -27,12 +27,20 @@
     dorado al completar la carga, hasta soltar), `W_Swipe` / `W_Swipe_Empowered` (corte al
     soltar; el dorado con carga completa) en la dirección apuntada, `W_Hit` en cada objetivo
     alcanzado y `W_Block` cuando la W absorbe un golpe.
-  - **E:** `E_cas` / `E_cas_02` (giro al lanzar), `E_Mis_01` / `E_Mis_02` (vuelo de cada
-    cuchilla desde Irelia hasta su punto), `E_Blades` (cuchilla suspendida con su columna de
-    luz) y `E_Team_Indicator` (anillo en el suelo; versión roja para una Irelia enemiga),
-    `E_Beam` y `E_Beam_Warning_Sparks` (haz entre las cuchillas mientras convergen), y al
-    impactar `E_Hit` / `E_Hit_minion` en cada unidad y `E_hit_Avatar` (silueta) en el campeón
-    aturdido.
+  - **E:** `E_cas` / `E_cas_02` (giro al lanzar), `E_Mis_01` (vuelo de cada cuchilla desde
+    Irelia hasta su punto), `E_Blades` (cuchilla suspendida con su columna de luz) y
+    `E_Team_Indicator` (anillo en el suelo; versión roja para una Irelia enemiga), `E_Beam`
+    (franja oscura entre los dos puntos) y `E_Beam_Warning_Sparks` (rayos sobre la franja),
+    `E_Mis_02` (en los últimos 0,15 s antes del impacto las cuchillas dejan su punto y vuelan
+    al centro con su estela de fragmentos), y al impactar `E_Hit` / `E_Hit_minion` en cada
+    unidad y `E_hit_Avatar` (silueta) en el campeón aturdido. El haz termina solo después del
+    impacto: su corte rojo y la línea oscura que queda en el camino salen como en LoL.
+  - Ajustes generales tras comparar con LoL: los efectos del suelo (anillos, discos, franjas) se
+    dibujan antes que el resto, como en LoL (antes el disco oscuro de `W_FullPower` tapaba el
+    escudo); la paleta de color (corte dorado de la W) se lee sin mipmaps, para que el color no
+    se mezcle con las filas vecinas al alejar la cámara; la franja `E_Beam/Dark_beam` (textura
+    casi negra y opaca en modo aditivo, que solo dejaba ver sus dos bordes) se dibuja como franja
+    oscura.
   - Con `"official_vfx": true` ya no se muestran los marcadores anteriores: el disco y las seis
     cuchillas que giraban durante la carga de la W, la barra del corte de la W, y las cuchillas
     de malla y el haz propio de la E. Con `false` vuelven tal como estaban.
@@ -70,6 +78,9 @@
     La malla `W_Swipe_Empowered/mesh_dustup` es de otra skin y tampoco está.
   - Varios campos de los emisores de W/E no tienen nombre conocido (p. ej. el modo de los haces);
     se dejaron en su valor por defecto.
+  - El dibujado de `Dark_beam` como franja oscura es una deducción (el modo de mezcla 4 de LoL
+    con esa textura); los tiempos de juego de la E no cambian, así que la espera entre la
+    llegada de la segunda cuchilla y el impacto es la de la simulación (0,25 s).
   - El zumbido largo de la cuchilla en espera no se reproduce en bucle (se recorta, ver arriba).
   - El evento de sonido `FUTURE_IreliaE_foley` de la animación no está en el banco base.
 

@@ -483,6 +483,15 @@ for name in sorted(systems):
     library['systems'].append({'name': name, 'sound': entry.get('soundOnCreateDefault', ''),
                                'emitters': emitters})
 
+# E_Beam 'Dark_beam' pairs an additive mode with an opaque, almost black '*_dark' texture: added,
+# it would only leave its two thin edges, while LoL shows a dark band. Drawn alpha-blended.
+for system in library['systems']:
+    for e in system['emitters']:
+        info = textures.get(e.get('texture') or '')
+        if e.get('blend') in (0, 4, 6, 7) and info and info['opaqueAlpha'] and e['texture'].endswith('_dark'):
+            e['blend'] = 1
+            notes.append(f"{system['name']}/{e['name']}: opaque dark texture in an additive mode, drawn as a dark band.")
+
 # Animation graph particle events (which clip spawns which swipe, on which frame).
 anm_paths = {}
 for path in SOURCE.rglob('*.anm'):

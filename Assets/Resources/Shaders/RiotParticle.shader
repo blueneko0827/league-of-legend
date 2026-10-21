@@ -78,7 +78,7 @@ Shader "MidLane/RiotParticle"
             {
                 half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 // paletteDefinition: the red channel picks the color in one palette row.
-                if (_UsePalette > 0.5) color.rgb = SAMPLE_TEXTURE2D(_PaletteTex, sampler_PaletteTex, float2(clamp(color.r, .002, .998), _PaletteV)).rgb;
+                if (_UsePalette > 0.5) color.rgb = SAMPLE_TEXTURE2D_LOD(_PaletteTex, sampler_PaletteTex, float2(clamp(color.r, .002, .998), _PaletteV), 0).rgb;
                 color *= _Color * i.color;
                 if (_UseMult > 0.5) color *= SAMPLE_TEXTURE2D(_MultTex, sampler_MultTex, i.uv2);
                 if (_UseErosion > 0.5)

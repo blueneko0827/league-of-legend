@@ -133,7 +133,7 @@ namespace MidLane
 
         Material BuildMaterial(RiotVfxEmitterData emitter, bool attached)
         {
-            string key = emitter.texture + "|" + emitter.blend + "|" + emitter.twoSided + "|" + emitter.pass + "|" + attached +
+            string key = emitter.texture + "|" + emitter.blend + "|" + emitter.twoSided + "|" + emitter.pass + "|" + emitter.groundLayer + "|" + attached +
                 "|" + (emitter.erosion != null ? emitter.erosion.map : "") + "|" + emitter.alphaRef +
                 "|" + (emitter.textureMult != null ? emitter.textureMult.texture : "") +
                 "|" + (emitter.palette != null && emitter.palette.Present ? emitter.palette.texture + "#" + emitter.palette.index + "/" + emitter.palette.count : "");
@@ -177,7 +177,10 @@ namespace MidLane
                 material.SetTexture(PaletteTex, GetTexture(emitter.palette.texture));
                 material.SetFloat(PaletteV, 1 - (Mathf.Clamp(emitter.palette.index, 0, emitter.palette.count - 1) + .5f) / emitter.palette.count);
             }
-            material.renderQueue = 3000 + Mathf.Clamp(emitter.pass, -400, 400);
+            // LoL draws ground-layer particles (rings, dark discs, beams on the floor) before the
+            // others, so a floor decal never covers a shield or a blade standing above it.
+            material.renderQueue = emitter.groundLayer ? 2600 + Mathf.Clamp(emitter.pass, -90, 90)
+                : 3000 + Mathf.Clamp(emitter.pass, -400, 400);
             materials[key] = material; owned.Add(material);
             return material;
         }
