@@ -20,5 +20,6 @@
   "ambient_color": { "r": 0.5, "g": 0.56, "b": 0.68, "a": 1.0 },
   "unit_shadows": true,
   "official_vfx": true,
-  "vfx_scale": 1.0
+  "vfx_scale": 1.0,
+  "champion_bar_lift": 0.36
 }

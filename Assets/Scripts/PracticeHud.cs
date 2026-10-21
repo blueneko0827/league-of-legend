@@ -79,7 +79,7 @@ namespace MidLane
             label = new GUIStyle(GUI.skin.label) { fontSize = 16 };
             small = new GUIStyle(GUI.skin.label) { fontSize = 13 };
             button = new GUIStyle(GUI.skin.button) { fontSize = 14 };
-            passiveStackNumber = new GUIStyle(small) { fontSize = 17, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+            passiveStackNumber = new GUIStyle(small) { fontSize = 11, fontStyle = FontStyle.Bold, alignment = TextAnchor.LowerRight, padding = new RectOffset(), clipping = TextClipping.Overflow };
             gritLabel = new GUIStyle(small) { fontSize = 10, alignment = TextAnchor.MiddleCenter };
             headerStyle = new GUIStyle(title) { fontSize = 21, alignment = TextAnchor.MiddleLeft };
             clockStyle = new GUIStyle(label) { fontSize = 20, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
@@ -290,19 +290,65 @@ namespace MidLane
             GUI.Label(new Rect(rect.x + 1, rect.y + 1, rect.width, rect.height), text, style);
             style.normal.textColor = color; GUI.Label(rect, text, style);
         }
+        // Ionian Fervor as the LoL client shows it in the buff bar: the official passive icon,
+        // a clockwise sweep that darkens as the stacks' duration runs out, a thin teal frame and
+        // the stack count in the lower-right corner.
         void DrawPlayerPassiveStacks()
         {
             int stacks = world.Player.Stacks;
             if (!world.Player.Alive || stacks == 0) return;
             Rect badge = ChampionHudLayout.PassiveStacks;
-            Box(badge, Panel);
-            HudIcons.Draw(new Rect(badge.x + 2, badge.y + 2, badge.width - 4, badge.height - 4), "Passive");
-            Box(badge, new Color(0, 0, 0, .25f));
-            HudFrame(badge, stacks == 4 ? new Color(1, .83f, .3f) : new Color(.3f, .8f, .85f), 1.5f);
+            Box(badge, new Color(.01f, .03f, .04f, .95f));
+            var icon = new Rect(badge.x + 1, badge.y + 1, badge.width - 2, badge.height - 2);
+            HudIcons.Draw(icon, "Passive");
+            BladeDuelist blade = world.Player.Blade;
+            // Defiant Dance pauses the duration: the sweep holds while W charges.
+            if (blade != null && !blade.IsCharging && blade.Tuning != null && blade.Tuning.passiveDuration > 0)
+                passiveElapsed = 1 - Mathf.Clamp01(blade.PassiveRemaining / blade.Tuning.passiveDuration);
+            GUI.DrawTexture(icon, BuffSweep(passiveElapsed), ScaleMode.StretchToFill);
+            HudFrame(badge, new Color(.29f, .66f, .64f), 1);
+            var number = new Rect(badge.x, badge.y, badge.width - 1.5f, badge.height - .5f);
             passiveStackNumber.normal.textColor = Color.black;
-            GUI.Label(new Rect(badge.x + 1, badge.y + 1, badge.width, badge.height), stacks.ToString(), passiveStackNumber);
+            foreach (Vector2 offset in StackOutline)
+                GUI.Label(new Rect(number.x + offset.x, number.y + offset.y, number.width, number.height), stacks.ToString(), passiveStackNumber);
             passiveStackNumber.normal.textColor = Color.white;
-            GUI.Label(badge, stacks.ToString(), passiveStackNumber);
+            GUI.Label(number, stacks.ToString(), passiveStackNumber);
+        }
+        float passiveElapsed;
+        static readonly Vector2[] StackOutline = { new Vector2(-1, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(0, 1) };
+        const int SweepSteps = 48, SweepSize = 64;
+        static Texture2D[] sweepTextures;
+        // Elapsed part of a buff timer, darkened clockwise from 12 o'clock with a light edge.
+        // One small texture per step, built on first use.
+        static Texture2D BuffSweep(float elapsed)
+        {
+            if (sweepTextures == null) sweepTextures = new Texture2D[SweepSteps + 1];
+            int step = Mathf.Clamp(Mathf.RoundToInt(elapsed * SweepSteps), 0, SweepSteps);
+            if (sweepTextures[step] != null) return sweepTextures[step];
+            var texture = new Texture2D(SweepSize, SweepSize, TextureFormat.RGBA32, false)
+            { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.HideAndDontSave };
+            float limit = step * 360f / SweepSteps;
+            float edgeSin = Mathf.Sin(limit * Mathf.Deg2Rad), edgeCos = Mathf.Cos(limit * Mathf.Deg2Rad);
+            var pixels = new Color32[SweepSize * SweepSize];
+            for (int y = 0; y < SweepSize; y++)
+                for (int x = 0; x < SweepSize; x++)
+                {
+                    float shade = 0;
+                    for (int s = 0; s < 4; s++)
+                    {
+                        float dx = x + .25f + .5f * (s % 2) - SweepSize / 2f, dy = y + .25f + .5f * (s / 2) - SweepSize / 2f;
+                        float angle = Mathf.Atan2(dx, dy) * Mathf.Rad2Deg; if (angle < 0) angle += 360;
+                        if (angle < limit) shade += .25f;
+                    }
+                    float cx = x + .5f - SweepSize / 2f, cy = y + .5f - SweepSize / 2f;
+                    float edge = step > 0 && step < SweepSteps && cx * edgeSin + cy * edgeCos > 0 ?
+                        Mathf.Clamp01(1.2f - Mathf.Abs(cx * edgeCos - cy * edgeSin)) : 0;
+                    float alpha = Mathf.Max(shade * .6f, edge * .85f);
+                    byte light = (byte)(255 * (alpha > 0 ? edge * .85f / alpha : 0));
+                    pixels[y * SweepSize + x] = new Color32(light, light, light, (byte)(255 * alpha));
+                }
+            texture.SetPixels32(pixels); texture.Apply(false, true);
+            return sweepTextures[step] = texture;
         }
         void DrawHoveredTarget()
         {

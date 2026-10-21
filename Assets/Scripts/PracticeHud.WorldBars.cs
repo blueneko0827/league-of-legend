@@ -11,7 +11,16 @@ namespace MidLane
         public const float TowerWidth = 150, TowerHeight = 14;
         public const float MinionWidth = 62, MinionHeight = 7;
 
-        // anchor: projection of VisualTop + 0.3 up, in HUD space (y grows downward).
+        // World point the bar hangs from: VisualTop + 0.3 up. Champions (not dummies) go higher,
+        // because their official models (hair, floating blades) rise above VisualTop.
+        public static Vector3 Anchor(Combatant unit, ScenePresentationConfig presentation)
+        {
+            float lift = presentation != null && unit.Kind == UnitKind.Champion && unit.Dummy == null ?
+                presentation.champion_bar_lift * unit.VisualHeight : 0;
+            return unit.VisualTop + Vector3.up * (.3f + lift);
+        }
+
+        // anchor: projection of Anchor(), in HUD space (y grows downward).
         public static Rect Frame(Combatant unit, Vector2 anchor)
         {
             if (unit.Kind == UnitKind.Tower) return new Rect(anchor.x - TowerWidth / 2, anchor.y - 4, TowerWidth, TowerHeight);
@@ -49,7 +58,7 @@ namespace MidLane
             foreach (Combatant unit in world.Units)
             {
                 if (unit == null || !unit.Alive || !unit.gameObject.activeInHierarchy) continue;
-                Vector3 screen = world.View.WorldToScreenPoint(unit.VisualTop + Vector3.up * .3f);
+                Vector3 screen = world.View.WorldToScreenPoint(WorldBarLayout.Anchor(unit, world.Presentation));
                 if (screen.z <= 0) continue;
                 var anchor = new Vector2(screen.x * 1280 / Screen.width, (Screen.height - screen.y) * 720 / Screen.height);
                 if (anchor.y < 0 || anchor.y > 720 || anchor.x < 0 || anchor.x > 1280 || BlocksPointer(new Vector2(screen.x, Screen.height - screen.y))) continue;

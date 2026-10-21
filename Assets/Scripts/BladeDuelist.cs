@@ -326,6 +326,8 @@ namespace MidLane
             pendingLink = null;
         }
         public void ResetPassive() { CancelTransient(); Stacks = 0; passiveExpiresAt = 0; }
+        // Read-only, for the HUD buff timer.
+        public float PassiveRemaining { get { return Stacks > 0 ? Mathf.Max(0, passiveExpiresAt - Time.time) : 0; } }
         public float DamageReduction(DamageType type)
         {
             if ((!IsCharging && Time.time >= guardUntil) || type == DamageType.True) return 0;

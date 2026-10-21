@@ -65,7 +65,15 @@ Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos).
   `PSparkles_1..12` (golpe potenciado), `PMaxSparkles_1..7` (golpe que completa las cargas)
   y `PMax_1..5` (activación a 4 cargas). Manifiesto:
   `Assets/SourceAudio/IreliaOfficial/PassiveSources.json`. Los clips existentes no se
-  modificaron. HUD sin cambios.
+  modificaron.
+  - Icono de cargas de la pasiva: ahora como el ícono de buff del cliente de LoL (ícono
+    oficial de la pasiva, marco fino, número de cargas abajo a la derecha y barrido horario
+    que oscurece el ícono a medida que vence la duración; se detiene mientras se carga la W).
+  - Barra sobre los campeones: más alta para no tapar la cara de Irelia (el modelo oficial
+    sobresale de la altura de selección). Se ajusta con `champion_bar_lift` en
+    `ScenePresentation.json` (fracción de la altura visual del campeón, 0,36 por defecto;
+    0 = posición anterior). Los dummies no cambian. El clic sobre la barra usa la misma
+    posición.
 
 - Recursos o paquetes nuevos y sus requisitos: scripts nuevos (con `.meta`):
   `RiotVfxData.cs`, `RiotVfxSimulation.cs`, `RiotVfxLibrary.cs`, `RiotVfxPlayer.cs`,
@@ -85,7 +93,8 @@ Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos).
   - `IreliaAudio.cs`: nuevas señales `CritHit`, `PSparkles`, `PMaxSparkles`, `PMax`
     (al final del enum) y `BasicHit(variante, crítico)`.
   - `IreliaMarkVisual.cs`: muestra la marca oficial; el rombo queda como respaldo.
-  - `ScenePresentationConfig.cs`: campos `official_vfx` y `vfx_scale`.
+  - `ScenePresentationConfig.cs`: campos `official_vfx`, `vfx_scale` y `champion_bar_lift`.
+  - `BladeDuelist.cs`: propiedad de solo lectura `PassiveRemaining` para el temporizador del HUD.
   - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: pruebas nuevas que verifican que los
     sistemas cargan, que el ataque básico y la Q lanzan sus efectos y que el golpe
     potenciado estalla en el pecho del dummy.

@@ -39,6 +39,10 @@ namespace MidLane
         // size around the attachment point; 1 keeps the proportion of the enlarged champion.
         public bool official_vfx = true;
         public float vfx_scale = 1;
+        // Extra height of the champions' overhead bar, as a fraction of the champion's visual
+        // height. The official models (hair, floating blades) rise above the selection height,
+        // so without it the bar covers Irelia's face; LoL leaves a gap above the head.
+        public float champion_bar_lift = .36f;
 
         public float ChampionVisualHeight { get { return TowerToTowerRules.ChampionSelectionHeight * visual_mesh_multiplier; } }
         public float MinionVisualHeight(MinionType type)
@@ -77,6 +81,7 @@ namespace MidLane
             sun_intensity = Mathf.Clamp(sun_intensity, 0, 3);
             shadow_strength = Mathf.Clamp01(shadow_strength);
             vfx_scale = Mathf.Clamp(vfx_scale, .5f, 2);
+            champion_bar_lift = Mathf.Clamp(champion_bar_lift, 0, 1);
             // Fixed at the farthest framing previously reachable with the scroll wheel, times the zoom.
             camera_distance = CameraDistance;
         }

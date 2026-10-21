@@ -29,7 +29,7 @@ namespace MidLane
                 int priority = gap <= 0 ? 1 : gap <= padding ? 2 : int.MaxValue;
                 float distance = priority == 1 ? Vector2.Distance(cursor, body.center) : gap;
                 Rect bar;
-                if (TryHealthBar(world.View, unit, out bar) && bar.Contains(cursor))
+                if (TryHealthBar(world.View, unit, out bar, world.Presentation) && bar.Contains(cursor))
                 {
                     priority = 0;
                     distance = Vector2.Distance(cursor, bar.center);
@@ -69,11 +69,11 @@ namespace MidLane
             return rect.Overlaps(camera.pixelRect);
         }
 
-        public static bool TryHealthBar(Camera camera, Combatant unit, out Rect rect)
+        public static bool TryHealthBar(Camera camera, Combatant unit, out Rect rect, ScenePresentationConfig presentation = null)
         {
             rect = default(Rect);
             if (camera == null || unit == null) return false;
-            Vector3 point = camera.WorldToScreenPoint(unit.VisualTop + Vector3.up * .3f);
+            Vector3 point = camera.WorldToScreenPoint(WorldBarLayout.Anchor(unit, presentation));
             if (point.z <= camera.nearClipPlane || point.z >= camera.farClipPlane) return false;
             // Same frame PracticeHud draws (HUD space, y down), converted to pixels (y up).
             Rect frame = WorldBarLayout.Frame(unit, Vector2.zero);
