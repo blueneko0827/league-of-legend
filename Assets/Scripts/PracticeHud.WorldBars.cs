@@ -42,6 +42,45 @@ namespace MidLane
         static readonly Color LevelSelf = new Color(.05f, .11f, .19f), LevelAlly = new Color(.05f, .11f, .19f), LevelEnemy = new Color(.24f, .04f, .04f);
         static readonly Color LevelBorder = new Color(.42f, .38f, .28f);
         GUIStyle barName, barLevel, dummyStats, dummyHit;
+        static readonly Color StackColor = new Color(.47f, .64f, .86f), StackMaxColor = new Color(.74f, .82f, .13f);
+        static Texture2D stackSegment, stackDot;
+
+        // Built once: a parallelogram with a dark outline (tinted per state) and an empty-slot dot.
+        static Texture2D StackPip(bool filled)
+        {
+            if (filled && stackSegment != null) return stackSegment;
+            if (!filled && stackDot != null) return stackDot;
+            int w = filled ? 64 : 16, h = 16;
+            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false)
+            { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.HideAndDontSave };
+            var pixels = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    Color32 c = new Color32(0, 0, 0, 0);
+                    float px = x + .5f, py = y + .5f;
+                    if (filled)
+                    {
+                        // Top edge shifted right (texture y grows upward).
+                        const float slant = 16, border = 3.5f;
+                        float left = slant * py / h, right = w - slant + slant * py / h;
+                        float inside = Mathf.Min(Mathf.Min(px - left, right - px), Mathf.Min(py, h - py));
+                        if (inside > 0)
+                        {
+                            byte v = (byte)(255 * (.82f + .18f * py / h));
+                            c = inside < border ? new Color32(8, 10, 12, 255) : new Color32(v, v, v, 255);
+                        }
+                    }
+                    else
+                    {
+                        float r = Mathf.Sqrt((px - w / 2f) * (px - w / 2f) + (py - h / 2f) * (py - h / 2f));
+                        if (r < 7.5f) c = r < 5 ? new Color32(28, 30, 33, 235) : new Color32(92, 96, 100, 235);
+                    }
+                    pixels[y * w + x] = c;
+                }
+            texture.SetPixels32(pixels); texture.Apply(false, true);
+            return filled ? (stackSegment = texture) : (stackDot = texture);
+        }
 
         void BarStyles()
         {
@@ -93,14 +132,24 @@ namespace MidLane
             float fraction = unit.UnlimitedMana ? 1 : unit.MaxResource > 0 ? unit.Resource / unit.MaxResource : 0;
             if (fraction > 0) Box(new Rect(resource.x, resource.y, resource.width * Mathf.Clamp01(fraction), resource.height), ManaColor);
 
-            // Irelia's passive: four small pips under her own bar, as in the client.
+            // Irelia's passive under her own bar, as in the client: four slots, an empty slot is a
+            // small dark dot, a stack is a slanted segment (steel blue, lime at 4 stacks).
             if (own && unit.Blade != null)
+            {
+                float slot = (healthRect.width + 6) / 4;
+                Color stackColor = unit.Stacks >= 4 ? StackMaxColor : StackColor;
                 for (int i = 0; i < 4; i++)
                 {
-                    var pip = new Rect(healthRect.x + 9 + i * 21, frame.yMax + 3, 6, 6);
-                    Box(pip, BarInk);
-                    if (i < unit.Stacks) Box(new Rect(pip.x + 1, pip.y + 1, 4, 4), unit.Stacks >= 4 ? new Color(1, .83f, .3f) : new Color(.55f, .85f, .95f));
+                    float x = healthRect.x - 4 + i * slot;
+                    if (i < unit.Stacks)
+                    {
+                        Color previous = GUI.color; GUI.color = stackColor;
+                        GUI.DrawTexture(new Rect(x, frame.yMax + 2, slot - 3, 6), StackPip(true));
+                        GUI.color = previous;
+                    }
+                    else GUI.DrawTexture(new Rect(x + (slot - 3) / 2 - 2.5f, frame.yMax + 2.5f, 5, 5), StackPip(false));
                 }
+            }
 
             float below = frame.yMax + (own ? 11 : 3);
             if (unit.Sett != null)

@@ -27,6 +27,10 @@ namespace MidLane
         int observedBasic, observedQ, observedStacks, observedDeaths;
         Combatant lastQVictim;
         float lastQVictimAt = -100;
+        SkinnedMeshRenderer bladesRenderer;
+        MaterialPropertyBlock bladesBlock;
+        bool bladesMaxed;
+        static readonly int BaseMap = Shader.PropertyToID("_BaseMap"), MainTex = Shader.PropertyToID("_MainTex");
 
         struct Pending { public float at; public string system; public string bone; public float rate; }
 
@@ -143,6 +147,7 @@ namespace MidLane
                 }
             }
             if (stacks < 4 && buff != null) { buff.Stop(); buff = null; }
+            SetBladesMaxed(stacks == 4);
             observedStacks = stacks;
             for (int i = 0; i < stackGlows.Length; i++)
             {
@@ -239,6 +244,25 @@ namespace MidLane
             };
         }
 
+        // The official blades material (Irelia_Blades_Passive_inst) switches its diffuse to the
+        // cream/bronze texture while the IreliaPassiveStacks buff is at 4, which makes the fanned
+        // floating blades stand out. A property block keeps the shared Material2 (E/R blades) intact.
+        void SetBladesMaxed(bool maxed)
+        {
+            if (maxed == bladesMaxed) return;
+            if (bladesRenderer == null && model != null)
+                foreach (SkinnedMeshRenderer renderer in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                    if (renderer.name == "AnimatedBlades") { bladesRenderer = renderer; break; }
+            Texture2D texture = maxed ? Resources.Load<Texture2D>(IreliaGlbAssets.Root + "BladesPassive4") : null;
+            if (bladesRenderer == null || (maxed && texture == null)) return;
+            bladesMaxed = maxed;
+            if (bladesBlock == null) bladesBlock = new MaterialPropertyBlock();
+            bladesRenderer.GetPropertyBlock(bladesBlock);
+            if (maxed) { bladesBlock.SetTexture(BaseMap, texture); bladesBlock.SetTexture(MainTex, texture); }
+            else bladesBlock.Clear();
+            bladesRenderer.SetPropertyBlock(bladesBlock);
+        }
+
         Quaternion Facing()
         {
             Transform source = model != null ? model : actor.transform;
@@ -262,6 +286,7 @@ namespace MidLane
         void StopPersistent()
         {
             for (int i = 0; i < stackGlows.Length; i++) { if (stackGlows[i] != null) stackGlows[i].Stop(); stackGlows[i] = null; stackGlowStyle[i] = 0; }
+            SetBladesMaxed(false);
             if (buff != null) buff.Stop();
             buff = null;
             if (dash != null) dash.Instance.StopBound();

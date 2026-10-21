@@ -44,6 +44,11 @@ Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos).
     la silueta de Irelia y aura); golpes potenciados `P_Hit_02/04` en el pecho del objetivo
     junto con el impacto del ataque, y barridos `P_Far_swipe_01/02` superpuestos;
     `P_Hit_4stack_left` cuando la Q completa las cargas.
+  - Cuchillas flotantes con 4 cargas: el material oficial de las cuchillas
+    (`Irelia_Blades_Passive_inst`) cambia su textura por la versión crema/bronce
+    (`irelia_base_blades_passive_4_texture`) mientras `IreliaPassiveStacks` vale 4; ahora se
+    aplica igual (`BladesPassive4.png`, exportada por `Tools/Import-IreliaVfx.py`, con un
+    MaterialPropertyBlock para no tocar `Material2`, que comparten las cuchillas de E/R).
   - Q: `Q_Dash` (borde de avance, estela, onda de choque y silueta brillante), `Q_tar` en el
     objetivo, `Q_heal` en Irelia, `Q_Proc` cuando la Q se reinicia (marca o muerte) y la
     marca oficial `Q_Mark_SelfOnly` alrededor del torso del objetivo, que reemplaza el
@@ -66,6 +71,8 @@ Hito 2.1 · Ataque básico, pasiva y Q (efectos, animaciones y sonidos).
   y `PMax_1..5` (activación a 4 cargas). Manifiesto:
   `Assets/SourceAudio/IreliaOfficial/PassiveSources.json`. Los clips existentes no se
   modificaron.
+  - Cargas bajo la barra de Irelia: como en LoL, cuatro casillas; vacía = punto oscuro,
+    carga = segmento inclinado (azul acero con 1–3 cargas, lima con 4).
   - Icono de cargas de la pasiva: ahora como el ícono de buff del cliente de LoL (ícono
     oficial de la pasiva, marco fino, número de cargas abajo a la derecha y barrido horario
     que oscurece el ícono a medida que vence la duración; se detiene mientras se carga la W).

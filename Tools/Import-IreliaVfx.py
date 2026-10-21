@@ -476,6 +476,17 @@ for name, info in sorted(textures.items()):
                                 'sha256': hashlib.sha256(info['source'].read_bytes()).hexdigest()})
 for name, mesh in sorted(meshes.items()):
     library['meshes'].append(dict(name=name, **mesh))
+# The blades' material switches its diffuse to this texture at 4 passive stacks
+# (Irelia_Blades_Passive_inst: Diffuse_Texture driven by the IreliaPassiveStacks buff counter).
+# Same import settings as the regular blades texture (Models/IreliaOfficial/Texture1.png).
+blades_source = files.get('irelia_base_blades_passive_4_texture.tex')
+if blades_source:
+    target = ROOT / 'Assets/Resources/Models/IreliaOfficial/BladesPassive4.png'
+    decode_tex(blades_source.read_bytes()).save(target)
+    blades_meta = (ROOT / 'Assets/Resources/Models/IreliaOfficial/Texture1.png.meta').read_text(encoding='utf-8-sig')
+    write_meta(target, re.sub(r'guid: \w+', 'guid: ' + guid('BladesPassive4'), blades_meta, count=1))
+else:
+    notes.append('Not in the supplied files: irelia_base_blades_passive_4_texture.tex (4-stack blades keep their texture).')
 target = OUTPUT / 'IreliaVfx.json'
 target.write_text(json.dumps(library, separators=(',', ':')) + '\n', encoding='utf-8')
 write_meta(target, f'fileFormatVersion: 2\nguid: {guid("IreliaVfx.json")}\nTextScriptImporter:\n  externalObjects: {{}}\n'
