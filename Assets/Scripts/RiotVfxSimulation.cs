@@ -81,7 +81,7 @@ namespace MidLane
         {
             public RiotVfxEmitterData data;
             public float accumulator;
-            public bool emittedSingle, stopped;
+            public bool emittedSingle, stopped, started;
             public readonly List<Particle> particles = new List<Particle>();
             public readonly List<TrailPoint> trail = new List<TrailPoint>();
             public bool Bound { get { return data.bindWeight >= .5f; } }
@@ -164,7 +164,11 @@ namespace MidLane
                     {
                         // Only the emitter's active window produces particles.
                         float start = Mathf.Max(0, before), end = d.lifetime < 0 ? local : Mathf.Min(local, d.lifetime);
-                        e.accumulator += Mathf.Max(0, end - start) * Mathf.Max(0, RiotVfxEval.Float(d.rate, emitterTime, 0));
+                        float rate = Mathf.Max(0, RiotVfxEval.Float(d.rate, emitterTime, 0));
+                        // The first particle is born when the emitter starts (W_DR's shield is there at
+                        // once in LoL), not one emission interval later.
+                        if (!e.started) { e.started = true; if (rate > 0) e.accumulator += 1; }
+                        e.accumulator += Mathf.Max(0, end - start) * rate;
                         int count = Mathf.Min(64, Mathf.FloorToInt(e.accumulator));
                         e.accumulator -= count;
                         for (int i = 0; i < count; i++)

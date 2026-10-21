@@ -173,7 +173,7 @@ namespace MidLane
             if (charging && !observedCharging)
             {
                 if (wShield != null) wShield.Stop();
-                wShield = RiotVfxPlayer.Play(world, "Irelia_Base_W_DR", BonePose("BUFFBONE_GLB_GROUND_LOC", true));
+                wShield = RiotVfxPlayer.Play(world, "Irelia_Base_W_DR", BonePose("BUFFBONE_GLB_GROUND_LOC", true), 1, null, SelfBoundSize());
                 wFullShown = false;
             }
             if (charging)
@@ -182,7 +182,7 @@ namespace MidLane
                 if (!wFullShown && wChargeFraction >= 1)
                 {
                     wFullShown = true;
-                    wFull = RiotVfxPlayer.Play(world, "Irelia_Base_W_FullPower", BonePose("BUFFBONE_GLB_GROUND_LOC", true));
+                    wFull = RiotVfxPlayer.Play(world, "Irelia_Base_W_FullPower", BonePose("BUFFBONE_GLB_GROUND_LOC", true), 1, null, SelfBoundSize());
                 }
             }
             else if (observedCharging)
@@ -198,6 +198,10 @@ namespace MidLane
             observedCharging = charging;
         }
 
+        // FlexShape bound size for effects on Irelia herself: the W shield bubble (flexScale) is about
+        // as tall as Irelia in LoL, which a bound of 3/4 of her height in LoL units reproduces.
+        float SelfBoundSize() { return .75f * actor.VisualHeight / RiotVfxPlayer.UnitScale(world); }
+
         void WLanded(Combatant target)
         {
             if (!Enabled || target == null) return;
@@ -210,7 +214,7 @@ namespace MidLane
         void SoundPlayed(IreliaSoundCue cue, AudioClip clip)
         {
             if (cue != IreliaSoundCue.WBlock || !Enabled || actor == null || !actor.Alive) return;
-            RiotVfxPlayer.Play(world, "Irelia_Base_W_Block", BonePose("BUFFBONE_GLB_GROUND_LOC", true));
+            RiotVfxPlayer.Play(world, "Irelia_Base_W_Block", BonePose("BUFFBONE_GLB_GROUND_LOC", true), 1, null, SelfBoundSize());
         }
 
         // E (Flawless Duet): cast swirl on Irelia (animation event of spell3 / spell3_b), each blade's

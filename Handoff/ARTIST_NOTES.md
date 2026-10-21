@@ -40,7 +40,16 @@
     escudo); la paleta de color (corte dorado de la W) se lee sin mipmaps, para que el color no
     se mezcle con las filas vecinas al alejar la cámara; la franja `E_Beam/Dark_beam` (textura
     casi negra y opaca en modo aditivo, que solo dejaba ver sus dos bordes) se dibuja como franja
-    oscura.
+    oscura; cada emisor continuo suelta su primera partícula al empezar (antes, una fracción de
+    segundo después: el escudo de la W tardaba en aparecer).
+  - **Escudo de la W:** sus esferas (`W_DR/Ripple`, varias capas a la vez, de distinto tamaño)
+    usan el tamaño de Irelia (`FlexShape`), así que ahora la rodean como en LoL; antes eran
+    del tamaño de un objeto genérico y quedaban casi ocultas dentro del modelo.
+  - **Indicador de la W** (`IreliaWIndicator.cs`, nuevo): círculo alrededor de Irelia (brillo
+    verde azulado con borde blanco), las dos líneas finas del área de golpe, la flecha brillante
+    con la mira y la punta en forma de hoja, con las proporciones medidas en el juego. Las
+    texturas de indicadores de LoL no vienen en los archivos del personaje, así que se dibujan
+    con `Tools/Make-IreliaWIndicator.py`. La R mantiene su indicador.
   - Con `"official_vfx": true` ya no se muestran los marcadores anteriores: el disco y las seis
     cuchillas que giraban durante la carga de la W, la barra del corte de la W, y las cuchillas
     de malla y el haz propio de la E. Con `false` vuelven tal como estaban.
@@ -53,15 +62,19 @@
   cambian.
 
 - Recursos o paquetes nuevos y sus requisitos: texturas y mallas de W/E en
-  `Assets/Resources/Vfx/Irelia/`, audios en `Assets/Resources/Audio/Irelia/`. Sin scripts
-  nuevos; sin paquetes nuevos.
+  `Assets/Resources/Vfx/Irelia/`, audios en `Assets/Resources/Audio/Irelia/`, texturas del
+  indicador de la W en `Assets/Resources/Models/IreliaOfficial/WAim/`, shader
+  `Assets/Resources/Shaders/IreliaWAim.shader` y script `IreliaWIndicator.cs`. Sin paquetes
+  nuevos.
 
-- Archivos de autoría incluidos: ninguno externo; todo sale de los archivos originales con
-  `Tools/Import-IreliaVfx.py` y `Tools/Import-IreliaEAudio.py`.
+- Archivos de autoría incluidos: `Tools/Make-IreliaWIndicator.py` (dibuja el indicador de la
+  W); el resto sale de los archivos originales con `Tools/Import-IreliaVfx.py` y
+  `Tools/Import-IreliaEAudio.py`.
 
 - Cambios que requieren fusionar código o afectan contratos con la simulación:
   - `BladeDuelist.cs`: eventos de solo lectura `WLanded(objetivo)` y `ELanded(objetivo,
-    aturdido)`; el disco de carga solo se crea sin `official_vfx`.
+    aturdido)`; el disco de carga solo se crea sin `official_vfx`; el indicador de la W es
+    `IreliaWIndicator` (misma forma de uso que `IreliaDirectionIndicator`, que sigue en la R).
   - `BladeWave.cs`: avisa cada impacto de la W (no de la R); oculta su barra con `official_vfx`.
   - `BladeLink.cs`: expone su línea de tiempo (orígenes, lanzamientos, convergencia, impacto)
     para los efectos; crea las cuchillas de malla y su haz solo sin `official_vfx`; reproduce el

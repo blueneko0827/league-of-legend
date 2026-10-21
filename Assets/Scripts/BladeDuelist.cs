@@ -80,7 +80,7 @@ namespace MidLane
         float eAnimationAt = float.NegativeInfinity, rAnimationAt = float.NegativeInfinity;
         bool attackAfterDash;
         GameObject chargeVisual;
-        IreliaDirectionIndicator wIndicator;
+        IreliaWIndicator wIndicator;
         public GameObject WIndicator { get { return wIndicator!=null?wIndicator.gameObject:null; } }
         BladeLink pendingLink;
         int bufferedSlot = -1;
@@ -159,7 +159,7 @@ namespace MidLane
                 if (!world.Presentation.official_vfx)
                     chargeVisual = world.Shape("Charging guard", PrimitiveType.Cylinder, transform, Vector3.up * 0.1f,
                         new Vector3(2.2f, 0.035f, 2.2f), self.Color * 0.6f);
-                if (wIndicator==null) wIndicator=IreliaDirectionIndicator.Create(transform,"W · charge direction");
+                if (wIndicator==null) wIndicator=IreliaWIndicator.Create(transform,"W · charge direction");
                 PresentWIndicator();
             }
             else if (slot == 2)
