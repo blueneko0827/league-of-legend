@@ -5,9 +5,42 @@ namespace MidLane
     // Short-lived routes around groups of bodies; local steering still validates every step.
     public sealed class CrowdPathfinding
     {
-        sealed class Route { public Vector3 Goal; public readonly List<Vector3> Points=new List<Vector3>(); }
+        sealed class Route { public Vector3 Goal, Start; public float RetryAt; public readonly List<Vector3> Points=new List<Vector3>(); }
         readonly Dictionary<Combatant,Route> routes=new Dictionary<Combatant,Route>();
         public void Clear() { routes.Clear(); }
+        public void Forget(Combatant actor) { routes.Remove(actor); }
+        public static List<Vector3> PreviewRoute(LaneWorld world, Combatant actor, Vector3 start, Vector3 goal)
+        {
+            if (Free(world, actor, start, goal)) return new List<Vector3> { goal };
+            // Farm/risk queries must not run a grid search for every possible destination.
+            // Preview both sides of the blocking group; only live navigation uses A*.
+            Vector3 forward = (goal - start).normalized, side = Vector3.Cross(forward, Vector3.up);
+            float near = float.PositiveInfinity, far = 0, left = 0, right = 0;
+            foreach (var unit in world.Units)
+            {
+                if (unit == null || unit == actor || !unit.Alive || !unit.gameObject.activeInHierarchy ||
+                    unit.Blade != null && unit.Blade.IsDashing || unit.Sett != null && unit.Sett.Casting) continue;
+                float radius = actor.Radius + unit.Radius + .12f;
+                Vector3 offset = unit.Position - start;
+                float along = Vector3.Dot(offset, forward), lateral = Vector3.Dot(offset, side);
+                if (along < -radius || along > Vector3.Distance(start, goal) + radius || Mathf.Abs(lateral) > radius + 2) continue;
+                near = Mathf.Min(near, along - radius); far = Mathf.Max(far, along + radius);
+                left = Mathf.Min(left, lateral - radius); right = Mathf.Max(right, lateral + radius);
+            }
+            var best = new List<Vector3>(); float shortest = float.PositiveInfinity;
+            if (float.IsPositiveInfinity(near)) return best;
+            for (int direction = 0; direction < 2; direction++)
+            {
+                float lateral = direction == 0 ? left : right;
+                Vector3 entry = world.Clamp(start + forward * Mathf.Max(0, near) + side * lateral, actor.Radius);
+                Vector3 exit = world.Clamp(start + forward * far + side * lateral, actor.Radius);
+                if (!Free(world, actor, start, entry) || !Free(world, actor, entry, exit) || !Free(world, actor, exit, goal)) continue;
+                float length = Vector3.Distance(start, entry) + Vector3.Distance(entry, exit) + Vector3.Distance(exit, goal);
+                if (length >= shortest) continue;
+                shortest = length; best.Clear(); best.Add(entry); best.Add(exit); best.Add(goal);
+            }
+            return best;
+        }
         public Vector3 Waypoint(LaneWorld world,Combatant actor,Vector3 goal)
         {
             if(Free(world,actor,actor.Position,goal)) { routes.Remove(actor); return goal; }
@@ -18,6 +51,9 @@ namespace MidLane
                 for(int i=route.Points.Count-1;i>=0;i--)
                     if((route.Points[i]-actor.Position).sqrMagnitude>.04f*.04f && Free(world,actor,actor.Position,route.Points[i]))
                         return route.Points[i];
+                // An enclosed actor must not rebuild the same failed grid every render frame.
+                // Direct paths and usable cached legs are checked above, so openings react immediately.
+                if (Time.time < route.RetryAt && (actor.Position - route.Start).sqrMagnitude < .25f * .25f) return goal;
             }
             route=Build(world,actor,goal); routes[actor]=route;
             for(int i=route.Points.Count-1;i>=0;i--)
@@ -73,7 +109,7 @@ namespace MidLane
         { foreach(var o in obstacles) if(!Free(start,end,o.Point,o.Radius)) return false; return true; }
         static Route Build(LaneWorld world,Combatant actor,Vector3 goal)
         {
-            var route=new Route { Goal=goal }; Vector3 start=actor.Position;
+            var route=new Route { Goal=goal, Start=actor.Position, RetryAt=Time.time+.2f }; Vector3 start=actor.Position;
             float minX=Mathf.Max(-TowerToTowerRules.HalfLength+actor.Radius,Mathf.Min(start.x,goal.x)-3);
             float maxX=Mathf.Min(TowerToTowerRules.HalfLength-actor.Radius,Mathf.Max(start.x,goal.x)+3);
             float minZ=-world.Settings.halfWidth+actor.Radius,maxZ=world.Settings.halfWidth-actor.Radius;

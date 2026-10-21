@@ -29,6 +29,8 @@ namespace MidLane
         {
             Vector3 point = FarmPoint(minion);
             if (TowerRange(tower, point) && !CanSiege(tower, player)) return false;
+            if (!MinionFarmSafe(point)) return false;
+            if (!SafeLaneApproach(point)) return false;
             if (!player.Targetable || Vector3.Distance(point, player.Position) > 7) return true;
             float health = self.Health / self.MaxHealth, enemyHealth = player.Health / player.MaxHealth;
             return health >= 0.42f && !(enemyHealth > health + 0.18f && health < 0.7f) &&

@@ -35,7 +35,10 @@ namespace MidLane
             return SafeMelLanePoint(point);
         }
         Vector3 MelFarmPoint(Combatant minion)
-        { return SafeMelLanePoint(minion.Position+MelHome*(self.AttackReach(minion)-.2f)); }
+        {
+            if (Vector3.Distance(self.Position, minion.Position) <= self.AttackReach(minion) - .05f) return self.Position;
+            return SafeMelLanePoint(minion.Position+MelHome*(self.AttackReach(minion)-.2f));
+        }
 
         void UpdateMelLaneAnchor()
         {
@@ -73,6 +76,8 @@ namespace MidLane
         bool MelFarmSafe(Combatant player,Vector3 point)
         {
             if (TowerRange(EnemyTower(),point)) return false;
+            if (!MinionFarmSafe(point)) return false;
+            if (!SafeLaneApproach(point)) return false;
             if (!player.Targetable || Vector3.Distance(player.Position,point) > 7) return true;
             float hp = self.Health/self.MaxHealth, enemyHp = player.Health/player.MaxHealth;
             bool exposed = hp < .45f && enemyHp > hp+.2f || ThreatDamage(player,point,1.5f) > (self.Health+self.TotalShield)*.7f;
@@ -149,14 +154,14 @@ namespace MidLane
             }
             if (melFarm != null)
             {
-                if (melFarm != previous) ready = Mathf.Max(ready,Time.time+MelDecisionRules.FarmReaction(world.Settings.difficulty));
+                if (melFarm != previous) ready = Mathf.Max(ready,Time.time+MelDecisionRules.FarmReaction(world.Settings.difficulty)+HumanFarmDelay);
                 melFarmFireAt = ready; melPreparedImpact = impact;
             }
         }
         void BeginMelLaneTrade()
         {
             if (melLaneTradeUntil > Time.time) return;
-            melLaneTradeUntil = Time.time+MelDecisionRules.TradeDuration; melTradeOrigin = melLaneAnchor;
+            melLaneTradeUntil = Time.time+MelDecisionRules.TradeDuration*HumanAggression; melTradeOrigin = melLaneAnchor;
             melReturning = false;
         }
         void EndMelLaneTrade()
@@ -181,6 +186,7 @@ namespace MidLane
             bool urgent = melPrepared != null && melPreparedImpact-Time.time < 1.1f;
             if (!kill && TryMelFarmVolley(player)) return;
             if (!kill && TryMelLaneLastHit(player)) return;
+            if (!kill && (TryLaneWaveClear(player) || TryLaneWavePosition(player))) return;
             if (!player.Targetable)
             {
                 melCombo = MelCombo.None; melLaneTradeUntil = 0;
@@ -192,7 +198,7 @@ namespace MidLane
             float distance = Vector3.Distance(self.Position,player.Position);
             bool closeThreat = distance < 3 && self.WasDamagedBy(player,1);
             bool inLeash = Vector3.Distance(player.Position,melLaneAnchor) <= MelDecisionRules.LaneLeash+self.AttackReach(player);
-            bool canTrade = !urgent && !melReturning && Time.time >= melTradeRest && inLeash &&
+            bool canTrade = WavePlan != LaneWavePlan.Freeze && !urgent && !melReturning && Time.time >= melTradeRest && inLeash &&
                 MelFarmSafe(player,self.Position) && (self.Resource > self.MaxResource*.25f || !self.Ready(0) && !self.Ready(2));
             if (melCombo != MelCombo.None && melLaneTradeUntil == 0) BeginMelLaneTrade();
             if (!kill && (melLaneTradeUntil > 0 && Time.time >= melLaneTradeUntil ||
@@ -205,7 +211,7 @@ namespace MidLane
             if (melCombo != MelCombo.None && ContinueMelCombo(player)) return;
             if ((canTrade || kill || closeThreat) && Time.time >= melTradeRest)
             {
-                if (distance < 3 && self.Health > self.MaxHealth*.6f && self.Cast(0,MelAim(player,MelRules.QSpeed)))
+                if (distance < 3 && self.Health > self.MaxHealth*.6f && HumanCombatCast(0,MelAim(player,MelRules.QSpeed)))
                 { BeginMelLaneTrade(); melCombo = MelCombo.CloseSnare; Plan(LaneTactic.Trade,"Mel: intercambio corto junto a la oleada"); return; }
                 bool exposed = player.IsWindingAttack || player.Blade != null && player.Blade.IsDashing;
                 if (world.Settings.difficulty == Difficulty.Expert && player.Blade != null && player.Blade.IsDashing && self.Ready(2))
@@ -216,7 +222,7 @@ namespace MidLane
                 if (distance <= MelRules.ERange && (distance <= 6 || exposed && Time.time >= melFishAt && RollMelFishing()))
                 {
                     if (StartMelSnare(MelAim(player,MelRules.ESpeed))) return;
-                    if (distance <= MelRules.QRange && self.Cast(0,MelAim(player,MelRules.QSpeed)))
+                    if (distance <= MelRules.QRange && HumanCombatCast(0,MelAim(player,MelRules.QSpeed)))
                     { BeginMelLaneTrade(); EndMelLaneTrade(); Plan(LaneTactic.Trade,"Mel: Q de desgaste y volver a farmear"); return; }
                 }
                 if (distance <= self.AttackReach(player) && self.AttackReady)
@@ -259,6 +265,7 @@ namespace MidLane
                 float hp = PredictMelMinionHealth(unit,arrival), q = unit.PreviewIncomingDamage(MelRules.QDamage(self.Progress.Rank(0),self.AbilityPower,true),self,DamageType.Magic);
                 if (hp <= 0 || hp > q) continue;
                 bool safeAuto = MelFarmSafe(player,MelFarmPoint(unit));
+                if (WavePlan == LaneWavePlan.Freeze && safeAuto && unit.MinionType != MinionType.Cannon) continue;
                 float basicAt = MelAttackArrival(unit,MelFarmPoint(unit));
                 bool autoCanSave = safeAuto && basicAt <= 1.1f && PredictMelMinionHealth(unit,basicAt) > 0;
                 int cluster = 0;

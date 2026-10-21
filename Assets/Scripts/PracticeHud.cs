@@ -32,14 +32,14 @@ namespace MidLane
             for (int slot = 0; slot < 4; slot++) if (AbilityRect(slot).Contains(point)) return slot;
             return -1;
         }
-        Rect DiagnosticsRect { get { return new Rect(20, panelExpanded ? 130 : 240, 350, 180); } }
+        Rect DiagnosticsRect { get { return new Rect(20, panelExpanded ? 130 : 240, 350, 228); } }
         Rect StatsRect { get { return new Rect(20, diagnostics ? DiagnosticsRect.yMax + 10 : panelExpanded ? 185 : 240, 350, 214); } }
         GUIStyle title, label, small, button, passiveStackNumber, gritLabel;
         static readonly Color Panel = new Color(0.035f, 0.055f, 0.085f, 0.96f);
         public void Initialize(LaneWorld lane) { world = lane; active = this; }
         public void TogglePanel() { if (LatencyFieldFocused) EndLatencyEdit(); panelExpanded = !panelExpanded; }
         public void CollapsePanel() { if (LatencyFieldFocused) EndLatencyEdit(); panelExpanded = false; }
-        public void ResetShieldBars() { shieldBarPeaks.Clear(); }
+        public void ResetShieldBars() { shieldBarPeaks.Clear(); ResetPracticeDummyModelHold(); }
         public float ShieldBarFraction(Combatant unit)
         {
             if (unit == null) return 0;
@@ -71,6 +71,7 @@ namespace MidLane
             if (active.diagnostics && active.world.Opponent != null && active.DiagnosticsRect.Contains(point)) return true;
             return active.showStats && !ShopHud.Open && active.StatsRect.Contains(point);
         }
+        GUIStyle headerStyle, clockStyle, centeredLabel, centeredSmall, tooltipStyle, noticeStyle, purchaseStyle;
         void Styles()
         {
             if (title != null) return;
@@ -80,9 +81,17 @@ namespace MidLane
             button = new GUIStyle(GUI.skin.button) { fontSize = 14 };
             passiveStackNumber = new GUIStyle(small) { fontSize = 17, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
             gritLabel = new GUIStyle(small) { fontSize = 10, alignment = TextAnchor.MiddleCenter };
+            headerStyle = new GUIStyle(title) { fontSize = 21, alignment = TextAnchor.MiddleLeft };
+            clockStyle = new GUIStyle(label) { fontSize = 20, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            centeredLabel = new GUIStyle(label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            centeredSmall = new GUIStyle(small) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+            tooltipStyle = new GUIStyle(small) { fontSize = 13, wordWrap = true };
+            noticeStyle = new GUIStyle(label) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+            purchaseStyle = new GUIStyle(small) { fontSize = 11, wordWrap = true };
         }
         void Update()
         {
+            UpdatePracticeMarkInput();
             if (LatencyFieldFocused) return;
             if (Input.GetKeyDown(KeyCode.Tab)) diagnostics = !diagnostics;
             if (Input.GetKeyDown(KeyCode.C) && !ShopHud.Open) showStats = !showStats;
@@ -101,9 +110,9 @@ namespace MidLane
             FlushLatencyFocus();
             Box(panelExpanded ? new Rect(0, 0, 1280, 115) : CompactHeader, Panel);
             if (GUI.Button(CompactHeader, new GUIContent("MidLane / Práctica", "Mostrar u ocultar el panel de práctica"),
-                new GUIStyle(title) { fontSize = 21, alignment = TextAnchor.MiddleLeft })) TogglePanel();
+                headerStyle)) TogglePanel();
             Box(MatchClock, Panel);
-            GUI.Label(MatchClock, ClockText, new GUIStyle(label) { fontSize = 20, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold });
+            GUI.Label(MatchClock, ClockText, clockStyle);
             if (panelExpanded)
             {
                 GUI.Label(new Rect(20, 48, 370, 26), world.PracticeModeActive ? "Irelia · nivel " + world.Player.Level + " · práctica con dummies" : "Irelia " + world.Player.Level + " · equipo " + (world.Player.Team == Team.Blue ? "azul" : "rojo") + " vs. " + world.Opponent.DisplayName + " " + world.Opponent.Level, small);
@@ -120,6 +129,7 @@ namespace MidLane
             if (!ShopHud.Open) DrawWorldBars();
             DrawNotices();
             DrawHoveredTarget();
+            DrawPracticeDummyModelHold();
             DrawChampionHud();
             bool previousEnabled = GUI.enabled;
             GUI.enabled = previousEnabled && !world.Paused;
@@ -160,7 +170,12 @@ namespace MidLane
                 GUI.Label(new Rect(30, y + 86, 340, 24), "Rangos rival: Q " + enemySkills.Rank(0) + " · W " + enemySkills.Rank(1) + " · E " + enemySkills.Rank(2) + " · R " + enemySkills.Rank(3), small);
                 GUI.Label(new Rect(30, y + 112, 340, 24), world.PvpModeActive ? "PvP: " + world.PvpDeaths + " bajas · nivel " + world.PvpLevel + "/18" :
                     "Progreso: " + (world.NormalplayModeActive ? "nivel y oro por tabla · EXP normal" : world.Settings.keepOpponentProgress ? "XP y oro generado parejos" : "natural"), small);
-                GUI.Label(new Rect(30, y + 140, 325, 32), brain.PurchaseDecision, new GUIStyle(small) { fontSize = 11, wordWrap = true });
+                GUI.Label(new Rect(30, y + 140, 325, 32), brain.PurchaseDecision, purchaseStyle);
+                if (brain.Human != null)
+                {
+                    GUI.Label(new Rect(30, y + 176, 325, 22), "Humano · " + brain.Human.Profile.Name + " · Foco: " + brain.Human.Focus, small);
+                    GUI.Label(new Rect(30, y + 200, 325, 22), "Tilt " + (brain.Human.Tilt*100).ToString("0") + "% · Confianza " + (brain.Human.Confidence*100).ToString("0") + "%", small);
+                }
             }
             if (showStats && !ShopHud.Open)
             {
@@ -213,7 +228,10 @@ namespace MidLane
         void DrawAbilityTooltip(int slot)
         {
             string text = IreliaAbilityHelp.Describe(world.Player, slot);
-            var style = new GUIStyle(small) { fontSize = 13, wordWrap = true };
+            if (slot == 2 && world.PracticeModeActive)
+                text += world.PermanentPracticeMarks ? "\n\nPráctica: marcas infinitas y E sin enfriamiento. Mantené el clic izquierdo aquí durante 2 s para desactivar ambos efectos." :
+                    "\n\nPráctica: mantené el clic izquierdo sobre este icono durante 2 s para activar marcas infinitas en todos los dummies y E sin enfriamiento.";
+            var style = tooltipStyle;
             float height = Mathf.Max(208, style.CalcHeight(new GUIContent(text), 372) + 22);
             Rect rect = new Rect(Mathf.Clamp(AbilityRect(slot).x - 75, 20, 860), ChampionHudLayout.Origin.y - height - 8, 400, height);
             Box(rect, Panel);
@@ -231,7 +249,7 @@ namespace MidLane
                 Rect rect = new Rect(screen.x * 1280 / Screen.width - 120, (Screen.height - screen.y) * 720 / Screen.height - 48 - i * 36, 240, 36);
                 if (rect.y < 0 || rect.yMax > 720) continue;
                 float alpha = Mathf.Clamp01(2.5f - age);
-                var style = new GUIStyle(label) { fontSize = 22, fontStyle = FontStyle.Bold, alignment = TextAnchor.MiddleCenter };
+                var style = noticeStyle;
                 style.normal.textColor = new Color(0, 0, 0, alpha);
                 GUI.Label(new Rect(rect.x + 2, rect.y + 2, rect.width, rect.height), notice.Text, style);
                 style.normal.textColor = new Color(notice.Color.r, notice.Color.g, notice.Color.b, alpha);
@@ -243,10 +261,11 @@ namespace MidLane
             Combatant player = world.Player, enemy = world.Opponent;
             Box(CompactScore, Panel);
             GUI.Label(CompactScore, "K / D / A   " + player.Kills + " / " + player.Deaths + " / " + player.Assists,
-                new GUIStyle(label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold });
+                centeredLabel);
             Box(CompactOpponent, Panel);
             GUI.Label(PvpModeButton, "Práctica · edición visual", small);
             DrawPracticeOptions();
+            if (InspectedTarget != null) { DrawInspectedVitals(); return; }
             if (enemy == null)
             {
                 GUI.Label(new Rect(20, 49, 224, 19), "Práctica · " + world.PracticeDummies.Count + " dummies · 0 AR / RM", small);

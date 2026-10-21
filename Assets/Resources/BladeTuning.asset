@@ -70,7 +70,7 @@ MonoBehaviour:
   eSecondCastTime: 0.125
   eRecastWindow: 3.5
   eConvergeTime: 0.25
-  eHalfWidth: 0.6
+  eHalfWidth: 0.7
   eStun: 0.75
   markDuration: 5
   rRange: 10

@@ -97,6 +97,7 @@ namespace MidLane
         public float AbilityCost(int slot) { return Tuning.Cost(slot, Mathf.Max(1, Rank(slot))); }
         public float AbilityCooldown(int slot)
         {
+            if (slot == 2 && self == world.Player && world.PermanentPracticeMarks) return 0;
             float[] values = slot == 0 ? Tuning.qCooldown : slot == 1 ? Tuning.wCooldown : slot == 2 ? Tuning.eCooldown : Tuning.rCooldown;
             float raw = values[Mathf.Clamp(Rank(slot) - 1, 0, values.Length - 1)];
             if (slot == 0) raw -= 0.5f * Rank(3);

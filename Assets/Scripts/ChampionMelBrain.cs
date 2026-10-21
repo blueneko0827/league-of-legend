@@ -12,7 +12,7 @@ namespace MidLane
         float melMacroAt, melActionAt, melSnareDeadline, melTradeRest, melOrbitSide = 1;
         bool melMissFollowup, melFlashOpportunity, melSnareHit;
         int melPlayerLife = -1;
-        public float MelWReaction { get { return MelDecisionRules.WReaction(world.Settings.difficulty); } }
+        public float MelWReaction { get { return HumanReaction(MelDecisionRules.WReaction(world.Settings.difficulty)); } }
 
         void ResetMelPlan()
         {
@@ -40,18 +40,16 @@ namespace MidLane
                 float dt = Time.time - lastSampleAt;
                 estimatedVelocity = dt > 0 ? Vector3.ClampMagnitude((player.Position - lastPlayerPosition) / dt, player.MoveSpeed) : Vector3.zero;
                 lastSampleAt = Time.time; lastPlayerPosition = player.Position;
-                if (world.PvpModeActive) recovering = false;
-                else if (MelDecisionRules.ShouldRecover(self.Health / self.MaxHealth, player.Health / player.MaxHealth,
-                    player.Targetable && player.Progress.Rank(0) > 0 && Time.time >= observedReady[0], false)) recovering = true;
-                if (recovering && self.Health >= self.MaxHealth * .85f && self.Resource >= self.MaxResource * .5f) recovering = false;
+                UpdateLaneWavePlan(player);
                 if (MelLaneMode) FindMelLaneFarm(player,tower); else FindMelFarm(tower);
             }
-            if (!self.CanAct || self.IsWindingAttack || Time.time < melActionAt) return;
+            if (!self.CanAct || Time.time < melActionAt) return;
+            if (TryLaneDefense(player)) { melActionAt = Time.time + .08f; return; }
+            if (self.IsWindingAttack) return;
             melActionAt = Time.time + .08f;
             if (TowerRange(tower, self.Position) && (world.PvpModeActive || TowerTargetsUs(tower) || !CanSiege(tower, player)))
             { melCombo = MelCombo.None; Plan(LaneTactic.Retreat, "Mel: salir del alcance de torre"); MoveOrHold(TowerExit(tower)); return; }
             if (TryMelUltimate(player, true)) return;
-            if (recovering) { RecoverMel(player); return; }
             if (MelLaneMode) { ThinkMelLane(player,tower); return; }
             if (melFarm != null && self.ValidEnemy(melFarm) && !TowerRange(tower, FarmPoint(melFarm)))
             {
@@ -76,7 +74,7 @@ namespace MidLane
             // Low-health retreat is spacing toward the tower, not an automatic trip to the fountain.
             if (self.Health < self.MaxHealth * .35f && world.Settings.difficulty != Difficulty.Expert && distance < 3)
             { Plan(LaneTactic.Retreat, "Mel: kitear hacia su torre"); MelKite(player, true); return; }
-            if (Time.time >= melTradeRest && distance < 3 && self.Health > self.MaxHealth * .6f && self.Ready(0) && self.Cast(0, MelAim(player, MelRules.QSpeed)))
+            if (Time.time >= melTradeRest && distance < 3 && self.Health > self.MaxHealth * .6f && self.Ready(0) && HumanCombatCast(0, MelAim(player, MelRules.QSpeed)))
             { melCombo = MelCombo.CloseSnare; Plan(LaneTactic.Trade, "Mel: Q → E → pasiva"); return; }
             if (world.Settings.difficulty == Difficulty.Expert && player.Blade != null && player.Blade.IsDashing && self.Ready(2))
             {
@@ -89,7 +87,7 @@ namespace MidLane
                 (distance <= 6 || exposed && Time.time >= melFishAt && RollMelFishing()))
             {
                 if (StartMelSnare(MelAim(player, MelRules.ESpeed))) return;
-                if (distance <= MelRules.QRange && self.Cast(0, MelAim(player, MelRules.QSpeed)))
+                if (distance <= MelRules.QRange && HumanCombatCast(0, MelAim(player, MelRules.QSpeed)))
                 { melTradeRest = Time.time + .8f; Plan(LaneTactic.Trade, "Mel: Q de desgaste"); return; }
             }
             if (distance <= self.AttackReach(player) && self.AttackReady && !TowerRange(tower, self.Position))
@@ -122,12 +120,12 @@ namespace MidLane
         }
         bool StartMelSnare(Vector3 aim)
         {
-            if (!self.Cast(2, aim)) return false;
+            if (!HumanCombatCast(2, aim)) return false;
             if (MelLaneMode) BeginMelLaneTrade();
             melSnare = self.Mel.LastSnare; melComboAim = aim; melSnareHit = false;
             melSnareDeadline = Time.time + MelRules.ECastTime + Mathf.Min(MelRules.ERange, Vector3.Distance(self.Position, aim) + world.Player.Radius + MelRules.ECoreRadius) / MelRules.ESpeed + .1f;
             // One roll per cast, not a fresh chance every frame after a miss.
-            melMissFollowup = Random.value < MelDecisionRules.MissInertia(world.Settings.difficulty);
+            melMissFollowup = !(Human != null && Human.SimplifyCombos) && Random.value < MelDecisionRules.MissInertia(world.Settings.difficulty);
             melCombo = MelCombo.WaitSnare; Plan(LaneTactic.Trade, "Mel: E → básico → Q"); return true;
         }
         bool ContinueMelCombo(Combatant player)
@@ -142,11 +140,11 @@ namespace MidLane
                 else { EndMelCombo(); MelKite(player, false); return true; }
             }
             if (melCombo == MelCombo.CloseSnare)
-            { if (distance <= MelRules.ERange) self.Cast(2, MelAim(player, MelRules.ESpeed)); melCombo = MelCombo.CloseBarrier; return true; }
+            { if (distance <= MelRules.ERange) HumanCombatCast(2, MelAim(player, MelRules.ESpeed)); melCombo = MelCombo.CloseBarrier; return true; }
             if (melCombo == MelCombo.CloseBarrier)
             {
                 // Expert doesn't waste its defensive W solely to generate passive missiles.
-                if (world.Settings.difficulty != Difficulty.Expert) self.Cast(1, self.Position);
+                if (world.Settings.difficulty != Difficulty.Expert) HumanCombatCast(1, self.Position);
                 melCombo = MelCombo.CloseAttack;
             }
             if (melCombo == MelCombo.Attack || melCombo == MelCombo.CloseAttack)
@@ -160,7 +158,7 @@ namespace MidLane
             if (melCombo == MelCombo.Volley)
             {
                 Vector3 aim = melSnareHit ? MelAim(player, MelRules.QSpeed) : melComboAim;
-                EndMelCombo(); if (self.Cast(0, aim)) return true;
+                EndMelCombo(); if (HumanCombatCast(0, aim)) return true;
             }
             if (melCombo == MelCombo.Eclipse) { EndMelCombo(); if (TryMelUltimate(player, false)) return true; }
             return false;
@@ -176,7 +174,7 @@ namespace MidLane
             float error = world.Settings.difficulty == Difficulty.Expert ? .2f : world.Settings.difficulty == Difficulty.Hard ? .55f : 1;
             float travel = (speed == MelRules.ESpeed ? MelRules.ECastTime : MelRules.QCastTime) + Vector3.Distance(self.Position, player.Position) / speed;
             Vector3 velocity = player.IsRooted || player.IsStunned ? Vector3.zero : estimatedVelocity;
-            return world.Clamp(player.Position + velocity * travel * lead + new Vector3(Random.Range(-error,error),0,Random.Range(-error,error)));
+            return world.Clamp(player.Position + velocity * (travel * lead * HumanPrediction) + HumanAimOffset(error));
         }
         bool TryMelUltimate(Combatant player, bool lethalOnly)
         {
@@ -186,15 +184,8 @@ namespace MidLane
             float execute = player.PreviewIncomingDamage(MelRules.ExecuteDamage(self.Progress.Rank(3), marks + 1, self.AbilityPower), self, DamageType.Magic);
             bool lethal = damage + execute >= player.Health + player.TotalShield + player.HealthRegeneration * MelRules.RCastTime;
             if (!lethal && (lethalOnly || player.Health > player.MaxHealth * .4f || !player.IsRooted && !player.IsStunned)) return false;
-            if (!self.Cast(3, player.Position)) return false;
+            if (!HumanCombatCast(3, player.Position)) return false;
             EndMelCombo(); Plan(LaneTactic.AllIn, "Mel: Eclipse Dorado sobre marcas"); return true;
-        }
-        void RecoverMel(Combatant player)
-        {
-            melCombo = MelCombo.None; Plan(LaneTactic.Recover, "Mel: recuperar vida y maná");
-            if (player.Targetable && Vector3.Distance(self.Position,player.Position) < 4 && self.Health < self.MaxHealth * .25f)
-                self.Summoners.Flash(world.FountainPoint(self.Team));
-            if (world.InFountain(self)) self.Stop(); else self.MoveTo(world.FountainPoint(self.Team));
         }
         void MelKite(Combatant player, bool straightHome)
         {
@@ -202,7 +193,7 @@ namespace MidLane
             if (away.sqrMagnitude < .01f) away = Vector3.left * Forward;
             Vector3 lateral = Vector3.Cross(away, Vector3.up);
             if (Time.time >= melOrbitAt) { melOrbitAt = Time.time + .8f; melOrbitSide = Random.value < .5f ? -1 : 1; }
-            float desired = melWave != null ? 6.5f : self.AttackReach(player) - .35f;
+            float desired = (melWave != null ? 6.5f : self.AttackReach(player) - .35f) * HumanTether;
             Vector3 point = player.Position + away * desired;
             if (straightHome) point = self.Position + (world.FountainPoint(self.Team) - self.Position).normalized * 2;
             else if (world.Settings.difficulty == Difficulty.Hard) point += lateral * melOrbitSide * 1.25f;

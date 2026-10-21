@@ -13,6 +13,7 @@ namespace MidLane
         public float reaction_min_seconds = 0.12f, reaction_max_seconds = 0.19f;
         public float panic_health_threshold = 0.25f, panic_reaction_multiplier = 1.25f;
         public float neutral_spacing_units = 650, spacing_noise_units = 45, spacing_noise_interval_seconds = 0.2f;
+        public float farm_lookahead_seconds = 2.5f, lane_leash_units = 450;
         public float MinionGold(MinionType type) { return type == MinionType.Cannon ? cannon_gold : type == MinionType.Melee ? melee_gold : caster_gold; }
         public static SettFinancialConfig Load()
         {
@@ -23,6 +24,8 @@ namespace MidLane
             config.reaction_min_seconds = Mathf.Clamp(config.reaction_min_seconds, 0.12f, 0.19f);
             config.reaction_max_seconds = Mathf.Clamp(config.reaction_max_seconds, config.reaction_min_seconds, 0.19f);
             config.spacing_noise_interval_seconds = Mathf.Max(0.02f, config.spacing_noise_interval_seconds);
+            config.farm_lookahead_seconds = Mathf.Clamp(config.farm_lookahead_seconds, 1, 4);
+            config.lane_leash_units = Mathf.Clamp(config.lane_leash_units, 250, 700);
             return config;
         }
     }

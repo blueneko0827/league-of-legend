@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MidLane
 {
-    public sealed class TrainingDummy : MonoBehaviour
+    public sealed partial class TrainingDummy : MonoBehaviour
     {
         public sealed class DamageNotice { public float Amount, StartedAt; public string Label; public DamageType Type; }
         public readonly List<DamageNotice> Notices = new List<DamageNotice>();
@@ -18,13 +18,13 @@ namespace MidLane
         public TrainingDummyModel Visual { get; private set; }
         public float TotalDamage { get; private set; }
         public float LastDamageAt { get; private set; } = float.NegativeInfinity;
-        // Read-only statistics for the Practice Tool style labels (last hit, DPS, total).
         public float LastHitAmount { get; private set; }
         public float SequenceStartedAt { get; private set; }
         public float DamagePerSecond { get { return TotalDamage <= 0 ? 0 : TotalDamage / Mathf.Max(1, LastDamageAt - SequenceStartedAt); } }
         public bool PracticeMark { get; private set; }
         public bool PermanentMark { get; private set; }
         public const float MovementRadius = 2.2f;
+        public const float PracticeMarkRearmSeconds = 5;
         LaneWorld world;
         readonly HashSet<Object> observed = new HashSet<Object>();
         float evadeAt = float.PositiveInfinity, returnAt = float.PositiveInfinity;
@@ -51,6 +51,7 @@ namespace MidLane
             Actor.MoveTo(PatrolDestination);
         }
         internal void EnablePermanentMark() { PermanentMark = PracticeMark = true; }
+        internal void DisablePermanentMark() { PermanentMark = false; }
         internal void RelocatePermanentTarget(Vector3 point)
         {
             if (!PermanentMark || Mobile) return;
@@ -71,7 +72,7 @@ namespace MidLane
         void Update()
         {
             if (world == null || world.Paused) return;
-            if (rearmMark && Time.time - LastDamageAt >= 6) { PracticeMark = true; rearmMark = false; }
+            if (rearmMark && Time.time - LastDamageAt >= PracticeMarkRearmSeconds) { PracticeMark = true; rearmMark = false; }
             if (Time.time - LastDamageAt >= 5) { TotalDamage = 0; LastHitAmount = 0; }
             Notices.RemoveAll(n => Time.time - n.StartedAt >= 1.5f);
             if (!Mobile) return;

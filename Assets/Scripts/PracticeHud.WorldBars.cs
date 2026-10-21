@@ -48,7 +48,7 @@ namespace MidLane
             BarStyles();
             foreach (Combatant unit in world.Units)
             {
-                if (unit == null || !unit.Alive) continue;
+                if (unit == null || !unit.Alive || !unit.gameObject.activeInHierarchy) continue;
                 Vector3 screen = world.View.WorldToScreenPoint(unit.VisualTop + Vector3.up * .3f);
                 if (screen.z <= 0) continue;
                 var anchor = new Vector2(screen.x * 1280 / Screen.width, (Screen.height - screen.y) * 720 / Screen.height);

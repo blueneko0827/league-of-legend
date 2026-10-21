@@ -5,7 +5,7 @@ namespace MidLane
     {
         static readonly Color HudGold = new Color(.55f, .46f, .27f), HudBright = new Color(.92f, .80f, .43f);
         static readonly Color HudInk = new Color(.018f, .037f, .045f, .98f);
-        GUIStyle hudText, hudNumbers, hudKey, hudUpgrade, hudVitals;
+        GUIStyle hudText, hudNumbers, hudKey, hudUpgrade, hudVitals, hudGoldSymbol;
         void HudStyles()
         {
             if (hudText != null) return;
@@ -15,6 +15,7 @@ namespace MidLane
             hudKey = new GUIStyle(hudText) { fontSize = 19, fontStyle = FontStyle.Bold, alignment = TextAnchor.LowerRight };
             hudUpgrade = new GUIStyle(hudNumbers) { fontSize = 29 };
             hudVitals = new GUIStyle(hudText) { fontSize = 22, fontStyle = FontStyle.Bold };
+            hudGoldSymbol = new GUIStyle(hudNumbers); hudGoldSymbol.normal.textColor = HudBright;
         }
         static void HudFrame(Rect r, Color color, float thickness = 3)
         {
@@ -76,7 +77,7 @@ namespace MidLane
             }
             Box(new Rect(646, 158, 214, 32), new Color(.04f, .065f, .065f));
             HudFrame(new Rect(646, 158, 214, 32), HudGold, 2);
-            GUI.Label(new Rect(650, 158, 30, 32), "●", new GUIStyle(hudNumbers) { normal = { textColor = HudBright } });
+            GUI.Label(new Rect(650, 158, 30, 32), "●", hudGoldSymbol);
             HudNumber(new Rect(681, 158, 170, 32), p.Gold.ToString(), hudNumbers);
             if (GUI.Button(new Rect(646, 158, 214, 32), GUIContent.none, GUIStyle.none)) world.GetComponent<ShopHud>().Toggle();
             GUI.matrix = previous;
@@ -101,6 +102,7 @@ namespace MidLane
             HudNumber(new Rect(r.x + 39, r.y + 40, 21, 22), "QWER"[slot].ToString(), hudKey);
             if (recast) HudNumber(new Rect(r.x, r.y + 8, 64, 28), "E2", hudNumbers);
             if (charging) Bar(new Rect(r.x + 3, r.y + 3, 58, 5), blade.ChargeFraction, Color.cyan);
+            if (slot == 2) DrawPracticeMarkHold(r);
             int maximum = slot == 3 ? 3 : 5;
             for (int i = 0; i < maximum; i++) Box(new Rect(r.x + i * (64f / maximum), 125, 64f / maximum - 3, 5), i < rank ? HudBright : new Color(.13f, .17f, .18f));
             if (!CanUpgradeSkill(slot)) return;

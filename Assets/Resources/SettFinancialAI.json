@@ -14,5 +14,7 @@
   "panic_reaction_multiplier": 1.25,
   "neutral_spacing_units": 650,
   "spacing_noise_units": 45,
-  "spacing_noise_interval_seconds": 0.2
+  "spacing_noise_interval_seconds": 0.2,
+  "farm_lookahead_seconds": 2.5,
+  "lane_leash_units": 450
 }

@@ -28,8 +28,8 @@ namespace MidLane
             }
             return name + "\n\n" + body + "\n\nAlcance: " + Mathf.RoundToInt(range * 100) + " unidades LoL · Maná: " + (player.UnlimitedMana ? 0 : player.AbilityCost(slot)) +
                 "\nEnfriamiento: " + player.AbilityCooldown(slot).ToString("0.#") + " s · Rango: " + blade.Rank(slot) +
-                (blade.Rank(slot) == 0 ? " (sin aprender)" : "") + (player.UnlimitedMana ? "\nModo práctica: nivel 6 · reinicio de CD tras 6 s sin daño." : player.Progress.PvpSkills ?
-                "\nModo PvP: mejora automática cada 2 bajas totales hasta nivel 18. Prioridad Q, W, E; R en 6/11/16." :
+                (blade.Rank(slot) == 0 ? " (sin aprender)" : "") + (player.UnlimitedMana ? "\nModo práctica: reinicio de CD tras 3,5 s sin lanzar habilidades ni causar daño." : player.Progress.PvpSkills ?
+                "\nModo PvP: reinicio de CD del jugador tras 3,5 s sin lanzar habilidades ni causar daño. Mejora automática cada 2 bajas totales hasta nivel 18. Prioridad Q, W, E; R en 6/11/16." :
                 "\nAprendizaje automático por nivel: Q > W > E; R en 6/11/16.");
         }
     }

@@ -7,7 +7,7 @@ namespace MidLane
         float tradeUntil, tradeRestUntil, siegeUntil, siegeRestUntil;
         bool recovering, igniteOpportunityRolled;
         int tradeSpellCount;
-        float Aggression { get { return world.Settings.difficulty == Difficulty.Expert ? 1 : world.Settings.difficulty == Difficulty.Hard ? 0.55f : 0; } }
+        float Aggression { get { return Mathf.Clamp01((world.Settings.difficulty == Difficulty.Expert ? 1 : world.Settings.difficulty == Difficulty.Hard ? 0.55f : 0) * HumanAggression); } }
         float TradeRecovery { get { return Mathf.Lerp(3, 0.65f, Aggression); } }
         float EngageReach { get { return self.AttackReach(world.Player) + Mathf.Lerp(1.5f, 2.8f, Aggression); } }
         int Forward { get { return self.Team == Team.Blue ? 1 : -1; } }
@@ -16,8 +16,12 @@ namespace MidLane
         {
             tradeUntil = tradeRestUntil = siegeUntil = siegeRestUntil = 0;
             recovering = igniteOpportunityRolled = false; tradeSpellCount = 0;
+            laneDefenseUntil = laneDefensePointAt = 0;
+            laneRouteAt = wavePlanAt = 0;
+            laneRoutePoints.Clear();
+            laneApproachFrame = -1; laneApproaches.Clear();
         }
-        void Plan(LaneTactic tactic, string label) { Tactic = tactic; Decision = label; }
+        void Plan(LaneTactic tactic, string label) { Tactic = tactic; Decision = label; HumanPlan(tactic); }
 
         void ThinkLane()
         {
@@ -26,9 +30,8 @@ namespace MidLane
             float distance = Vector3.Distance(self.Position, player.Position);
             float health = self.Health / self.MaxHealth;
             bool inTower = TowerRange(tower, self.Position);
-            if (recovering && health >= 0.85f && (self.MaxResource == 0 || self.Resource >= self.MaxResource * 0.5f)) recovering = false;
-            if (health < 0.26f) recovering = true;
-            if (recovering) { Recover(player, distance); return; }
+            UpdateLaneWavePlan(player);
+            if (TryLaneDefense(player)) return;
             if (inTower && (TowerTargetsUs(tower) || !CanSiege(tower, player)))
             {
                 tradeUntil = 0; siegeUntil = 0; siegeRestUntil = Time.time + 4;
@@ -48,6 +51,7 @@ namespace MidLane
 
             Combatant lastHit, wave;
             FindFarm(tower, player, out lastHit, out wave);
+            if (lastHit != null && !HumanNoticedFarm(lastHit)) lastHit = null;
             if (lastHit != null)
             {
                 // A short trade cannot steal the next safe last-hit window.
@@ -57,6 +61,7 @@ namespace MidLane
                 else ApproachFarm(lastHit);
                 return;
             }
+            if (WavePlan == LaneWavePlan.Freeze && TryLaneWavePosition(player)) return;
             if (tradeUntil > 0 && Time.time >= tradeUntil)
             { tradeUntil = 0; tradeRestUntil = Time.time + TradeRecovery; }
             if (Time.time < tradeUntil)
@@ -88,6 +93,7 @@ namespace MidLane
                 Plan(LaneTactic.Trade, "Intercambio corto"); Fight(player, false); return;
             }
             bool rivalAbsent = !player.Targetable || distance > 11;
+            if (TryLaneWaveClear(player) || TryLaneWavePosition(player)) return;
             if (wave != null)
             {
                 Plan(rivalAbsent ? LaneTactic.Push : LaneTactic.Farm, rivalAbsent ? "Empujar la oleada hacia torre" : "Preparar último golpe");
@@ -113,20 +119,20 @@ namespace MidLane
         {
             if (world.PvpModeActive) { recovering = false; Plan(LaneTactic.AllIn, "PvP: mantener el all-in"); self.OrderAttack(player); return; }
             tradeUntil = 0;
-            Plan(LaneTactic.Recover, world.InFountain(self) ? "Curarse en la fuente" : "Retirarse a recuperar vida");
-            if (player.Targetable && distance < 4 && (self.Sett == null || ShouldUseHaymaker(player, player.Position))) self.Cast(1, player.Position, player);
+            Plan(LaneTactic.Recover, "Jugar seguro · salir del daño y buscar cobertura");
+            // Mel's defense module owns Rebuttal and its observed threat/reaction clock.
+            if (self.Mel == null && player.Targetable && distance < 4 && (self.Sett == null || ShouldUseHaymaker(player, player.Position))) self.Cast(1, player.Position, player);
             if (player.Targetable && self.Health < self.MaxHealth * 0.23f && distance < 8 && self.Summoners.FlashRemaining <= 0)
             {
                 Vector3 away = self.Position - player.Position;
-                Vector3 home = world.FountainPoint(self.Team) - self.Position;
+                Vector3 home = DefensiveLanePoint(player) - self.Position;
                 if (away.sqrMagnitude < 0.01f) away = Vector3.right * -Forward;
                 Vector3 direction = (away.normalized + home.normalized * 0.65f).normalized;
                 Vector3 cursor = self.Position + direction * SummonerRules.FlashRange;
                 Combatant tower = EnemyTower();
                 if (!TowerRange(tower, world.Clamp(cursor))) self.Summoners.Flash(cursor);
             }
-            if (world.InFountain(self)) { self.Stop(); return; }
-            self.MoveTo(world.FountainPoint(self.Team));
+            MoveOrHold(DefensiveLanePoint(player));
         }
 
         void Fight(Combatant player, bool allIn)
@@ -176,8 +182,7 @@ namespace MidLane
         {
             float lead = world.Settings.difficulty == Difficulty.Normal ? 0 : world.Settings.difficulty == Difficulty.Hard ? 0.35f : 0.5f;
             float error = CombatRules.AimError(world.Settings.difficulty);
-            return player.Position + estimatedVelocity * (lead + distance / 18 * lead) +
-                new Vector3(Random.Range(-error, error), 0, Random.Range(-error, error));
+            return player.Position + estimatedVelocity * ((lead + distance / 18 * lead) * HumanPrediction) + HumanAimOffset(error);
         }
 
         bool TryIgnite(Combatant player, Combatant tower)
@@ -231,10 +236,7 @@ namespace MidLane
                 if (Time.time >= observedReady[0]) damage += Physical(player, self, player.AttackDamage * 0.6f + 55);
                 damage += CombatRules.Mitigate(65, self.MagicResist);
             }
-            foreach (Combatant minion in world.Units)
-                if (minion != null && minion.Alive && minion.Kind == UnitKind.Minion && minion.Team != self.Team && Vector3.Distance(minion.Position, point) < 4.5f)
-                    damage += CombatRules.Mitigate(minion.BasicDamageAgainst(self, minion.AttackDamage), self.Armor) * minion.BaseAttackSpeed * seconds;
-            return damage;
+            return damage + MinionDamageAt(point, seconds);
         }
         static float Physical(Combatant source, Combatant target, float raw)
         {
@@ -296,7 +298,7 @@ namespace MidLane
             MoveOrHold(point);
         }
         void MoveOrHold(Vector3 point)
-        { if (Vector3.Distance(self.Position, point) > 0.15f) self.MoveTo(point); else self.Stop(); }
+        { point = LaneSafeWaypoint(point); if (Vector3.Distance(self.Position, point) > 0.15f) self.MoveTo(point); else self.Stop(); }
         bool NoHostileMinions(Vector3 point, float radius)
         {
             foreach (Combatant unit in world.Units)

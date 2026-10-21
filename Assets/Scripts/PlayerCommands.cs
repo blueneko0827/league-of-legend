@@ -7,6 +7,16 @@ namespace MidLane
         LaneWorld world;
         public string Feedback { get; private set; }
         public Combatant HoveredTarget { get; private set; }
+        Combatant inspectedTarget;
+        public Combatant InspectedTarget
+        {
+            get
+            {
+                if (inspectedTarget == null || !inspectedTarget.Alive || !inspectedTarget.gameObject.activeInHierarchy || !world.Units.Contains(inspectedTarget))
+                    inspectedTarget = null;
+                return inspectedTarget;
+            }
+        }
         float feedbackUntil;
         bool keyboardCharge;
         public bool DummyPlacementActive { get; private set; }
@@ -19,7 +29,15 @@ namespace MidLane
             Latency = gameObject.AddComponent<PlayerLatency>(); Latency.Initialize(lane);
         }
         public void ResetPendingInputs()
-        { keyboardCharge = DummyPlacementActive = false; HoveredTarget = null; if (rAim != null) rAim.Cancel(); if (Latency != null) Latency.Clear(); }
+        { keyboardCharge = DummyPlacementActive = false; HoveredTarget = inspectedTarget = null; if (rAim != null) rAim.Cancel(); if (Latency != null) Latency.Clear(); }
+        public bool InspectAtScreenPoint(Vector2 point)
+        {
+            var hud = world.GetComponent<PracticeHud>();
+            if (ShopHud.Open || DummyPlacementActive || hud.LatencyFieldFocused || hud.RunePickerOpen || hud.SummonerPickerOpen ||
+                !world.View.pixelRect.Contains(point) || PracticeHud.BlocksPointer(new Vector2(point.x, Screen.height - point.y))) return false;
+            inspectedTarget = TargetPicker.ResolveForInspection(world, point);
+            return true;
+        }
         public void CancelForRunePicker()
         { CancelDummyPlacement(); HoveredTarget=null; if(rAim!=null) rAim.Cancel(); if(Latency!=null) Latency.Clear(); }
         public bool ToggleDummyPlacement()
@@ -47,7 +65,7 @@ namespace MidLane
         public bool RequestStop()
         { rAim.Cancel(); var actor = world.Player; return Latency.Submit(() => actor.Stop()); }
         public bool RequestRecall()
-        { rAim.Cancel(); var actor = world.Player; return Latency.Submit(() => actor.BeginRecall()); }
+        { ShowFeedback("Recall deshabilitado por ahora."); return false; }
         public bool RequestAbility(int slot, Vector3 aim, Combatant target = null)
         {
             if (slot < 0 || slot > 3) return false;
@@ -120,6 +138,7 @@ namespace MidLane
                     if (Input.GetKeyDown(SkillKeys[slot]) && !world.Player.Blade.Learn(slot))
                         ShowFeedback(world.PvpModeActive ? "Modo PvP: las habilidades mejoran automáticamente con las bajas totales." :
                             "No se puede mejorar: revisá los puntos, el nivel y el rango máximo.");
+            if (Input.GetMouseButtonDown(0)) InspectAtScreenPoint(Input.mousePosition);
             if (world.Paused || world.RoundOver || !world.Player.Alive) { rAim.Cancel(); if (!world.Player.Alive) keyboardCharge = false; return; }
             if(!hud.RunePickerOpen) for (int slot = 0; slot < 6; slot++) if (Input.GetKeyDown((KeyCode)((int)KeyCode.Alpha1 + slot))) RequestItem(slot);
             if (world.Player.IsInStasis) { rAim.Cancel(); return; }
@@ -200,7 +219,7 @@ namespace MidLane
         }
         string QFeedback(Combatant target)
         {
-            if (target == null) return "Q: no hay un enemigo seleccionado bajo el cursor";
+            if (target == null) return null;
             if (target.Kind == UnitKind.Tower) return "Q no puede apuntar a una torre";
             if (Vector3.Distance(world.Player.Position, target.Position) > world.Player.Blade.Tuning.qRange + target.Radius)
                 return "Q: " + target.DisplayName + " está fuera de alcance";
@@ -208,6 +227,6 @@ namespace MidLane
             if (world.Player.Resource < world.Player.AbilityCost(0)) return "Q: maná insuficiente";
             return "Q: no disponible durante esta acción o control de masas";
         }
-        void ShowFeedback(string message) { Feedback = message; feedbackUntil = Time.unscaledTime + 2.5f; }
+        void ShowFeedback(string message) { if (string.IsNullOrEmpty(message)) return; Feedback = message; feedbackUntil = Time.unscaledTime + 2.5f; }
     }
 }

@@ -33,7 +33,6 @@ namespace MidLane
             if (target.Inventory.Has(3053))
                 shielding += Mathf.Max(0, target.MaxHealth - target.BaseStats.Health.At(target.Level)) * target.Inventory.Get(3053).Value("BaseShieldRatio", .6f) * target.ItemEffects.ShieldReceivedMultiplier;
             float effectiveHealth = target.Health + shielding + target.HealthRegeneration * .8f;
-            if (world.InFountain(target)) effectiveHealth += target.MaxHealth * .104f * .8f;
             return damage >= effectiveHealth * 1.15f;
         }
     }

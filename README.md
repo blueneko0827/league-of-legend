@@ -1,6 +1,6 @@
-# DemoMidlanePractice — versión demo
+# MidLane Practice Visual · entrega actualizada (hito 2)
 
-Versión demo independiente de MidLane Simulator para mejorar su presentación visual en **modo
+Copia independiente del simulador para mejorar su presentación visual en **modo
 Práctica**. Incluye el estado actual de Irelia, cinco dummies, dos torres, tienda,
 runas, hechizos, animaciones, sonidos, voces, indicadores y efectos.
 
@@ -13,6 +13,11 @@ runas, hechizos, animaciones, sonidos, voces, indicadores y efectos.
 Siempre inicia en Práctica. No hay botones para activar PvP, Normalplay o rivales.
 F5 reinicia Práctica. No se necesita una API key ni una instalación de LoL para jugar.
 La primera importación puede necesitar conexión para descargar los paquetes de Unity.
+
+Incluye el mapa corto y las mejoras visuales integradas del primer hito, el ancho
+actual de E de 140 unidades, la inspección de vida/maná y los controles nuevos:
+mantener clic 2 s sobre E alterna marcas infinitas/E sin enfriamiento; mantener clic
+2 s sobre un dummy alterna los cinco modelos a magos/guerrero y viceversa.
 
 Leer [ARTIST_GUIDE.md](ARTIST_GUIDE.md) antes de trabajar. Allí se detallan cámara,
 dimensiones, modelos, prefabs, animaciones, partículas, iluminación, HUD y el proceso
