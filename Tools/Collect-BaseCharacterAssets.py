@@ -76,7 +76,8 @@ class Collection:
         sha = digest(source)
         # A few Riot shared-definition filenames exceed Windows' path limit
         # once nested in a project. Keep their exact original path in sources.
-        if len(str(self.folder / destination)) >= 240:
+        if (len(str(self.folder / destination)) >= 240
+                or destination.name.startswith(("irelia_multi_skins_", "ireliablades_multi_skins_"))):
             path_hash = hashlib.sha256(destination.as_posix().encode()).hexdigest()[:24]
             destination = Path("Original/LongNames") / (path_hash + destination.suffix)
         dest = destination.as_posix()

@@ -25,7 +25,7 @@ namespace MidLane
             if (set == null) set = visual.AddComponent<UnitShadows>();
             foreach (Renderer source in visual.GetComponentsInChildren<Renderer>(true))
             {
-                if (source == null || set.proxies.Contains(source) || source.shadowCastingMode == ShadowCastingMode.ShadowsOnly) continue;
+                if (source == null || set.sources.Contains(source) || set.proxies.Contains(source) || source.shadowCastingMode == ShadowCastingMode.ShadowsOnly) continue;
                 Renderer proxy = CreateProxy(source, material);
                 if (proxy == null) continue;
                 set.sources.Add(source); set.proxies.Add(proxy);

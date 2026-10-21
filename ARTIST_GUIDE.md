@@ -28,6 +28,9 @@ Las marcas de dummies y el reinicio de enfriamientos conservan las reglas actual
 | Q | Dash al objetivo bajo el cursor |
 | Mantener y soltar W | Cargar y soltar W; indicador de dirección |
 | E, E | Colocar las dos cuchillas y activar su convergencia |
+| Clic izquierdo 2 s sobre el icono E | Alternar marcas infinitas y E sin enfriamiento |
+| Clic izquierdo 2 s sobre cualquier dummy/minion | Alternar los cinco modelos: guerrero en el centro fijo y magos en los otros cuatro |
+| Clic izquierdo corto sobre una unidad | Inspeccionar vida y maná en el panel superior izquierdo |
 | Mantener y soltar R | Apuntar y lanzar R; Esc/clic derecho cancela |
 | D / F | Hechizos de invocador; sus iconos permiten cambiarlos |
 | P | Tienda; comprar en cualquier lugar |
@@ -36,6 +39,7 @@ Las marcas de dummies y el reinicio de enfriamientos conservan las reglas actual
 | Flechas / bordes | Desplazar cámara libre |
 | Esc / F5 | Pausa / reiniciar Práctica |
 | Mute / ms | Silenciar / latencia simulada |
+| F8 / F9 | Panel de ajustes visuales / superposición de referencias |
 | Icono de recarga del HUD | Elegir otra página de runas; reinicia Práctica |
 
 ## Arquitectura de la escena
@@ -57,6 +61,7 @@ el juego ignore: se trabaja sobre la misma presentación que luego se integrará
 | Irelia: prefab, rig, texturas y materiales | `Assets/Resources/Models/IreliaOfficial/` |
 | Reproducción y mezcla de animaciones | `Assets/Scripts/IreliaRigAnimation.cs`, `IreliaModelAnimation.cs`, `IreliaGlbAssets.cs` |
 | Dummy: prefab, rig y clips Idle/Hit | `Assets/Resources/Models/TrainingDummy/`, `Assets/Scripts/TrainingDummyModel.cs` |
+| Apariencias de minions de práctica | `TrainingDummy.Appearance.cs`, `MinionVisuals.cs`, `MinionModelAnimation.cs`, `Assets/Resources/Models/LaneUnitsOfficial/` |
 | Torres de ambos equipos | `Assets/Resources/Models/LaneUnitsOfficial/BlueTower/` y `RedTower/`; `PracticeModels.CreateTower` |
 | Cuchillas E y convergencia | `Assets/Scripts/BladeLink.cs`, `IreliaEConvergenceVisual.cs`, `Assets/Resources/Models/IreliaOfficial/E/` |
 | R: vuelo, cuchillas y muro | `Assets/Scripts/BladeWave.cs`, `BladeWall.cs`, `IreliaRVisuals.cs`, `Assets/Resources/Models/IreliaOfficial/R/` |
@@ -94,10 +99,11 @@ dimensiones y pivotes. Los clips pueden sobrescribir la escala de huesos, por lo
 que la escala visual suele aplicarse en un padre externo al rig.
 
 Valores iniciales: FOV 32,5°, pitch Unity +55°, yaw 45°, multiplicador 1,65,
-inclinación 15°, proporción de torre 3. La configuración **limita** algunos valores
+inclinación 15°, proporción de torre 2,7. La configuración **limita** algunos valores
 en `ScenePresentationConfig.Load`. Además, `camera_distance` se recalcula como
-`CameraMaxDistance` y `IsometricCamera` usa ese valor derivado: editar solo el campo
-JSON de distancia no cambia el encuadre. Si se necesita otro comportamiento,
+`CameraMaxDistance * camera_zoom` e `IsometricCamera` usa ese valor derivado: usar
+`camera_zoom` para ajustar el encuadre; editar solo el campo JSON de distancia no
+lo cambia. Si se necesita otro comportamiento,
 modificar y documentar esos puntos. Tampoco se presupone que dichos valores sean
 una extracción exacta de la cámara de Riot: son el ajuste actual del simulador.
 
@@ -112,6 +118,7 @@ Comparar desde Game con la misma resolución, cámara y posición, incluyendo am
 lados del mapa. `References/imagelol*.jpg` contiene capturas de LoL aportadas por el
 usuario. `imageSimulator*.png` son capturas antiguas, no la línea base de esta entrega.
 La captura validada de esta copia está en `Handoff/Validation/practice-preview.png`.
+Es una referencia de la escena 3D; no incluye la capa OnGUI del HUD.
 
 Antes de devolver, guardar fuera de Play los archivos editados, añadir capturas de
 antes/después y completar `Handoff/ARTIST_NOTES.md`. Luego ejecutar:

@@ -10,6 +10,11 @@ namespace MidLane
         Vector3 restPosition;
         Quaternion restRotation;
         Renderer[] geometry;
+        public bool SampleDriven { get; set; }
+        int poseRevision, appliedRevision = -1;
+        Quaternion lastParentRotation, lastViewRotation;
+        float lastY, lastDegrees;
+        public void InvalidatePose() { poseRevision++; }
         public float ReferenceHeight { get; private set; }
         public void Initialize(LaneWorld lane, bool excludeBlades = false)
         {
@@ -31,6 +36,11 @@ namespace MidLane
         {
             if (world == null || transform.parent == null) return;
             var parent = transform.parent;
+            Quaternion viewRotation = world.View != null ? world.View.transform.rotation : Quaternion.identity;
+            if (SampleDriven && appliedRevision == poseRevision && lastParentRotation == parent.rotation &&
+                lastViewRotation == viewRotation && lastY == parent.position.y && lastDegrees == world.Presentation.model_tilt_degrees) return;
+            appliedRevision = poseRevision; lastParentRotation = parent.rotation; lastViewRotation = viewRotation;
+            lastY = parent.position.y; lastDegrees = world.Presentation.model_tilt_degrees;
             Quaternion lean = Quaternion.Inverse(parent.rotation) * WorldRotation(world.View, world.Presentation.model_tilt_degrees) * parent.rotation;
             transform.localRotation = lean * restRotation;
             transform.localPosition = lean * restPosition;

@@ -56,7 +56,7 @@ namespace MidLane
             if (away.sqrMagnitude < 0.01f) away = Vector3.left * Forward;
             float spacing = FinancialConfig.trap_spacing_units * 0.01f;
             Vector3 point = world.AvoidTower(self, GoldTrapMinion.Position + away.normalized * spacing);
-            if (TowerRange(tower, point) || Mathf.Abs(Vector3.Distance(point, GoldTrapMinion.Position) - spacing) > 0.1f) return false;
+            if (!WithinFinancialLane(point) || TowerRange(tower, point) || Mathf.Abs(Vector3.Distance(point, GoldTrapMinion.Position) - spacing) > 0.1f) return false;
             tradeUntil = 0;
             Plan(LaneTactic.GoldTrap, "Trampa de oro · reservar E junto al minion"); MoveOrHold(point); return true;
         }

@@ -69,13 +69,17 @@ namespace MidLane
         public void Stop() { if (Instance != null) Instance.Stop(); }
 
         // Riot bone names are case-insensitive (events use C_BUFFBONE_GLB_LAYOUT_LOC).
+        // Hidden children are skipped: a practice dummy shown as a minion keeps its dummy rig
+        // inactive next to the minion rig, and both have the same buff bones.
         public static Transform FindBone(Transform root, string name)
         {
             if (root == null || string.IsNullOrEmpty(name)) return null;
             if (string.Equals(root.name, name, StringComparison.OrdinalIgnoreCase)) return root;
             for (int i = 0; i < root.childCount; i++)
             {
-                Transform found = FindBone(root.GetChild(i), name);
+                Transform child = root.GetChild(i);
+                if (!child.gameObject.activeSelf) continue;
+                Transform found = FindBone(child, name);
                 if (found != null) return found;
             }
             return null;

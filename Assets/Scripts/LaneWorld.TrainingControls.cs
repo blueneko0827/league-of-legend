@@ -20,6 +20,7 @@ namespace MidLane
                 int starter = actor.Archetype == Archetype.Prism ? 1056 :
                     actor.Archetype == Archetype.Blade || actor.Archetype == Archetype.Brawler ? 1055 : 0;
                 if (starter != 0) actor.EquipPvpStarter(starter);
+                if (NormalplayModeActive) actor.EquipPvpStarter(2003);
             }
         }
         void ApplyPvpProgression()

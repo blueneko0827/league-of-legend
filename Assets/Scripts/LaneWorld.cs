@@ -46,6 +46,8 @@ namespace MidLane
         }
         public void ChampionLeveled(Combatant actor) { if(actor.Runes!=null) actor.Runes.SynchronizeProgress(); ShowNotice(actor, "Level Up", new Color(1, 0.85f, 0.3f)); }
         public event Action<Combatant, int, float> OnAbilityUsed;
+        public event Action<Combatant, Combatant, float, int> OnObservedDamage;
+        public event Action<Combatant, Combatant> OnUnitDeath;
         public bool Paused { get; private set; }
         public Team PlayerTeam { get { return Player != null ? Player.Team : Team.Blue; } }
         public readonly TowerNavigation Navigation = new TowerNavigation();
@@ -59,6 +61,7 @@ namespace MidLane
             Player.Heal(Player.MaxHealth);
         }
         Transform arenaRoot, roundRoot;
+        public MinionVisualPool MinionVisualsPool { get; private set; }
         readonly Dictionary<Color, Material> materials = new Dictionary<Color, Material>();
 
         void Awake()
@@ -82,6 +85,8 @@ namespace MidLane
         {
             Notices.RemoveAll(notice => notice.Actor == null || Time.time - notice.StartedAt > 2.5f);
             TickPracticeMode();
+            if (!Paused && !RoundOver && NormalplayModeActive && Settings.spawnWaves)
+                MinionVisualsPool?.Replenish();
             if (Paused || RoundOver || !Settings.spawnWaves || Time.time < NextWave) return;
             float waveTime = SwiftplayRules.OpeningClock + NextWave - StartedAt;
             NextWave += GetWaveInterval(waveTime);
@@ -141,8 +146,11 @@ namespace MidLane
             EnforcePracticeVisualMode();
             var commands = GetComponent<PlayerCommands>(); if (commands != null) commands.ResetPendingInputs();
             var summonerHud = GetComponent<PracticeHud>();
-            if (summonerHud != null) { if (summonerHud.LatencyFieldFocused) summonerHud.EndLatencyEdit(); summonerHud.CloseSummonerPicker(); summonerHud.CloseRunePicker(); summonerHud.ResetShieldBars(); }
+            if (summonerHud != null) { if (summonerHud.LatencyFieldFocused) summonerHud.EndLatencyEdit(); summonerHud.CloseSummonerPicker(); summonerHud.CloseRunePicker(); summonerHud.ResetShieldBars(); summonerHud.ResetPracticeMarkHold(); }
             ApplyMapDimensions();
+            if (MinionVisualsPool == null) MinionVisualsPool = new MinionVisualPool(this);
+            MinionVisualsPool.Clear();
+            if (NormalplayModeActive) MinionVisualsPool.Prepare();
             Time.timeScale = 1; Paused = false;
             if (FlashSounds != null) FlashSounds.StopAll();
             if (roundRoot != null)
@@ -150,8 +158,8 @@ namespace MidLane
                 // Disable immediately: Destroy itself is deferred until the end of the frame.
                 roundRoot.gameObject.SetActive(false); Destroy(roundRoot.gameObject);
             }
-            Units.Clear(); Shots.Clear(); BasicProjectiles.Clear(); BladeLinks.Clear(); BladeWaves.Clear(); BladeWalls.Clear(); Notices.Clear(); OnAbilityUsed = null; Navigation.Clear(); Spacing.Clear();
-            PracticeDummies.Clear(); PvpQDummy = null; practiceResetArmed = false; practiceResetAt = 0;
+            Units.Clear(); Shots.Clear(); BasicProjectiles.Clear(); BladeLinks.Clear(); BladeWaves.Clear(); BladeWalls.Clear(); Notices.Clear(); OnAbilityUsed = null; OnObservedDamage = null; OnUnitDeath = null; Navigation.Clear(); Spacing.Clear();
+            PracticeDummies.Clear(); PvpQDummy = null; PracticeMinionModelsActive = false; practiceResetArmed = false; practiceResetAt = 0;
             roundRoot = new GameObject("Round").transform; roundRoot.SetParent(transform);
             RoundOver = false; Result = ""; Wave = 0; StartedAt = Time.time; PvpDeaths = 0; pvpBonusLevels = pvpProgressDeaths = 0;
             if (PracticeModeActive) Settings.pvpMode = false;
@@ -231,26 +239,19 @@ namespace MidLane
             View.nearClipPlane = 0.1f; View.farClipPlane = 100;
             View.clearFlags = CameraClearFlags.SolidColor; View.backgroundColor = new Color(0.035f, 0.065f, 0.1f);
             View.gameObject.AddComponent<IsometricCamera>().Initialize(this);
-            for (int team = 0; team < 2; team++)
-            {
-                var circle = new GameObject("Recovery circle " + (Team)team); circle.transform.SetParent(arenaRoot, false);
-                circle.transform.localPosition = FountainPoint((Team)team);
-                circle.AddComponent<RecoveryCircle>().Build((Team)team, TowerToTowerRules.RecoveryRadius);
-            }
         }
 
         Combatant Spawn(Team team, UnitKind kind, Archetype archetype, string label, Vector3 point, MinionType minionType = MinionType.Melee)
         {
             var root = new GameObject(label); root.transform.SetParent(roundRoot); root.transform.position = point;
-            var model = new GameObject("Model").transform; model.SetParent(root.transform, false);
+            var model = kind == UnitKind.Minion ? MinionVisualsPool.Rent(team, minionType, root.transform) : new GameObject("Model").transform;
+            if (kind != UnitKind.Minion) model.SetParent(root.transform, false);
             Color color = team == Team.Blue ? new Color(0.2f, 0.8f, 1f) : new Color(1f, 0.35f, 0.4f);
             if (kind == UnitKind.Tower)
                 PracticeModels.CreateTower(this, model, team);
-            else if (kind == UnitKind.Minion)
-                MinionVisuals.Create(this, model, team, minionType);
-            else if (archetype == Archetype.Blade)
+            else if (kind == UnitKind.Champion && archetype == Archetype.Blade)
                 PracticeModels.CreateIrelia(this, model, team);
-            else
+            else if (kind == UnitKind.Champion)
                 PracticeModels.CreateChampionBody(this, model, team, archetype);
             var collider = root.AddComponent<CapsuleCollider>();
             collider.height = TowerToTowerRules.SelectionHeight(kind, minionType);
@@ -324,6 +325,7 @@ namespace MidLane
         }
         public void DamageApplied(Combatant source, Combatant target, float damage, int abilitySlot = -1)
         {
+            if (damage > 0) OnObservedDamage?.Invoke(source, target, damage, abilitySlot);
             if (damage > 0) { source.RecordPvpActivity(); target.RecordPvpActivity(); }
             if (source.Kind != UnitKind.Champion || target.Kind != UnitKind.Champion || damage <= 0) return;
             if (PvpModeActive && source == Player && target == Opponent && target.Sett != null)
@@ -335,6 +337,8 @@ namespace MidLane
         }
         public void UnitDied(Combatant actor, Combatant killer)
         {
+            OnUnitDeath?.Invoke(actor, killer);
+            Navigation.Forget(actor); Spacing.Forget(actor);
             if (actor.Kind == UnitKind.Minion)
                 foreach (Combatant champion in Units)
                     if (champion != null && champion.Alive && champion.Kind == UnitKind.Champion && champion.Team != actor.Team &&
@@ -349,7 +353,6 @@ namespace MidLane
                         if (champion == killer || actor.WasDamagedBy(champion, 3)) champion.ItemEffects.OnTakedown();
                         if ((champion == killer || actor.WasDamagedBy(champion, 3)) && champion.Runes!=null) champion.Runes.OnTakedown();
                     }
-                Navigation.Forget(actor);
                 if (killer == Player) ShowNotice(Player, "Unstopable", new Color(1, 0.48f, 0.18f));
                 actor.ScheduleRespawn(Settings.usePracticeRespawnTime ? Mathf.Max(0, Settings.practiceRespawnSeconds) : SwiftplayRules.RespawnSeconds(actor.Level, MatchTime));
                 if (PvpModeActive && (actor == Player || actor == Opponent))
@@ -357,8 +360,10 @@ namespace MidLane
                     PvpDeaths++;
                     if (ProgressionEnabled)
                     { pvpProgressDeaths++; ApplyPvpProgression(); }
-                    if (killer == Player || killer == Opponent) killer.RestoreAfterPvpKill();
                 }
+                if ((PvpModeActive || NormalplayModeActive) && (actor == Player || actor == Opponent) &&
+                    (killer == Player || killer == Opponent) && killer != actor && killer.Team != actor.Team)
+                    killer.RestoreAfterChampionKill();
                 // Every champion death starts a fresh duel for both sides, even after a tower kill.
                 foreach (Combatant champion in Units)
                     if (champion != null && champion.Kind == UnitKind.Champion)
@@ -374,7 +379,7 @@ namespace MidLane
         System.Collections.IEnumerator RemoveCorpse(Combatant actor)
         {
             yield return new WaitForSeconds(2);
-            Units.Remove(actor); if (actor != null) Destroy(actor.gameObject);
+            Units.Remove(actor); if (actor != null) { MinionVisualsPool?.Return(actor); Destroy(actor.gameObject); }
         }
     }
 }

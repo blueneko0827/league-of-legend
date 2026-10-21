@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.TestTools;
 
 namespace MidLane.Tests
@@ -153,17 +154,31 @@ namespace MidLane.Tests
             var patrol = world.PracticeDummies.Find(dummy => dummy.Patrolling);
             Assert.NotNull(patrol); Assert.AreEqual(3.65f, patrol.Actor.MoveSpeed, .001f);
             Assert.AreEqual(new Rect(-12, -4, 8, 8), patrol.PatrolBounds);
+            yield return null;
             if (SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
             {
-                var gameView = UnityEditor.EditorWindow.GetWindow(System.Type.GetType("UnityEditor.GameView,UnityEditor"));
-                gameView.position = new Rect(30, 30, 1280, 760); gameView.Show();
-                yield return new WaitForSeconds(1);
                 string path = Path.GetFullPath(Path.Combine(Application.dataPath, "../Handoff/Validation/practice-preview.png"));
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
-                if (File.Exists(path)) File.Delete(path);
-                ScreenCapture.CaptureScreenshot(path);
-                float deadline = Time.realtimeSinceStartup + 10;
-                while (!File.Exists(path) && Time.realtimeSinceStartup < deadline) yield return null;
+                // Render directly: batchmode does not repaint the Game view or service
+                // end-of-frame screenshots. This preview contains the 3D scene, not OnGUI.
+                var buffer = new RenderTexture(1280, 720, 24); buffer.Create();
+                var image = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+                var previous = RenderTexture.active;
+                float aspect = world.View.aspect;
+                try
+                {
+                    world.View.GetComponent<IsometricCamera>().Snap(); world.View.aspect = 1280f / 720;
+                    var request = new RenderPipeline.StandardRequest { destination = buffer };
+                    Assert.IsTrue(RenderPipeline.SupportsRenderRequest(world.View, request));
+                    RenderPipeline.SubmitRenderRequest(world.View, request);
+                    RenderTexture.active = buffer; image.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); image.Apply();
+                    File.WriteAllBytes(path, image.EncodeToPNG());
+                }
+                finally
+                {
+                    world.View.aspect = aspect; RenderTexture.active = previous;
+                    buffer.Release(); Object.Destroy(buffer); Object.Destroy(image);
+                }
                 Assert.IsTrue(File.Exists(path));
             }
         }

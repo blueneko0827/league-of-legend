@@ -8,6 +8,8 @@ namespace MidLane
         [Header("Practice")]
         public Archetype opponent = Archetype.Brawler;
         public Difficulty difficulty = Difficulty.Hard;
+        [Header("Shared human behavior")]
+        public int aiHumanSeed = 1337;
         public bool spawnWaves = true;
         public bool pvpMode = true;
         [Range(0, 15)] public float pvpSettWaitOffset = 10;
@@ -25,7 +27,7 @@ namespace MidLane
         public SummonerSpell fSummoner = SummonerSpell.Ignite;
         public Team fixedPlayerSide = Team.Blue;
         [Header("Mouse selection / pixels at 720p")]
-        [Range(0, 40)] public float selectionPadding = 18;
+        [Range(0, 40)] public float selectionPadding = 7;
         [Header("Locked camera / offset toward the opposing side")]
         [Range(0, 5)] public float lockedCameraOffset = 2.5f;
         [Header("Lane")]

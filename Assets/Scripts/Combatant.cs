@@ -56,10 +56,11 @@ namespace MidLane
             (!BaseStats.UsesMana && ItemEffects != null && Inventory.Has(1056) ? ItemEffects.DoranDrainRegeneration * Inventory.Get(1056).Value("ManaToHealthConversion", .45f) : 0) : 0; } }
         public float ManaRegeneration { get { return Kind == UnitKind.Champion ? BaseStats.ManaRegeneration.At(Level) + manaRegenBonus + (BaseStats.UsesMana && ItemEffects != null ? ItemEffects.DoranDrainRegeneration : 0) : 0; } }
         public float BaseAttackSpeed { get { return Kind == UnitKind.Champion ? Mathf.Min(2.5f, BaseStats.AttackSpeedAt(Level, BonusAttackSpeed)) : 1 / attackInterval; } }
-        public bool CanShop { get { return Kind == UnitKind.Champion && (!Alive || world.InFountain(this)); } }
-        public bool CanBuy { get { return CanShop || Kind == UnitKind.Champion && (world.PvpModeActive && (this == world.Player || this == world.Opponent) || world.PracticeModeActive && this == world.Player); } }
+        public bool CanShop { get { return Kind == UnitKind.Champion; } }
+        public bool CanBuy { get { return CanShop; } }
         public bool IsRecalling { get { return recallAt > 0; } }
         public float RecallRemaining { get { return Mathf.Max(0, recallAt - Time.time); } }
+        public bool HealthPotionActive { get { return Time.time < potionUntil; } }
         public int Gold { get; private set; }
         public long TotalGoldEarned { get; private set; }
         public int LastHits { get; private set; }
@@ -96,7 +97,7 @@ namespace MidLane
         {
             get
             {
-                if (Dummy != null) return world.Presentation.DummyVisualHeight;
+                if (Dummy != null) return Dummy.VisualHeight;
                 if (Kind == UnitKind.Tower) return world.Presentation.TowerVisualHeight;
                 if (Kind == UnitKind.Minion) return world.Presentation.MinionVisualHeight(MinionType) * VisualScale;
                 return SelectionHeight * VisualScale;
@@ -223,14 +224,12 @@ namespace MidLane
             Resource = Mathf.Min(MaxResource, Resource + dt * ManaRegeneration);
             Heal(dt * HealthRegeneration);
             if (Time.time < potionUntil) Heal(potionRate * dt);
-            if (Kind == UnitKind.Champion && world.InFountain(this))
-            { Heal(dt * MaxHealth * 0.104f); Resource = Mathf.Min(MaxResource, Resource + dt * MaxResource * 0.124f); refillCharges = 2; }
             if (Time.time >= shieldUntil) Shield = 0;
 
             Vector3 yieldGoal=Position;
             bool yielding=Kind==UnitKind.Minion && CanAct && !IsRooted && !IsWindingAttack && world.Spacing.TryYieldGoal(world,this,out yieldGoal);
             if(yielding)
-                transform.position=world.Navigation.Step(world,this,yieldGoal,MoveSpeed*dt,true);
+                transform.position=world.Navigation.Step(world,this,yieldGoal,MoveSpeed*dt);
             else if (CanAct)
             {
                 if (AttackTarget != null && !ValidEnemy(AttackTarget)) { AttackTarget = null; moving = false; }
@@ -254,7 +253,8 @@ namespace MidLane
             Velocity = dt > 0 ? (Position - before) / dt : Vector3.zero;
             if (model != null)
             {
-                if (Velocity.sqrMagnitude > 0.1f) model.rotation = Quaternion.LookRotation(Velocity);
+                if (Velocity.sqrMagnitude > 0.1f)
+                    model.rotation = Kind == UnitKind.Minion ? Quaternion.RotateTowards(model.rotation, Quaternion.LookRotation(Velocity), 540 * dt) : Quaternion.LookRotation(Velocity);
                 if (Kind == UnitKind.Minion && MinionType == MinionType.Cannon) model.localScale = Vector3.one * VisualScale;
                 else if ((modelAnimation != null || settAnimation != null || melAnimation != null || minionAnimation != null) && IsWindingAttack && AttackTarget != null && (AttackTarget.Position - Position).sqrMagnitude > 0.01f)
                     model.rotation = Quaternion.LookRotation(AttackTarget.Position - Position);
@@ -437,6 +437,8 @@ namespace MidLane
         }
         internal void TickPvpIdleReset()
         {
+            // The player shares Practice's spell/damage timer instead of the movement-based bot timer.
+            if (this == world.Player) { pvpIdleTracked = false; return; }
             if (!world.PvpModeActive || !Alive || (ItemEffects != null && ItemEffects.IsReviving))
             { pvpIdleTracked = false; return; }
             if (!pvpIdleTracked || (Position - pvpIdlePosition).sqrMagnitude > .000001f)
@@ -519,6 +521,7 @@ namespace MidLane
         internal void ResetPvpEconomy()
         {
             Gold = PvpProgressionRules.StartingGold; TotalGoldEarned = Gold; passiveGold = 0;
+            potionUntil = potionRate = 0; refillCharges = 2;
             Inventory.Items.Clear(); ItemEffects = new CombatItemEffects(world, this);
             Runes=new RuneEffects(world,this);
         }
@@ -545,8 +548,8 @@ namespace MidLane
             world.ChampionLeveled(this);
             if (ItemEffects != null) ItemEffects.OnLevelUp();
         }
-        internal void RestoreAfterPvpKill()
-        { if (Alive) { Health = MaxHealth; Resource = MaxResource; } }
+        internal void RestoreAfterChampionKill()
+        { if (Alive) { Health = MaxHealth; Resource = MaxResource; ResetCombatCooldowns(); } }
         internal void GrantTrainingLevel()
         {
             if (!world.ProgressionEnabled || Progress == null || Level >= 18) return;
@@ -602,7 +605,7 @@ namespace MidLane
         }
         public bool BuyItem(int id, out string reason)
         {
-            reason = "ComprÃ¡ en la fuente o mientras estÃ¡s muerto.";
+            reason = "Compra no disponible para esta unidad o mientras la partida está en pausa.";
             if (!CanBuy || world.Paused) return false;
             ItemDefinition item = Inventory.Get(id);
             if (item != null && !item.effectsImplemented) { reason = "Este objeto aÃºn no tiene todos sus efectos implementados."; return false; }
@@ -628,7 +631,7 @@ namespace MidLane
         public const float RecallChannelDuration = 3;
         public void BeginRecall()
         {
-            if (!CanAct) return; Stop(); recallAt = Time.time + RecallChannelDuration; busyUntil = recallAt;
+            // Temporarily disabled: the lane no longer has a recovery destination.
         }
         public void CancelRecall() { if (recallAt <= 0) return; recallAt = 0; busyUntil = Time.time; }
         public void NotifySpellCast()

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: MidLane.Runtime::MidLane.SandboxSettings
   opponent: 1
   difficulty: 1
+  aiHumanSeed: 1337
   spawnWaves: 0
   pvpMode: 0
   pvpSettWaitOffset: 10
@@ -28,7 +29,7 @@ MonoBehaviour:
   aiIgniteChance: 0.3
   randomizePlayerSide: 1
   fixedPlayerSide: 0
-  selectionPadding: 18
+  selectionPadding: 7
   lockedCameraOffset: 2.5
   halfLength: 25.75
   halfWidth: 8

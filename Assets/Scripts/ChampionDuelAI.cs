@@ -8,9 +8,7 @@ namespace MidLane
         {
             Combatant player = world.Player, tower = EnemyTower();
             float distance = Vector3.Distance(self.Position, player.Position), hp = self.Health / self.MaxHealth;
-            if (world.PvpModeActive) recovering = false;
-            if (recovering && hp >= .85f && (self.MaxResource == 0 || self.Resource >= self.MaxResource * .5f)) recovering = false;
-            if (!world.PvpModeActive && hp < .23f) recovering = true;
+            recovering = !world.PvpModeActive && player.Targetable && hp < .23f && distance < 7;
             if (recovering) { Recover(player, distance); return; }
             if (TowerRange(tower, self.Position))
             { Plan(LaneTactic.Retreat, "Duelo: respetar torre rival"); MoveOrHold(TowerExit(tower)); return; }
@@ -18,8 +16,7 @@ namespace MidLane
             { FightFromTowerEdge(player, tower, distance); return; }
             if (!player.Targetable)
             {
-                if (!world.PvpModeActive && hp < .85f) { recovering = true; Recover(player, distance); }
-                else { Plan(LaneTactic.Zone, "Duelo: esperar al rival"); MoveOrHold(new Vector3(-Forward * 3, 0, 0)); }
+                Plan(LaneTactic.Zone, "Duelo: esperar al rival"); MoveOrHold(new Vector3(-Forward * 3, 0, 0));
                 return;
             }
             if (DodgeWarnings(player) || self.IsWindingAttack) return;

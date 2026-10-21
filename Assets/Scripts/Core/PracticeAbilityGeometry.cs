@@ -7,7 +7,7 @@ namespace MidLane
         const float Scale = LeagueChampionStats.WorldUnitsPerLeagueUnit;
         public const float IreliaQRange = 600 * Scale;
         public const float IreliaWRange = 825 * Scale, IreliaWHalfWidth = 240 * Scale / 2;
-        public const float IreliaEPlacementRange = 775 * Scale, IreliaEHalfWidth = 120 * Scale / 2;
+        public const float IreliaEPlacementRange = 775 * Scale, IreliaEHalfWidth = 140 * Scale / 2;
         public const float IreliaRRange = 1000 * Scale, IreliaRWallLifetime = 2.5f;
         public const float IreliaRHalfWidth = 320 * Scale / 2, IreliaRWallHalfWidth = 50 * Scale / 2;
         public const float IreliaRExplosionRadius = 320 * Scale, IreliaROriginRadius = 90 * Scale;

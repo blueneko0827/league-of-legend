@@ -1,0 +1,12 @@
+{
+  "passed": 7,
+  "checks": [
+    "unchanged delivery produces zero changes",
+    "changed assets include existing meta",
+    "new effects include asset and folder metadata",
+    "deletions are proposals only",
+    "distribution adapter edits require review",
+    "adapted shared files require merge",
+    "finalized baseline cannot be overwritten"
+  ]
+}

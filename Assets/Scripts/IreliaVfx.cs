@@ -211,6 +211,9 @@ namespace MidLane
             Vector3 last = target != null ? target.Position + Vector3.up * target.VisualHeight * fallbackHeight : Vector3.zero;
             return () =>
             {
+                // The target's appearance can switch (dummy <-> minion model): follow the visible rig.
+                if (target != null && (bone == null || !bone.gameObject.activeInHierarchy))
+                    bone = RiotVfxPlayer.FindBone(target.transform, boneName);
                 if (bone != null) last = bone.position;
                 else if (target != null) last = target.Position + Vector3.up * target.VisualHeight * fallbackHeight;
                 return new RiotVfxPose(last, facing);
