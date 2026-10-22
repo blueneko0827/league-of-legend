@@ -488,7 +488,7 @@ for name in sorted(systems):
 # life (its erosion runs slower), and the ghost blade images around it stay faint.
 ARTIST_TWEAKS = {
     ('Irelia_Base_W_DR', 'Ripple'): {'erosionDrive': .6},
-    ('Irelia_Base_W_DR', 'top2'): {'alpha': .45},
+    ('Irelia_Base_W_DR', 'top2'): {'alpha': .6},
 }
 for system in library['systems']:
     for e in system['emitters']:

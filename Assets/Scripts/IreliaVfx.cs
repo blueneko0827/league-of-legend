@@ -208,9 +208,10 @@ namespace MidLane
             observedCharging = charging;
         }
 
-        // FlexShape bound size for effects on Irelia herself: the W shield bubble (flexScale) is about
-        // as tall as Irelia in LoL, which a bound of 3/4 of her height in LoL units reproduces.
-        float SelfBoundSize() { return .75f * actor.VisualHeight / RiotVfxPlayer.UnitScale(world); }
+        // FlexShape bound size for effects on Irelia herself: in the footage the W shield bubble
+        // (flexScale) is about 1.1 times as tall as Irelia, which a bound of her height in LoL units
+        // reproduces.
+        float SelfBoundSize() { return actor.VisualHeight / RiotVfxPlayer.UnitScale(world); }
 
         void WLanded(Combatant target)
         {

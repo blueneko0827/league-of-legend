@@ -25,7 +25,7 @@ Shader "MidLane/IreliaWAim"
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float2 uv:TEXCOORD0; };
             struct Varyings { float4 positionCS:SV_POSITION; float2 uv:TEXCOORD0; };
-            Varyings Vert(Attributes i) { Varyings o; o.positionCS=TransformObjectToHClip(i.positionOS.xyz); o.uv=i.uv; return o; }
+            Varyings Vert(Attributes i) { Varyings o; o.positionCS=TransformObjectToHClip(i.positionOS.xyz); o.uv=i.uv*_BaseMap_ST.xy+_BaseMap_ST.zw; return o; }
             half4 Frag(Varyings i):SV_Target { return SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv)*_Tint; }
             ENDHLSL
         }

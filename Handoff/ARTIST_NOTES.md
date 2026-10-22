@@ -47,16 +47,21 @@
     partícula al empezar (antes, una fracción de segundo después: el escudo de la W tardaba en
     aparecer).
   - **Escudo de la W:** sus esferas (`W_DR/Ripple`, varias capas a la vez, de distinto tamaño)
-    usan el tamaño de Irelia (`FlexShape`), así que ahora la rodean como en LoL; antes eran
+    usan el tamaño de Irelia (`FlexShape`: su altura), así que ahora la rodean como en LoL,
+    con varias capas a la vez (una interior marcada y otra exterior más tenue); antes eran
     del tamaño de un objeto genérico y quedaban casi ocultas dentro del modelo. Ajustado a ojo
     contra el juego (en `Tools/Import-IreliaVfx.py`, `ARTIST_TWEAKS`): la burbuja conserva su
     relleno violeta y su borde la mayor parte de su vida, y las imágenes de cuchillas que giran
     alrededor (`top2`) quedan tenues, como en LoL.
-  - **Indicador de la W** (`IreliaWIndicator.cs`, nuevo): círculo alrededor de Irelia (brillo
-    verde azulado con borde blanco), las dos líneas finas del área de golpe, la flecha brillante
-    con la mira y la punta en forma de hoja, con las proporciones medidas en el juego. Las
-    texturas de indicadores de LoL no vienen en los archivos del personaje, así que se dibujan
-    con `Tools/Make-IreliaWIndicator.py`. La R mantiene su indicador.
+  - **Indicador de la W** (`IreliaWIndicator.cs`, nuevo), como en el juego: círculo alrededor de
+    Irelia (brillo verde azulado con borde blanco fino), las dos líneas punteadas del área de
+    golpe, el cuerpo de la flecha (ancho parejo), la mira (siempre mirando a la cámara, como en
+    LoL) y la punta en forma de hoja. Las texturas de indicadores de LoL no vienen en los
+    archivos del personaje: las proporciones se midieron sobre una vista cenital de la
+    grabación del juego (el círculo vuelve a ser redondo), la punta se calcó de esa misma
+    grabación (`Tools/Trace-IreliaWArrowhead.py`) y el resto se dibuja con
+    `Tools/Make-IreliaWIndicator.py`. Las líneas laterales siguen el ancho de golpe de la W de
+    la simulación. La R mantiene su indicador.
   - Con `"official_vfx": true` ya no se muestran los marcadores anteriores: el disco y las seis
     cuchillas que giraban durante la carga de la W, la barra del corte de la W, y las cuchillas
     de malla y el haz propio de la E. Con `false` vuelven tal como estaban.
@@ -75,7 +80,8 @@
   nuevos.
 
 - Archivos de autoría incluidos: `Tools/Make-IreliaWIndicator.py` (dibuja el indicador de la
-  W); el resto sale de los archivos originales con `Tools/Import-IreliaVfx.py` y
+  W) y `Tools/Trace-IreliaWArrowhead.py` (calca la punta de la flecha de un cuadro de la
+  grabación del juego); el resto sale de los archivos originales con `Tools/Import-IreliaVfx.py` y
   `Tools/Import-IreliaEAudio.py`.
 
 - Cambios que requieren fusionar código o afectan contratos con la simulación:

@@ -4,9 +4,10 @@ Usage: python Tools/Make-IreliaWIndicator.py
 Requires Pillow.
 
 LoL's skillshot indicator textures live in the game's shared UI files, which are not in
-CharacterAssets, so these are drawn here after the in-game W indicator: the circle around
-Irelia (teal glow inside a bright rim), the bright arrow with its target reticle, and the
-blade-shaped arrowhead where the two side lines of the hit area meet. Writes
+CharacterAssets, so these are drawn here after the in-game W indicator, measured on a top-down
+view of the reference footage: the circle around Irelia (teal glow inside a thin bright rim),
+the arrow body, the dashed side lines of the hit area and the target reticle. The arrowhead is
+traced from the footage itself (Tools/Trace-IreliaWArrowhead.py). Writes
 Assets/Resources/Models/IreliaOfficial/WAim/*.png (row 0 = far end, as Unity maps v=1).
 """
 import hashlib
@@ -29,7 +30,7 @@ def guid(name):
     return hashlib.md5(('MidLane/IreliaWAim/' + name).encode('utf-8')).hexdigest()
 
 
-def save(image, name, size):
+def save(image, name, size, repeat=False):
     OUT.mkdir(parents=True, exist_ok=True)
     folder_meta = Path(str(OUT) + '.meta')
     if not folder_meta.exists():
@@ -44,6 +45,8 @@ def save(image, name, size):
         text = TEMPLATE.read_text(encoding='utf-8-sig')
         lines = text.splitlines()
         lines = [f'guid: {guid(name)}' if line.startswith('guid:') else line for line in lines]
+        if repeat:
+            lines = [line.replace('wrapU: 1', 'wrapU: 0').replace('wrapV: 1', 'wrapV: 0') for line in lines]
         meta.write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print('wrote', target.relative_to(ROOT))
 
@@ -73,106 +76,65 @@ def circle():
     save(image, 'Circle', (512, 512))
 
 
-def stroke(draw, points, width0, width1, color, scale):
-    """Polyline with a width that tapers from width0 to width1 (pixels at supersampled scale)."""
-    count = len(points)
-    for i in range(count - 1):
-        t = i / max(1, count - 2)
-        w = width0 + (width1 - width0) * t
-        (x0, y0), (x1, y1) = points[i], points[i + 1]
-        dx, dy = x1 - x0, y1 - y0
-        length = math.hypot(dx, dy) or 1
-        nx, ny = -dy / length * w / 2, dx / length * w / 2
-        draw.polygon([(x0 + nx, y0 + ny), (x1 + nx, y1 + ny), (x1 - nx, y1 - ny), (x0 - nx, y0 - ny)], fill=color)
-        draw.ellipse([x1 - w / 2, y1 - w / 2, x1 + w / 2, y1 + w / 2], fill=color)
-
-
-def bezier(p0, p1, p2, steps=48):
-    return [((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],
-             (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1])
-            for t in (i / steps for i in range(steps + 1))]
-
-
-def head():
-    """Blade-shaped arrowhead: the side lines bend into a pointed arch, a filled teal chevron
-    inside, and the arrow splitting into two prongs that reach the tip."""
-    w, h = 512 * SS, 384 * SS
-    image = Image.new('RGBA', (w, h))
-    draw = ImageDraw.Draw(image)
-
-    def P(x, y):  # x across [-1, 1], y forward [0, 1] (tip at the top of the image)
-        return ((x * .96 + 1) / 2 * w, (1 - y * .97) * h)
-
-    for side in (-1, 1):
-        # Outer arch: continues the side line and rounds off into the point.
-        arch = [(side * (1 - y ** 3) ** .5, y) for y in (k / 64 for k in range(65))]
-        stroke(draw, [P(*p) for p in arch], 9 * SS, 5 * SS, CYAN + (255,), SS)
-        # Front chevron: a thin crescent (teal inside, bright front edge) pointing forward.
-        front = bezier((side * .78, .14), (side * .74, .66), (0, .9))
-        back = bezier((0, .73), (side * .58, .5), (side * .78, .14))
-        draw.polygon([P(*p) for p in front + back], fill=TEAL + (140,))
-        stroke(draw, [P(*p) for p in front], 10 * SS, 5 * SS, CYAN + (255,), SS)
-        stroke(draw, [P(*p) for p in back], 4 * SS, 4 * SS, CYAN + (220,), SS)
-        # A second, smaller chevron behind it.
-        stroke(draw, [P(*p) for p in bezier((side * .52, .1), (side * .46, .46), (0, .62))], 7 * SS, 4 * SS, CYAN + (245,), SS)
-        # The arrow's two prongs.
-        stroke(draw, [P(*p) for p in bezier((side * .07, 0), (side * .09, .4), (side * .02, .86))], 11 * SS, 5 * SS, CYAN + (255,), SS)
-    image = image.filter(ImageFilter.GaussianBlur(SS * .6))
-    save(image, 'Head', (512, 384))
-
-
 def line():
-    """Bright arrow body: narrow near Irelia, full width at the reticle, soft sides."""
-    w, h = 64, 512
-    image = Image.new('RGBA', (w, h))
-    px = image.load()
-    for y in range(h):
-        forward = 1 - (y + .5) / h
-        half = .3 + .7 * forward ** .8
-        for x in range(w):
-            d = abs((x + .5) / w * 2 - 1) / half
-            a = 1 - smooth(.7, 1.0, d)
-            if a > 0:
-                px[x, y] = CYAN + (int(255 * a),)
-    save(image, 'Line', (64, 512))
-
-
-def edge():
-    """Thin side line of the hit area."""
-    w, h = 16, 64
+    """Arrow body: an even bright band with soft sides (the same width all along, as in LoL)."""
+    w, h = 64, 16
     image = Image.new('RGBA', (w, h))
     px = image.load()
     for y in range(h):
         for x in range(w):
             d = abs((x + .5) / w * 2 - 1)
-            a = (1 - smooth(.35, 1.0, d)) * .75
+            a = 1 - smooth(.78, 1.0, d)
+            core = 1 - smooth(0, .8, d)  # a touch brighter along the middle
+            c = tuple(int(CYAN[i] * (.92 + .08 * core)) for i in range(3))
+            px[x, y] = c + (int(255 * a),)
+    save(image, 'Line', (64, 16))
+
+
+def edge():
+    """Dashed side line of the hit area: one dash per tile (the material repeats it)."""
+    w, h = 16, 64
+    image = Image.new('RGBA', (w, h))
+    px = image.load()
+    for y in range(h):
+        along = (y + .5) / h
+        dash = .35 + .65 * smooth(.0, .1, along) * (1 - smooth(.7, .8, along))
+        for x in range(w):
+            d = abs((x + .5) / w * 2 - 1)
+            a = (1 - smooth(.3, 1.0, d)) * dash * .6
             px[x, y] = CYAN + (int(255 * a),)
-    save(image, 'Edge', (16, 64))
+    save(image, 'Edge', (16, 64), repeat=True)
 
 
 def reticle():
-    """Target mark at the end of the arrow: cream rim, black ring, teal center, white pip."""
+    """Target mark (faces the camera): black outer ring, cream ring with four small notches
+    pointing in, a see-through dark center that lets the arrow body show, and a cream pip in a
+    black dot."""
     n = 256 * SS
     image = Image.new('RGBA', (n, n))
     draw = ImageDraw.Draw(image)
     c = n / 2
+    cream, black = (240, 230, 206, 255), (8, 10, 12, 255)
 
     def disc(r, color):
         draw.ellipse([c - r * c, c - r * c, c + r * c, c + r * c], fill=color)
 
-    disc(1.0, (236, 226, 196, 255))
-    disc(.86, (10, 14, 16, 255))
-    # Four notches in the black ring, as on LoL's reticle.
-    for angle in (45, 135, 225, 315):
+    disc(1.0, black)
+    disc(.86, cream)
+    disc(.72, black)
+    for angle in (0, 90, 180, 270):
         a = math.radians(angle)
-        x, y = c + math.cos(a) * .78 * c, c + math.sin(a) * .78 * c
-        draw.ellipse([x - .09 * c, y - .09 * c, x + .09 * c, y + .09 * c], fill=(236, 226, 196, 255))
-    disc(.66, (60, 190, 180, 255))
-    disc(.27, (10, 14, 16, 255))
-    disc(.15, (250, 250, 245, 255))
+        x, y = c + math.cos(a) * .7 * c, c + math.sin(a) * .7 * c
+        tip_x, tip_y = c + math.cos(a) * .52 * c, c + math.sin(a) * .52 * c
+        side = .1 * c
+        draw.polygon([(x - math.sin(a) * side, y + math.cos(a) * side), (tip_x, tip_y),
+                      (x + math.sin(a) * side, y - math.cos(a) * side)], fill=cream)
+    disc(.6, (10, 30, 34, 120))  # see-through: the body shows under it
+    disc(.26, black)
+    disc(.13, cream)
     image = image.filter(ImageFilter.GaussianBlur(SS * .5))
     save(image, 'Reticle', (128, 128))
 
 
 if __name__ == '__main__':
-    circle(); head(); line(); edge(); reticle()
+    circle(); line(); edge(); reticle()
