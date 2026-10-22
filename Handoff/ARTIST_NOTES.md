@@ -95,6 +95,16 @@
       deshace en arcos como una corona de laurel alrededor de ella, antes era del tamaño de un
       objeto genérico y quedaba oculto dentro del modelo; en la grabación aparece justo cuando
       el golpe completa las 4 cargas.
+    - Corona de laurel y rayos (agregados para igualar la grabación; LoL usa parte de esto con
+      su bloom y efectos de pantalla que el proyecto no tiene): dos emisores nuevos en `P_buf`,
+      creados por el importador con texturas derivadas de las de Irelia.
+      - `Laurel`: al completar las 4 cargas, imágenes de cuchillas doradas se cierran alrededor
+        del pecho en forma de corona de laurel (dos ramas que suben desde abajo) durante medio
+        segundo, girando hasta su lugar. Textura `irelia_p_laurel_gold` (la corona de cuchillas
+        de la W, `irelia_base_w_swipe_blades`, en dorado y dada vuelta).
+      - `Sunburst_A` / `Sunburst_B`: mientras mantiene las 4 cargas, rayos suaves dorados como
+        luz de vela salen en círculo desde el centro del cuerpo, girando despacio y latiendo (dos
+        capas desfasadas). Textura `irelia_p_sunburst_gold` (dibujada por el importador).
     - Color: el destello del cuerpo (`Avatar_Burst`) y los rayos (`Sparks1` / `Sparks2`) son
       dorados como en el juego (en los datos son blanco y celeste/violeta, que LoL lleva a dorado
       con su resplandor); ajuste en `ARTIST_TWEAKS` del importador.

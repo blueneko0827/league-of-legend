@@ -545,6 +545,102 @@ for system in library['systems']:
         notes.append(f"{system['name']}/{e['name']}: adjusted to match in-game footage {sorted(tweak)}.")
 
 
+# ---------------------------------------------------------------------------------------------
+# Four-stack passive, matched to in-game footage (Handoff/ARTIST_NOTES.md). LoL draws part of this
+# look through its bloom and screen effects, which the project does not have, so two emitters are
+# added to Irelia_Base_P_buf with textures derived from Irelia's own:
+#  - Laurel: when the stacks complete, gold blade images close around her chest in a laurel
+#    wreath shape for half a second (the W's blade-wreath texture, recolored gold and turned so
+#    the two branches rise from the bottom, as in the footage), turning into place as they appear.
+#  - Sunburst_A / Sunburst_B: while she keeps four stacks, soft candle-gold beams spread in a
+#    circle from her body center, slowly turning and pulsing (two layers out of phase).
+
+
+class GeneratedSource:
+    def __init__(self, image):
+        buffer = io.BytesIO(); image.save(buffer, 'PNG'); self.data = buffer.getvalue()
+
+    def read_bytes(self):
+        return self.data
+
+
+def add_generated_texture(name, image):
+    alpha = image.getchannel('A').getextrema()
+    textures[name] = {'source': GeneratedSource(image), 'image': image, 'opaqueAlpha': alpha[0] == alpha[1]}
+
+
+def laurel_texture():
+    base = textures.get('irelia_base_w_swipe_blades')
+    if not base:
+        return False
+    source = base['image'].convert('RGBA').transpose(Image.FLIP_TOP_BOTTOM)
+    out = Image.new('RGBA', source.size)
+    src, dst = source.load(), out.load()
+    for y in range(source.size[1]):
+        for x in range(source.size[0]):
+            r, g, b, a = src[x, y]
+            lum = (r + g + b) / (3 * 255)
+            t = max(0.0, min(1.0, (lum - .2) / .6))
+            gold = (int(255 * (.85 + .15 * t)), int(255 * (.55 + .35 * t)), int(255 * (.18 + .45 * t)))
+            dst[x, y] = gold + (a,)
+    add_generated_texture('irelia_p_laurel_gold', out.resize((256, 256), Image.LANCZOS))
+    return True
+
+
+def sunburst_texture(beams=10, size=256):
+    import math
+    out = Image.new('RGBA', (size, size))
+    px = out.load()
+    for y in range(size):
+        for x in range(size):
+            u, v = (x + .5) / size * 2 - 1, (y + .5) / size * 2 - 1
+            r = math.hypot(u, v)
+            if r >= 1:
+                continue
+            angle = math.atan2(v, u) * beams / (2 * math.pi)
+            spoke = math.exp(-((angle - round(angle)) / .16) ** 2)   # soft beam across
+            radial = min(1, max(0, (r - .08) / .22)) * (1 - r) ** 1.4  # starts off center, fades out
+            core = math.exp(-(r / .28) ** 2) * .35                       # warm glow at the center
+            a = max(0, min(1, spoke * radial * 1.6 + core))
+            t = min(1, spoke * (1 - r))
+            px[x, y] = (255, int(255 * (.62 + .3 * t)), int(255 * (.22 + .4 * t)), int(255 * a))
+    add_generated_texture('irelia_p_sunburst_gold', out)
+
+
+def billboard(name, texture, **fields):
+    e = {'name': name, 'skip': '', 'primitive': 'billboard', 'texture': texture, 'blend': 4, 'pass': 6,
+         'alphaRef': 0, 'twoSided': False, 'single': False, 'delay': 0.0, 'lifetime': -1.0, 'linger': .3,
+         'bindWeight': 1.0, 'rate': {'c': [1.0]}, 'particleLifetime': {'c': [1.0]},
+         'shape': 'point', 'shapeOffset': {'c': [0.0, 115.0, 0.0]}, 'flexScale': 0.0, 'flexOffset': 0.0,
+         'uniformScale': True, 'rotationEnabled': False, 'localOrientation': False,
+         'particleLocalOrientation': False, 'directionOriented': False, 'groundLayer': False,
+         'randomStartFrame': False, 'directionVelocityScale': 0.0, 'directionVelocityMinScale': 0.0,
+         'texDiv': [1.0, 1.0], 'numFrames': 0, 'frameRate': 0.0, 'startFrame': 0, 'uvMode': 0}
+    e.update(fields)
+    return e
+
+
+buf = next((system for system in library['systems'] if system['name'] == 'Irelia_Base_P_buf'), None)
+if buf is not None:
+    added = []
+    if laurel_texture():
+        added.append(billboard('Laurel', 'irelia_p_laurel_gold', single=True, lifetime=1.0, linger=-1.0, delay=.04,
+                               particleLifetime={'c': [.55]}, birthScale={'c': [135.0, 135.0, 1.0]},
+                               scale={'c': [1, 1, 1], 't': [0, .25, 1], 'v': [.75, .75, .75, 1.05, 1.05, 1.05, 1.15, 1.15, 1.15]},
+                               birthRotation={'c': [-35.0, 0.0, 0.0]},
+                               rotationalVelocity={'c': [0.0, 0.0, 0.0]},
+                               rotation={'c': [0, 0, 0], 't': [0, .3, 1], 'v': [0, 0, 0, 35, 0, 0, 35, 0, 0]},
+                               color={'c': [1, 1, 1, 1], 't': [0, .12, .6, 1], 'v': [1, .9, .6, 0, 1, .85, .5, 1, 1, .7, .3, .85, 1, .55, .18, 0]}))
+    sunburst_texture()
+    for name, phase, spin in (('Sunburst_A', 0.0, 9.0), ('Sunburst_B', 18.0, -6.0)):
+        added.append(billboard(name, 'irelia_p_sunburst_gold', particleLifetime={'c': [2.0]}, rate={'c': [1.0]},
+                               birthScale={'c': [175.0, 175.0, 1.0]}, birthRotation={'c': [phase, 0.0, 0.0]},
+                               rotationalVelocity={'c': [spin, 0.0, 0.0]},
+                               color={'c': [1, .7, .3, .24], 't': [0, .5, 1], 'v': [1, .7, .3, 0, 1, .72, .32, .24, 1, .62, .24, 0]}))
+    buf['emitters'] += added
+    for e in added:
+        notes.append(f"Irelia_Base_P_buf/{e['name']}: added to match in-game footage (generated texture {e['texture']}).")
+
 # Animation graph particle events (which clip spawns which swipe, on which frame).
 anm_paths = {}
 for path in SOURCE.rglob('*.anm'):
