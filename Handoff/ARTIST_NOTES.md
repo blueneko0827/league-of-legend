@@ -60,8 +60,13 @@
     archivos del personaje: las proporciones se midieron sobre una vista cenital de la
     grabación del juego (el círculo vuelve a ser redondo), la punta se calcó de esa misma
     grabación (`Tools/Trace-IreliaWArrowhead.py`) y el resto se dibuja con
-    `Tools/Make-IreliaWIndicator.py`. Las líneas laterales siguen el ancho de golpe de la W de
-    la simulación. La R mantiene su indicador.
+    `Tools/Make-IreliaWIndicator.py`. La R mantiene su indicador.
+  - **Tamaño del indicador de la W:** los campeones se dibujan 1,65 veces más grandes que las
+    distancias del juego, así que un indicador exactamente del alcance de la W se ve corto al
+    lado de Irelia (su punta queda a 3 alturas de Irelia; en LoL, a 3,9). Por eso se dibuja
+    1,3 veces más grande (`"w_indicator_scale": 1.3` en `ScenePresentation.json`), con la
+    proporción de LoL. Con `1` muestra exactamente el alcance y el ancho de golpe de la W; el
+    área de golpe no cambia en ningún caso.
   - Con `"official_vfx": true` ya no se muestran los marcadores anteriores: el disco y las seis
     cuchillas que giraban durante la carga de la W, la barra del corte de la W, y las cuchillas
     de malla y el haz propio de la E. Con `false` vuelven tal como estaban.
@@ -95,6 +100,8 @@
   - `BladeTuning.cs` / `BladeTuning.asset`: `eConvergeTime` 0,25 → 0,35 s (el impacto de la E
     llega 0,1 s más tarde, como en LoL).
   - `IreliaModelAnimation.cs`: las cuchillas de guardia de la W solo sin `official_vfx`.
+  - `ScenePresentationConfig.cs` / `ScenePresentation.json`: ajuste nuevo `w_indicator_scale`
+    (solo presentación).
   - `IreliaAudio.cs`: señales `EBladeLand` y `ESparkles` (al final del enum).
   - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva `OfficialWAndEEffectsPlay`.
 

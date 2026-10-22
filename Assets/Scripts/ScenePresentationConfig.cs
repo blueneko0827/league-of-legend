@@ -39,6 +39,11 @@ namespace MidLane
         // size around the attachment point; 1 keeps the proportion of the enlarged champion.
         public bool official_vfx = true;
         public float vfx_scale = 1;
+        // Size of the W aiming indicator. The champions are drawn 1.65 times larger than the
+        // gameplay distances, so an indicator exactly as long as the W's range looks short next
+        // to Irelia; 1.3 gives it LoL's proportion to her (measured on in-game footage: its point
+        // is 3.9 times her height away). 1 = exactly the W's hit range and width.
+        public float w_indicator_scale = 1.3f;
         // Extra height of the champions' overhead bar, as a fraction of the champion's visual
         // height. The official models (hair, floating blades) rise above the selection height,
         // so without it the bar covers Irelia's face; LoL leaves a gap above the head.
@@ -81,6 +86,7 @@ namespace MidLane
             sun_intensity = Mathf.Clamp(sun_intensity, 0, 3);
             shadow_strength = Mathf.Clamp01(shadow_strength);
             vfx_scale = Mathf.Clamp(vfx_scale, .5f, 2);
+            w_indicator_scale = Mathf.Clamp(w_indicator_scale, .5f, 2);
             champion_bar_lift = Mathf.Clamp(champion_bar_lift, 0, 1);
             // Fixed at the farthest framing previously reachable with the scroll wheel, times the zoom.
             camera_distance = CameraDistance;

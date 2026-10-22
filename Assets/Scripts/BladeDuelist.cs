@@ -214,7 +214,11 @@ namespace MidLane
         }
         public void AimW(Vector3 aim) { if (IsCharging) { chargeAim = aim; PresentWIndicator(); } }
         void PresentWIndicator()
-        { if (wIndicator!=null) wIndicator.Present(self.Position,WDirection,Tuning.wRange,Tuning.wHalfWidth*2); }
+        {
+            // Presentation size only (ScenePresentation.json "w_indicator_scale"); the hit area is unchanged.
+            float size = world.Presentation.w_indicator_scale > 0 ? world.Presentation.w_indicator_scale : 1;
+            if (wIndicator!=null) wIndicator.Present(self.Position,WDirection,Tuning.wRange*size,Tuning.wHalfWidth*2*size);
+        }
         public bool ReleaseW(Vector3 aim)
         {
             if (!IsCharging || world.Paused || world.RoundOver || !self.Alive) return false;
