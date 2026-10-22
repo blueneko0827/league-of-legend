@@ -71,11 +71,13 @@
     juego: en LoL las cuchillas brillan naranja dorado, el cuerpo de Irelia toma un brillo
     dorado y salen rayos dorados en todas direcciones.
     - Cuchillas y cuerpo: el material de las cuchillas de LoL (`Irelia_Blades_Passive_inst`)
-      lleva su resplandor (bloom) de azul a naranja dorado (1, 0,62, 0) con 4 cargas. El proyecto
-      no tiene bloom, así que `IreliaPassiveGlow.cs` (nuevo, shader
-      `IreliaPassiveGlow.shader`) suma ese dorado sobre las cuchillas (relleno y borde) y un borde
-      dorado sobre el cuerpo; aparece y se va en 0,2 s. Se mantiene la textura de cuchillas de 4
-      cargas que ya cambiaba en el Hito 2.1.
+      lleva su resplandor (bloom) de azul a naranja dorado con 4 cargas. El proyecto no tiene
+      bloom, así que `IreliaPassiveGlow.cs` (nuevo, shader `IreliaPassiveGlow.shader`) suma un
+      brillo sobre el modelo, ajustado a la grabación del juego: las cuchillas se ven crema
+      dorado pálido (sin contorno naranja) y el cuerpo conserva sus colores (rojo, blanco,
+      violeta) con apenas un borde cálido; aparece y se va en 0,2 s. Se mantiene la textura de
+      cuchillas de 4 cargas del Hito 2.1. El resplandor alrededor del pecho (`P_buf/glow1`) es
+      naranja como en el juego (en los datos, amarillo).
     - Rayos: los destellos de `P_buf` (`Sparks1` / `Sparks2`) salían todos en la misma dirección;
       su forma de emisión (`VfxShapeSphere`, `flags` 1) indica una dirección al azar para cada
       uno, y ahora salen en todas direcciones, como en el juego. El importador lee `flags`

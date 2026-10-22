@@ -3,10 +3,11 @@ using UnityEngine;
 
 namespace MidLane
 {
-    // Ionian Fervor at four stacks, on Irelia's model: her blades glow orange-gold and her body
-    // takes a gold rim, as in LoL (whose blade material blooms to Bloom_Color 1, 0.62, 0 at four
-    // IreliaPassiveStacks; the project has no bloom pass, so an additive glow pass is drawn on top
-    // of each skinned mesh). Fades in and out instead of popping. Presentation only.
+    // Ionian Fervor at four stacks, on Irelia's model: her blades glow pale cream-gold and her body
+    // keeps its colors with a faint warm edge, as in the game footage (LoL's blade material blooms
+    // to Bloom_Color 1, 0.62, 0 at four IreliaPassiveStacks; the project has no bloom pass, so an
+    // additive glow pass is drawn on top of each skinned mesh). Fades in and out instead of
+    // popping. Presentation only.
     public sealed class IreliaPassiveGlow
     {
         const float FadeTime = .2f;
@@ -23,16 +24,19 @@ namespace MidLane
             this.model = model;
             Shader shader = Shader.Find("MidLane/IreliaPassiveGlow");
             if (model == null || shader == null) return;
-            // Blades: LoL's bloom color as a fill plus a brighter rim, slightly larger than the blade.
+            // Blades: in the game footage they read pale cream-gold (the 4-stack texture plus LoL's
+            // bloom), not orange: a soft cream fill and a narrow rim, the same size as the blade (a
+            // larger shell outlined every blade with a jagged orange edge).
             blades = new Material(shader) { name = "Irelia passive glow (blades)" };
-            blades.SetColor("_GlowColor", new Color(1, .62f, 0, 1));
-            blades.SetFloat("_Fill", .45f); blades.SetFloat("_RimPower", 1.6f); blades.SetFloat("_Inflate", .012f);
-            bladesIntensity = 1.1f;
-            // Body: a warm gold rim around her silhouette.
+            blades.SetColor("_GlowColor", new Color(1, .84f, .55f, 1));
+            blades.SetFloat("_Fill", .28f); blades.SetFloat("_RimPower", 3f); blades.SetFloat("_Inflate", 0);
+            bladesIntensity = .7f;
+            // Body: her own colors stay (red, white, violet in the footage); only a faint warm edge
+            // where the orange glow around her catches the silhouette.
             body = new Material(shader) { name = "Irelia passive glow (body)" };
-            body.SetColor("_GlowColor", new Color(1, .7f, .25f, 1));
-            body.SetFloat("_Fill", .06f); body.SetFloat("_RimPower", 2.4f); body.SetFloat("_Inflate", .004f);
-            bodyIntensity = .85f;
+            body.SetColor("_GlowColor", new Color(1, .55f, .18f, 1));
+            body.SetFloat("_Fill", 0); body.SetFloat("_RimPower", 4f); body.SetFloat("_Inflate", 0);
+            bodyIntensity = .25f;
         }
 
         public void Set(bool on) { target = on ? 1 : 0; }
