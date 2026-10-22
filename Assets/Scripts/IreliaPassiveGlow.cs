@@ -30,13 +30,13 @@ namespace MidLane
             blades = new Material(shader) { name = "Irelia passive glow (blades)" };
             blades.SetColor("_GlowColor", new Color(1, .84f, .55f, 1));
             blades.SetFloat("_Fill", .28f); blades.SetFloat("_RimPower", 3f); blades.SetFloat("_Inflate", 0);
-            bladesIntensity = .7f;
+            bladesIntensity = .55f;
             // Body: her own colors stay (red, white, violet in the footage); only a faint warm edge
             // where the orange glow around her catches the silhouette.
             body = new Material(shader) { name = "Irelia passive glow (body)" };
             body.SetColor("_GlowColor", new Color(1, .55f, .18f, 1));
             body.SetFloat("_Fill", 0); body.SetFloat("_RimPower", 4f); body.SetFloat("_Inflate", 0);
-            bodyIntensity = .25f;
+            bodyIntensity = .15f;
         }
 
         public void Set(bool on) { target = on ? 1 : 0; }

@@ -87,24 +87,26 @@
       desde el pecho como los rayos de una rueda, como en el juego. Solo afecta a los emisores
       de dirección al azar (los cortes de los golpes básicos no cambian).
     - Luz alrededor del cuerpo, como la de una vela: el resplandor `P_buf/glow1` es más amplio,
-      naranja dorado y suave, y late despacio (dos partículas por segundo que aparecen y se
-      apagan); ya no se ve como un disco ("moneda"). El destello del cuerpo al activarse
+      naranja dorado, suave y tenue, y late despacio (dos partículas por segundo que aparecen y
+      se apagan); ya no se ve como un disco ("moneda"). El brillo del modelo (cuchillas y
+      borde del cuerpo) también es más suave. El destello del cuerpo al activarse
       (`Avatar_Burst`) es más tenue y los rayos continuos (`Sparks2`) son menos y más suaves.
     - Corona dorada al completar las cargas: `P_buf` ahora usa el tamaño de Irelia
       (`FlexShape`, como el escudo de la W). Su anillo dorado (`RippleActivate`), que se
       deshace en arcos como una corona de laurel alrededor de ella, antes era del tamaño de un
       objeto genérico y quedaba oculto dentro del modelo; en la grabación aparece justo cuando
       el golpe completa las 4 cargas.
-    - Corona de laurel y rayos (agregados para igualar la grabación; LoL usa parte de esto con
-      su bloom y efectos de pantalla que el proyecto no tiene): dos emisores nuevos en `P_buf`,
-      creados por el importador con texturas derivadas de las de Irelia.
-      - `Laurel`: al completar las 4 cargas, imágenes de cuchillas doradas se cierran alrededor
-        del pecho en forma de corona de laurel (dos ramas que suben desde abajo) durante medio
-        segundo, girando hasta su lugar. Textura `irelia_p_laurel_gold` (la corona de cuchillas
-        de la W, `irelia_base_w_swipe_blades`, en dorado y dada vuelta).
-      - `Sunburst_A` / `Sunburst_B`: mientras mantiene las 4 cargas, rayos suaves dorados como
-        luz de vela salen en círculo desde el centro del cuerpo, girando despacio y latiendo (dos
-        capas desfasadas). Textura `irelia_p_sunburst_gold` (dibujada por el importador).
+    - Rayos de luz (agregados para igualar la grabación; LoL usa parte de esto con su bloom,
+      que el proyecto no tiene): emisor nuevo `P_buf/Beams`, creado por el importador con la
+      textura `irelia_p_beam_gold` (dibujada por él). Mientras mantiene las 4 cargas, rayos
+      suaves dorados, como luz de vela, salen desde el centro del cuerpo en un círculo
+      irregular: cada rayo es una partícula (unos nueve por segundo, de medio a un segundo de
+      vida) con dirección, largo, brillo y giro al azar, más intensa en el centro y apagándose
+      hacia la punta, y siguen a Irelia al moverse.
+    - La corona de laurel dorada que se ve bajo Irelia en la grabación no es de Irelia: aparece
+      cuando la runa Conquistador llega a 12 cargas (en el HUD de la grabación su contador pasa
+      de 10 a 12 y aparece su ícono dorado en ese mismo momento). No se agrega, porque el
+      proyecto no tiene runas en los efectos; la corona que se había agregado antes se quitó.
     - Color: el destello del cuerpo (`Avatar_Burst`) y los rayos (`Sparks1` / `Sparks2`) son
       dorados como en el juego (en los datos son blanco y celeste/violeta, que LoL lleva a dorado
       con su resplandor); ajuste en `ARTIST_TWEAKS` del importador.
