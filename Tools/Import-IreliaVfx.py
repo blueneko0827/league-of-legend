@@ -322,7 +322,7 @@ textures, meshes, notes = {}, {}, []
 # glows and flashes, a mote for sparks).
 SUBSTITUTE_TEXTURES = {
     'irelia_skin16_glow': 'irelia_base_z_glow_bright',        # W_Swipe_Empowered: gold streak to the target
-    'zoe_base_z_spark': 'irelia_base_z_mote',                  # W_Hit: sparks
+    'zoe_base_z_spark': 'irelia_base_z_glow_bright',           # W_Hit: sparks (streaks along their flight)
     'zoe_base_q_impactglow': 'irelia_base_z_spotlight',        # E_Blades: dark circle under the blade
 }
 # Not replaced: the dust textures (TahmKench smoke, Kaisa recall dust). Irelia has no soft smoke
@@ -512,7 +512,15 @@ GOLD_FLASH = {'c': [1, .66, .25, .45], 't': [0, 1], 'v': [1, .66, .25, .45, 1, .
 # full strength its round texture showed as a disc (a "coin") on her body.
 ORANGE_HAZE = {'c': [1, .66, .28, .26], 't': [0, .5, 1], 'v': [1, .66, .28, 0, 1, .66, .28, .26, 1, .6, .22, 0]}
 GOLD_RAYS = {'c': [1, .8, .4, 1], 't': [0, 1], 'v': [1, .88, .52, 1, 1, .52, .1, 0]}
+# W_Hit: in the footage the hit is a white-hot burst with a blue halo, about as wide as the target
+# and brightest in its first tenth of a second, with sparks streaking out; read literally its star
+# starts invisible and only turns blue, and the sparks are specks.
+W_HIT_STAR = {'c': [1, 1, 1, 1], 't': [0, .2, .55, 1], 'v': [1, 1, 1, 1, .82, .9, 1, 1, .35, .5, 1, .55, .3, .4, 1, 0]}
 ARTIST_TWEAKS = {
+    ('Irelia_Base_W_Hit', 'large'): {'color': W_HIT_STAR, 'size': 1.6},
+    ('Irelia_Base_W_Hit', 'glow'): {'size': 1.5},
+    ('Irelia_Base_W_Hit', 'glow1'): {'size': 1.5},
+    ('Irelia_Base_W_Hit', 'burst'): {'size': 2.2},
     ('Irelia_Base_W_DR', 'Ripple'): {'erosionDrive': .6},
     ('Irelia_Base_W_DR', 'top2'): {'alpha': .6},
     ('Irelia_Base_P_buf', 'Avatar_Burst'): {'color': GOLD_FLASH},
@@ -533,6 +541,8 @@ for system in library['systems']:
             e['color'] = json.loads(json.dumps(tweak['color']))
         if 'size' in tweak and e.get('birthScale'):
             e['birthScale']['c'] = [v * tweak['size'] for v in e['birthScale']['c']]
+            if e['birthScale'].get('v'):
+                e['birthScale']['v'] = [v * tweak['size'] for v in e['birthScale']['v']]
         if 'rate' in tweak and e.get('rate'):
             e['rate']['c'] = [v * tweak['rate'] for v in e['rate']['c']]
             if e['rate'].get('v'):

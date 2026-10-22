@@ -53,6 +53,13 @@
     contra el juego (en `Tools/Import-IreliaVfx.py`, `ARTIST_TWEAKS`): la burbuja conserva su
     relleno violeta y su borde la mayor parte de su vida, y las imágenes de cuchillas que giran
     alrededor (`top2`) quedan tenues, como en LoL.
+  - **Impacto de la W** (`W_Hit`), comparado con la grabación del juego: allí es un estallido
+    blanco intenso con halo azul, más o menos del ancho del objetivo, que brilla sobre todo en
+    la primera décima de segundo, con chispas que salen disparadas. Leído tal cual, su estrella
+    empezaba invisible y solo se ponía azul, y las chispas eran puntos. Ajustes en
+    `ARTIST_TWEAKS`: estrella blanca al inicio que pasa a azul y 1,6 veces más grande; halos
+    1,5 veces; chispas como trazos (`irelia_base_z_glow_bright` en lugar de la textura de Zoe
+    que no viene) y 2,2 veces más grandes.
   - **Indicador de la W** (`IreliaWIndicator.cs`, nuevo), como en el juego: círculo alrededor de
     Irelia (brillo verde azulado con borde blanco fino), las dos líneas punteadas del área de
     golpe, el cuerpo de la flecha (ancho parejo), la mira (siempre mirando a la cámara, como en
