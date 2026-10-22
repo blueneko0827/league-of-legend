@@ -67,6 +67,22 @@
     1,3 veces más grande (`"w_indicator_scale": 1.3` en `ScenePresentation.json`), con la
     proporción de LoL. Con `1` muestra exactamente el alcance y el ancho de golpe de la W; el
     área de golpe no cambia en ningún caso.
+  - **Pasiva con 4 cargas** (al completar las cargas con Q, E u otros golpes), comparada con el
+    juego: en LoL las cuchillas brillan naranja dorado, el cuerpo de Irelia toma un brillo
+    dorado y salen rayos dorados en todas direcciones.
+    - Cuchillas y cuerpo: el material de las cuchillas de LoL (`Irelia_Blades_Passive_inst`)
+      lleva su resplandor (bloom) de azul a naranja dorado (1, 0,62, 0) con 4 cargas. El proyecto
+      no tiene bloom, así que `IreliaPassiveGlow.cs` (nuevo, shader
+      `IreliaPassiveGlow.shader`) suma ese dorado sobre las cuchillas (relleno y borde) y un borde
+      dorado sobre el cuerpo; aparece y se va en 0,2 s. Se mantiene la textura de cuchillas de 4
+      cargas que ya cambiaba en el Hito 2.1.
+    - Rayos: los destellos de `P_buf` (`Sparks1` / `Sparks2`) salían todos en la misma dirección;
+      su forma de emisión (`VfxShapeSphere`, `flags` 1) indica una dirección al azar para cada
+      uno, y ahora salen en todas direcciones, como en el juego. El importador lee `flags`
+      (`shapeFlags`).
+    - Color: el destello del cuerpo (`Avatar_Burst`) y los rayos (`Sparks1` / `Sparks2`) son
+      dorados como en el juego (en los datos son blanco y celeste/violeta, que LoL lleva a dorado
+      con su resplandor); ajuste en `ARTIST_TWEAKS` del importador.
   - Con `"official_vfx": true` ya no se muestran los marcadores anteriores: el disco y las seis
     cuchillas que giraban durante la carga de la W, la barra del corte de la W, y las cuchillas
     de malla y el haz propio de la E. Con `false` vuelven tal como estaban.
@@ -81,8 +97,9 @@
 - Recursos o paquetes nuevos y sus requisitos: texturas y mallas de W/E en
   `Assets/Resources/Vfx/Irelia/`, audios en `Assets/Resources/Audio/Irelia/`, texturas del
   indicador de la W en `Assets/Resources/Models/IreliaOfficial/WAim/`, shader
-  `Assets/Resources/Shaders/IreliaWAim.shader` y script `IreliaWIndicator.cs`. Sin paquetes
-  nuevos.
+  `Assets/Resources/Shaders/IreliaWAim.shader` y script `IreliaWIndicator.cs`; brillo de la
+  pasiva: `IreliaPassiveGlow.cs` y `Assets/Resources/Shaders/IreliaPassiveGlow.shader`. Sin
+  paquetes nuevos.
 
 - Archivos de autoría incluidos: `Tools/Make-IreliaWIndicator.py` (dibuja el indicador de la
   W) y `Tools/Trace-IreliaWArrowhead.py` (calca la punta de la flecha de un cuadro de la
@@ -103,6 +120,9 @@
   - `ScenePresentationConfig.cs` / `ScenePresentation.json`: ajuste nuevo `w_indicator_scale`
     (solo presentación).
   - `IreliaAudio.cs`: señales `EBladeLand` y `ESparkles` (al final del enum).
+  - `RiotVfxSimulation.cs` / `RiotVfxData.cs`: `shapeFlags` (dirección al azar en esfera).
+  - `IreliaVfx.cs`: con 4 cargas suma un material de brillo a los `SkinnedMeshRenderer` del
+    modelo de Irelia (se quita al perder las cargas, al morir o al reiniciar).
   - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva `OfficialWAndEEffectsPlay`.
 
 - Capturas de comparación y resolución utilizada: pendientes, 1280×720 en Game.

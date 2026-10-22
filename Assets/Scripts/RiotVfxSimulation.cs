@@ -204,6 +204,15 @@ namespace MidLane
                     Quaternion spin = Quaternion.AngleAxis(RiotVfxEval.Float(d.shapeRotationAngles[i], emitterTime, 0, random), axis);
                     offset = spin * offset; velocity = spin * velocity;
                 }
+            // VfxShapeSphere flag 1: each particle leaves in a random direction (its birth velocity
+            // turned uniformly over the sphere), e.g. the rays that burst out of Irelia at four
+            // passive stacks.
+            if (d.shape == "sphere" && (d.shapeFlags & 1) != 0)
+            {
+                Vector3 direction;
+                do direction = new Vector3(Signed(), Signed(), Signed()); while (direction.sqrMagnitude > 1 || direction.sqrMagnitude < 1e-4f);
+                velocity = Quaternion.FromToRotation(Vector3.right, direction.normalized) * velocity;
+            }
             // A negative particle lifetime means the particle lives until the system stops.
             float life = RiotVfxEval.Float(d.particleLifetime, emitterTime, 1, random);
             life = life < 0 ? float.PositiveInfinity : Mathf.Max(.01f, life);

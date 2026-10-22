@@ -92,6 +92,7 @@ namespace MidLane
         public bool twoSided, single, uniformScale, rotationEnabled, localOrientation, particleLocalOrientation;
         public bool directionOriented, groundLayer, randomStartFrame;
         public float delay, lifetime, linger, bindWeight, flexScale, flexOffset, shapeRadius, shapeHeight;
+        public int shapeFlags;
         public float directionVelocityScale, directionVelocityMinScale, frameRate, trailCutoff;
         // Beam meshes: length along Z in LoL units, stretched to the target distance.
         public float beamLength;

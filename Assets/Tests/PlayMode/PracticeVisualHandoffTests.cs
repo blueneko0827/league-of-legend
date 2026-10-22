@@ -75,7 +75,7 @@ namespace MidLane.Tests
             { Assert.NotNull(dummy.Visual); Assert.Greater(dummy.Visual.IdleClip.length, 0); Assert.Greater(dummy.Visual.HitClip.length, 0); }
             foreach (string clip in new[] { "Run", "Attack", "WCharge", "EFirst", "RCast" })
                 Assert.NotNull(Resources.Load<AnimationClip>("Models/IreliaOfficial/" + clip));
-            foreach (string shader in new[] { "IreliaRAim", "IreliaRBlade", "IreliaREnergy", "IreliaEConvergence" })
+            foreach (string shader in new[] { "IreliaRAim", "IreliaRBlade", "IreliaREnergy", "IreliaEConvergence", "IreliaWAim", "IreliaPassiveGlow" })
                 Assert.NotNull(Resources.Load<Shader>("Shaders/" + shader));
         }
         [UnityTest] public IEnumerator QAndEStillWorkAndTheShopCanBuyOutsideTheFountain()

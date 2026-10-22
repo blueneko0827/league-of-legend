@@ -30,6 +30,7 @@ namespace MidLane
         SkinnedMeshRenderer bladesRenderer;
         MaterialPropertyBlock bladesBlock;
         bool bladesMaxed;
+        IreliaPassiveGlow passiveGlow;
         static readonly int BaseMap = Shader.PropertyToID("_BaseMap"), MainTex = Shader.PropertyToID("_MainTex");
 
         struct Pending { public float at; public string system; public string bone; public float rate; }
@@ -72,6 +73,7 @@ namespace MidLane
             world = lane; actor = owner; blade = owner.Blade;
             model = transform.Find("Model");
             rig = model != null ? model.GetComponentInChildren<IreliaRigAnimation>() : null;
+            passiveGlow = new IreliaPassiveGlow(model);
             observedBasic = actor.BasicAttackSequence; observedQ = blade.QSequence; observedDeaths = actor.Deaths;
             observedE = blade.ESequence;
             blade.OnHitLanded += HitLanded; blade.QLanded += QLanded; blade.WLanded += WLanded; blade.ELanded += ELanded;
@@ -84,6 +86,7 @@ namespace MidLane
             if (blade != null) { blade.OnHitLanded -= HitLanded; blade.QLanded -= QLanded; blade.WLanded -= WLanded; blade.ELanded -= ELanded; }
             if (actor != null && actor.Audio != null) actor.Audio.Played -= SoundPlayed;
             StopPersistent();
+            if (passiveGlow != null) passiveGlow.Destroy();
         }
 
         bool Enabled { get { return world != null && world.Presentation.official_vfx; } }
@@ -376,6 +379,7 @@ namespace MidLane
             }
             if (stacks < 4 && buff != null) { buff.Stop(); buff = null; }
             SetBladesMaxed(stacks == 4);
+            if (passiveGlow != null) { passiveGlow.Set(stacks == 4); passiveGlow.Tick(Time.deltaTime); }
             observedStacks = stacks;
             for (int i = 0; i < stackGlows.Length; i++)
             {
@@ -515,6 +519,7 @@ namespace MidLane
         {
             for (int i = 0; i < stackGlows.Length; i++) { if (stackGlows[i] != null) stackGlows[i].Stop(); stackGlows[i] = null; stackGlowStyle[i] = 0; }
             SetBladesMaxed(false);
+            if (passiveGlow != null) passiveGlow.Clear();
             if (wShield != null) wShield.Stop();
             if (wFull != null) wFull.Stop();
             wShield = wFull = null;

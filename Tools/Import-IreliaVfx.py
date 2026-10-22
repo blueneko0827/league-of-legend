@@ -418,6 +418,8 @@ def emitter(e):
         out['shapeRadius'] = float(shape['radius'])
     if 'height' in shape:
         out['shapeHeight'] = float(shape['height'])
+    if 'flags' in shape:
+        out['shapeFlags'] = int(shape['flags'])
     offset = shape.get('emitOffset')
     if isinstance(offset, list):
         out['shapeOffset'] = {'c': [float(c) for c in offset]}
@@ -483,12 +485,19 @@ for name in sorted(systems):
     library['systems'].append({'name': name, 'sound': entry.get('soundOnCreateDefault', ''),
                                'emitters': emitters})
 
-# Matched by eye to in-game footage (W charging, Handoff/ARTIST_NOTES.md), where our reading of a
-# field still differs from LoL: the shield bubble keeps its filled look and rim for most of its
-# life (its erosion runs slower), and the ghost blade images around it stay faint.
+# Matched by eye to in-game footage (Handoff/ARTIST_NOTES.md), where our reading of a field still
+# differs from LoL: the W shield bubble keeps its filled look and rim for most of its life (its
+# erosion runs slower) and the ghost blade images around it stay faint; at four passive stacks the
+# body flash and the rays that burst out of Irelia are orange-gold, as in the game (LoL tints them
+# through its bloom, which the project does not have).
+GOLD_FLASH = {'c': [1, .72, .28, 1], 't': [0, 1], 'v': [1, .72, .28, 1, 1, .58, .14, 0]}
+GOLD_RAYS = {'c': [1, .8, .4, 1], 't': [0, 1], 'v': [1, .88, .52, 1, 1, .52, .1, 0]}
 ARTIST_TWEAKS = {
     ('Irelia_Base_W_DR', 'Ripple'): {'erosionDrive': .6},
     ('Irelia_Base_W_DR', 'top2'): {'alpha': .6},
+    ('Irelia_Base_P_buf', 'Avatar_Burst'): {'color': GOLD_FLASH},
+    ('Irelia_Base_P_buf', 'Sparks1'): {'color': GOLD_RAYS},
+    ('Irelia_Base_P_buf', 'Sparks2'): {'color': GOLD_RAYS},
 }
 for system in library['systems']:
     for e in system['emitters']:
@@ -499,12 +508,14 @@ for system in library['systems']:
             drive = e['erosion']['drive']
             drive['c'] = [v * tweak['erosionDrive'] for v in drive.get('c') or []]
             drive['v'] = [v * tweak['erosionDrive'] for v in drive.get('v') or []]
+        if 'color' in tweak:
+            e['color'] = json.loads(json.dumps(tweak['color']))
         if 'alpha' in tweak:
             curve = e.get('color')
             if curve:
                 curve['c'][3] *= tweak['alpha']
                 curve['v'] = [v * tweak['alpha'] if i % 4 == 3 else v for i, v in enumerate(curve.get('v') or [])]
-        notes.append(f"{system['name']}/{e['name']}: adjusted to match in-game footage {tweak}.")
+        notes.append(f"{system['name']}/{e['name']}: adjusted to match in-game footage {sorted(tweak)}.")
 
 
 # Animation graph particle events (which clip spawns which swipe, on which frame).
