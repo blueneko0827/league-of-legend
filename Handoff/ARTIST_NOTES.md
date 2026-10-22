@@ -81,7 +81,13 @@
     - Rayos: los destellos de `P_buf` (`Sparks1` / `Sparks2`) salían todos en la misma dirección;
       su forma de emisión (`VfxShapeSphere`, `flags` 1) indica una dirección al azar para cada
       uno, y ahora salen en todas direcciones, como en el juego. El importador lee `flags`
-      (`shapeFlags`).
+      (`shapeFlags`). Además se dibujaban como rectángulos tendidos en el suelo (su rotación de
+      nacimiento los acuesta), y juntos formaban una mancha clara rectangular desde los pies de
+      Irelia; ahora se dibujan como trazos a lo largo de su vuelo, mirando a la cámara, y salen
+      desde el pecho como los rayos de una rueda, como en el juego. Solo afecta a los emisores
+      de dirección al azar (los cortes de los golpes básicos no cambian).
+    - El resplandor redondo del pecho (`P_buf/glow1`) se veía como un disco ("moneda") sobre el
+      cuerpo; queda tenue, como en la grabación.
     - Color: el destello del cuerpo (`Avatar_Burst`) y los rayos (`Sparks1` / `Sparks2`) son
       dorados como en el juego (en los datos son blanco y celeste/violeta, que LoL lleva a dorado
       con su resplandor); ajuste en `ARTIST_TWEAKS` del importador.

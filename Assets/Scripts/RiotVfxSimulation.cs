@@ -409,7 +409,12 @@ namespace MidLane
                 return draw;
             }
             draw.kind = RiotVfxDrawKind.Quad;
-            if (d.IsBillboard)
+            // Direction-oriented quads of a random-direction burst (VfxShapeSphere flag 1, e.g. the
+            // rays of Irelia's four-stack passive) are drawn as streaks along their flight, facing
+            // the camera, so they radiate from the center like spokes as in LoL. Drawn as world
+            // quads (their birth rotation lays them flat) they formed a pale patch on the ground.
+            bool spoke = d.primitive == "quad" && d.directionOriented && d.shape == "sphere" && (d.shapeFlags & 1) != 0;
+            if (d.IsBillboard || spoke)
             {
                 Vector3 right = view.right, up = view.up, normal = -view.forward;
                 if (d.groundLayer)

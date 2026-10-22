@@ -507,8 +507,9 @@ for name in sorted(systems):
 # body flash and the rays that burst out of Irelia are orange-gold, as in the game (LoL tints them
 # through its bloom, which the project does not have).
 GOLD_FLASH = {'c': [1, .72, .28, 1], 't': [0, 1], 'v': [1, .72, .28, 1, 1, .58, .14, 0]}
-# The soft glow around her chest at four stacks reads orange in the footage, not yellow.
-ORANGE_HAZE = {'c': [1, .6, .2, .5], 't': [0, .5, 1], 'v': [1, .6, .2, 0, 1, .6, .2, .55, 1, .6, .2, 0]}
+# The soft glow around her chest at four stacks reads orange in the footage, not yellow, and faint:
+# at full strength its round texture showed as a disc (a "coin") on her body.
+ORANGE_HAZE = {'c': [1, .6, .2, .3], 't': [0, .5, 1], 'v': [1, .6, .2, 0, 1, .6, .2, .3, 1, .6, .2, 0]}
 GOLD_RAYS = {'c': [1, .8, .4, 1], 't': [0, 1], 'v': [1, .88, .52, 1, 1, .52, .1, 0]}
 ARTIST_TWEAKS = {
     ('Irelia_Base_W_DR', 'Ripple'): {'erosionDrive': .6},
