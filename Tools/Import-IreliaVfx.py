@@ -506,18 +506,19 @@ for name in sorted(systems):
 # erosion runs slower) and the ghost blade images around it stay faint; at four passive stacks the
 # body flash and the rays that burst out of Irelia are orange-gold, as in the game (LoL tints them
 # through its bloom, which the project does not have).
-GOLD_FLASH = {'c': [1, .72, .28, 1], 't': [0, 1], 'v': [1, .72, .28, 1, 1, .58, .14, 0]}
-# The soft glow around her chest at four stacks reads orange in the footage, not yellow, and faint:
-# at full strength its round texture showed as a disc (a "coin") on her body.
-ORANGE_HAZE = {'c': [1, .6, .2, .3], 't': [0, .5, 1], 'v': [1, .6, .2, 0, 1, .6, .2, .3, 1, .6, .2, 0]}
+GOLD_FLASH = {'c': [1, .66, .25, .45], 't': [0, 1], 'v': [1, .66, .25, .45, 1, .55, .14, 0]}
+# The soft glow around her at four stacks reads like candlelight in the footage: warm orange-gold,
+# wider than her body, gently pulsing (two overlapping particles a second fade in and out); at
+# full strength its round texture showed as a disc (a "coin") on her body.
+ORANGE_HAZE = {'c': [1, .66, .28, .38], 't': [0, .5, 1], 'v': [1, .66, .28, 0, 1, .66, .28, .38, 1, .6, .22, 0]}
 GOLD_RAYS = {'c': [1, .8, .4, 1], 't': [0, 1], 'v': [1, .88, .52, 1, 1, .52, .1, 0]}
 ARTIST_TWEAKS = {
     ('Irelia_Base_W_DR', 'Ripple'): {'erosionDrive': .6},
     ('Irelia_Base_W_DR', 'top2'): {'alpha': .6},
     ('Irelia_Base_P_buf', 'Avatar_Burst'): {'color': GOLD_FLASH},
-    ('Irelia_Base_P_buf', 'glow1'): {'color': ORANGE_HAZE},
+    ('Irelia_Base_P_buf', 'glow1'): {'color': ORANGE_HAZE, 'size': 1.35},
     ('Irelia_Base_P_buf', 'Sparks1'): {'color': GOLD_RAYS},
-    ('Irelia_Base_P_buf', 'Sparks2'): {'color': GOLD_RAYS},
+    ('Irelia_Base_P_buf', 'Sparks2'): {'color': GOLD_RAYS, 'alpha': .45, 'rate': .4},
 }
 for system in library['systems']:
     for e in system['emitters']:
@@ -530,6 +531,12 @@ for system in library['systems']:
             drive['v'] = [v * tweak['erosionDrive'] for v in drive.get('v') or []]
         if 'color' in tweak:
             e['color'] = json.loads(json.dumps(tweak['color']))
+        if 'size' in tweak and e.get('birthScale'):
+            e['birthScale']['c'] = [v * tweak['size'] for v in e['birthScale']['c']]
+        if 'rate' in tweak and e.get('rate'):
+            e['rate']['c'] = [v * tweak['rate'] for v in e['rate']['c']]
+            if e['rate'].get('v'):
+                e['rate']['v'] = [v * tweak['rate'] for v in e['rate']['v']]
         if 'alpha' in tweak:
             curve = e.get('color')
             if curve:

@@ -368,7 +368,9 @@ namespace MidLane
             if (stacks == 4 && observedStacks < 4)
             {
                 if (buff != null) buff.Stop();
-                buff = RiotVfxPlayer.Play(world, "Irelia_Base_P_buf", BonePose("BUFFBONE_GLB_GROUND_LOC", true), 1, model != null ? model.gameObject : null);
+                // Bound to Irelia's size (FlexShape): the gold ring of the activation (RippleActivate,
+                // eroding into arcs like a laurel wreath around her) is as wide as in LoL.
+                buff = RiotVfxPlayer.Play(world, "Irelia_Base_P_buf", BonePose("BUFFBONE_GLB_GROUND_LOC", true), 1, model != null ? model.gameObject : null, SelfBoundSize());
                 if (actor.Audio != null) actor.Audio.PassiveMaxed();
                 // The hit that completed the stacks shows the 4-stack proc on its target.
                 if (lastQVictim != null && Time.time - lastQVictimAt < .25f)
