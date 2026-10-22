@@ -317,6 +317,16 @@ def value(obj, size):
 
 
 textures, meshes, notes = {}, {}, []
+# Textures of other champions or skins that some Irelia emitters borrow and that are not in the
+# supplied files, with the Irelia texture of the same kind that stands in for each (soft glow for
+# glows and flashes, a mote for sparks).
+SUBSTITUTE_TEXTURES = {
+    'irelia_skin16_glow': 'irelia_base_z_glow_bright',        # W_Swipe_Empowered: gold streak to the target
+    'zoe_base_z_spark': 'irelia_base_z_mote',                  # W_Hit: sparks
+    'zoe_base_q_impactglow': 'irelia_base_z_spotlight',        # E_Blades: dark circle under the blade
+}
+# Not replaced: the dust textures (TahmKench smoke, Kaisa recall dust). Irelia has no soft smoke
+# texture, and her cloudy noise drawn instead shows square patches on the ground.
 
 
 def texture_ref(path):
@@ -381,6 +391,12 @@ def emitter(e):
         out['trailMode'] = int(trail.get('mMode', 0))
         out['trailCutoff'] = float(trail.get('mCutoff', 0))
     out['texture'] = texture_ref(e.get('texture', ''))
+    missing = Path(str(e.get('texture', '')).replace('\\', '/')).stem.lower()
+    if e.get('texture') and not out['texture'] and missing in SUBSTITUTE_TEXTURES:
+        # Another champion's or skin's texture that is not in the supplied files, replaced by the
+        # closest Irelia texture so the emitter still plays (compared with in-game footage).
+        out['texture'] = texture_ref(SUBSTITUTE_TEXTURES[missing] + '.tex')
+        notes.append(f'{missing}: replaced by {out["texture"]} (texture not in the supplied files).')
     if e.get('texture') and not out['texture']:
         # A white quad would not resemble the missing (other champion's) texture: skip it.
         out['skip'] = 'missing texture'

@@ -128,9 +128,14 @@
 - Capturas de comparación y resolución utilizada: pendientes, 1280×720 en Game.
 
 - Limitaciones pendientes:
-  - Sin la textura original (de otros campeones, no incluida): el polvo de `W_DR`, la chispa de
-    `W_Hit`, el centro y el polvo de `W_Swipe_Empowered` y el círculo oscuro de `E_Blades`.
-    La malla `W_Swipe_Empowered/mesh_dustup` es de otra skin y tampoco está.
+  - Texturas de otros campeones o skins que no vienen en los archivos: tres se reemplazan por
+    la textura de Irelia más parecida para que el emisor se vea (comparado con la grabación del
+    juego; `SUBSTITUTE_TEXTURES` en el importador): el destello dorado que viaja hasta el
+    objetivo al soltar la W cargada (`W_Swipe_Empowered/Center`, brillo suave), las chispas de
+    `W_Hit` y el círculo violeta que sube de la cuchilla de la E (`E_Blades/Dark_circle`). El
+    polvo de `W_DR`, de `W_Swipe_Empowered` y del dash de la Q sigue sin mostrarse (Irelia no
+    tiene una textura de humo; la de ruido mostraba parches cuadrados). La malla
+    `W_Swipe_Empowered/mesh_dustup` es de otra skin y tampoco está.
   - Varios campos de los emisores de W/E no tienen nombre conocido (p. ej. el modo de los haces);
     se dejaron en su valor por defecto.
   - La orientación de las cuchillas que se cruzan (`E_Mis_02`), su recorrido completo y los
