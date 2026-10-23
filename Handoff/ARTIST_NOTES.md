@@ -8,10 +8,12 @@
     `Glow1`, `Center_light`, `shadow`) se dibujan un cuarto de vuelta respecto de los quads
     comunes, como ya pasaba con los quads de suelo (`MissileQuadTurn` en
     `RiotVfxSimulation.cs`). El chevrón violeta ahora queda detrás de las cuchillas con la
-    punta hacia donde vuela la R («<» cuando la R vuela a la izquierda; corregido 180° según la
-    revisión del cliente con su grabación), en la dirección de la R; antes se abría de costado
-    y se veía siempre como «^». `Center_light` pasa a ser la barra fina atravesada al vuelo
-    que se ve en el juego.
+    punta hacia donde vuela la R («<» cuando la R vuela a la izquierda, según la revisión del
+    cliente con su grabación), en la dirección de la R; antes se abría de costado y se veía
+    siempre como «^». La textura se espeja a lo largo del vuelo (no se gira 180°) y `R_Mis/Glow`
+    lleva media textura de desplazamiento en V (`birthUvOffset` 0,5, ajuste del importador), así
+    el chevrón conserva su lugar, bien separado detrás de las cuchillas, como en el juego.
+    `Center_light` pasa a ser la barra fina atravesada al vuelo que se ve en el juego.
   - Salto de la R: `irelia_spell4` mueve la raíz de Irelia unas 230 unidades hacia arriba y
     270 hacia adelante antes de caer (`spell4_to_idle`). El rig fijaba la raíz en X/Z
     (necesario en la Q y los ataques, que se desplazan por la simulación); durante la R ahora

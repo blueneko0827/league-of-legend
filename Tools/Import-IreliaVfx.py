@@ -532,6 +532,10 @@ ARTIST_TWEAKS = {
     ('Irelia_Base_P_buf', 'Sparks1'): {'color': GOLD_RAYS},
     ('Irelia_Base_P_buf', 'Sparks2'): {'color': GOLD_RAYS, 'alpha': .45, 'rate': .4},
     ('Irelia_Base_R_Hit_Aoe', 'large_yellow'): {'localOrientation': True, 'birthRotation': [90.0, 180.0, 0.0]},
+    # The runtime mirrors the R missile's flat quads along the flight (apex of this chevron toward
+    # the flight, as in the game). Half a texture of V offset keeps the chevron (top half of its
+    # texture) where it is authored, well behind the blades, instead of moving it onto them.
+    ('Irelia_Base_R_Mis', 'Glow'): {'birthUvOffset': [0.0, 0.5]},
 }
 for system in library['systems']:
     for e in system['emitters']:
@@ -557,6 +561,8 @@ for system in library['systems']:
             if curve:
                 curve['c'][3] *= tweak['alpha']
                 curve['v'] = [v * tweak['alpha'] if i % 4 == 3 else v for i, v in enumerate(curve.get('v') or [])]
+        if 'birthUvOffset' in tweak:
+            e['birthUvOffset'] = {'c': list(tweak['birthUvOffset'])}
         if 'localOrientation' in tweak:
             e['localOrientation'] = tweak['localOrientation']
         if 'birthRotation' in tweak:

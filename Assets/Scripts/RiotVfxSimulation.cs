@@ -59,7 +59,7 @@ namespace MidLane
         // facing the flight, instead of lying on the floor.
         public bool MissileFrame;
         static readonly Quaternion MissileTilt = Quaternion.Euler(90, 0, 0);
-        const float MissileQuadTurn = 90;
+        const float MissileQuadTurn = -90;
         public readonly List<Vector3> TrailPositions = new List<Vector3>();
         public readonly List<Vector2> TrailUvs = new List<Vector2>();
         public readonly List<Color> TrailColors = new List<Color>();
@@ -486,10 +486,13 @@ namespace MidLane
             {
                 // The flight-frame quads of a missile (R_Mis Glow, Glow1, Center_light, shadow) lie
                 // flat and, like ground quads, are drawn a quarter turn from the plain quad
-                // convention. As in the game: the chevron glow trails behind the blades with its
-                // apex toward the flight ("<" when the R flies left) and Center_light is a thin
-                // bar across the flight; without the turn the chevron opened sideways ("^").
+                // convention; without the turn the chevron glow opened sideways ("^") and
+                // Center_light ran along the flight instead of across it. The texture is also
+                // mirrored along the flight (V flipped): the chevron keeps its authored place,
+                // well behind the blades, with its apex toward the flight ("<" when the R flies
+                // left), as in the game. Turning it 180° instead put it right on the blades.
                 rotation *= Quaternion.Euler(0, 0, MissileQuadTurn);
+                draw.uv = new Vector4(draw.uv.x, -draw.uv.y, draw.uv.z, draw.uv.w + draw.uv.y);
             }
             draw.matrix = Matrix4x4.TRS(center, rotation, new Vector3(size.x, size.y, 1) * UnitScale);
             return draw;
