@@ -11,7 +11,8 @@ namespace MidLane
         float reflectionFactor = 1;
         Combatant DamageOwner { get { return reflectedOwner != null ? reflectedOwner : blade.Actor; } }
         public void SetReflection(Combatant actor, float factor) { reflectedOwner = actor; reflectionFactor = factor; }
-        float expiresAt;
+        float expiresAt, armedAt;
+        bool landed;
         int castId;
         Vector3[] points;
         public IReadOnlyList<Vector3> Points { get { return points; } }
@@ -27,20 +28,29 @@ namespace MidLane
         readonly Dictionary<Combatant, Vector3> previous = new Dictionary<Combatant, Vector3>();
         public void Initialize(LaneWorld lane, BladeDuelist owner, Vector3 impact, Vector3 direction, int spellCastId = 0, Combatant reflectedSource = null, float reflectedMultiplier = 1)
         {
-            world = lane; blade = owner; expiresAt = Time.time + blade.Tuning.rWallLifetime;
+            world = lane; blade = owner;
+            // The blades drop on the wall after the explosion: until then nothing is hit, and a
+            // unit that crossed the line meanwhile (or stands on it) is caught once they land.
+            // The perimeter then stands for its whole lifetime (2.5 s in LoL).
+            armedAt = Time.time + blade.Tuning.rWallArmTime;
+            expiresAt = armedAt + blade.Tuning.rWallLifetime;
             reflectedOwner = reflectedSource; reflectionFactor = reflectedMultiplier;
             castId = spellCastId;
             Impact = impact; Direction = direction;
             points = IreliaRGeometry.WallPoints(impact, direction);
             // With official_vfx, IreliaVfx shows LoL's own wall (IreliaRBlades and its particles).
             if (!world.Presentation.official_vfx)
-                IreliaRVisuals.CreateWall(transform, points, impact, blade.Tuning.rWallLifetime, DamageOwner.Team != world.PlayerTeam);
+                IreliaRVisuals.CreateWall(transform, points, impact, expiresAt - Time.time, DamageOwner.Team != world.PlayerTeam);
             foreach (Combatant unit in world.Units) if (unit != null) previous[unit] = unit.Position;
         }
         void Update()
         {
             if (world.RoundOver || blade == null || Time.time >= expiresAt) { Destroy(gameObject); return; }
-            if (world.Paused) return;
+            if (world.Paused || Time.time < armedAt) return;
+            // The first check is the blades landing: whoever they land on (or slipped through the
+            // line while they fell) is hit by them and, like the explosion's hits, marked (in the
+            // game footage a target standing on the wall line ends up with the mark).
+            bool landing = !landed; landed = true;
             foreach (Combatant unit in world.Units)
             {
                 if (!DamageOwner.ValidEnemy(unit) || unit.Kind != UnitKind.Champion || hit.Contains(unit)) continue;
@@ -57,6 +67,7 @@ namespace MidLane
                 hit.Add(unit); DamageOwner.DealAbilityDamage(unit, (50 + blade.Rank(3) * 75 + blade.Actor.AbilityPower) * reflectionFactor, DamageType.Magic, castId, reflectedOwner != null ? 1 : 3);
                 if (blade.Actor.Audio != null) blade.Actor.Audio.RWallImpact();
                 if (unit.Alive) unit.Slow(0.1f, blade.Tuning.rWallSlowDuration);
+                if (landing && unit.Alive) unit.Mark(blade.Tuning.markDuration);
                 blade.NotifyRWallHit(unit);
             }
         }

@@ -91,6 +91,9 @@ namespace MidLane
         public int blend, pass, alphaRef, numFrames, startFrame, uvMode, trailMode;
         public bool twoSided, single, uniformScale, rotationEnabled, localOrientation, particleLocalOrientation;
         public bool directionOriented, groundLayer, randomStartFrame;
+        // A single-particle emitter whose rate is the size of one burst (all at once), as in the
+        // game footage of the R: its explosion rays, fan of streaks, wall-hit spikes and shards.
+        public bool burst;
         public float delay, lifetime, linger, bindWeight, flexScale, flexOffset, shapeRadius, shapeHeight;
         public int shapeFlags;
         public float directionVelocityScale, directionVelocityMinScale, frameRate, trailCutoff;

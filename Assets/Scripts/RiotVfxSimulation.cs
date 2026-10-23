@@ -54,8 +54,9 @@ namespace MidLane
         public float GroundHeight = 0;
         // A missile's particles live in a frame whose Y axis is the flight (the pose faces it):
         // Irelia_Base_R_Mis lays its blades along Y and trails its glows at negative Y, which is
-        // how they fly in the game footage, point first. Its ground-layer parts (the rings and
-        // swirl left where it starts) keep the upright frame.
+        // how they fly in the game footage, point first. Its ground-layer parts ride the same
+        // frame: in the footage the rings the blades burst through at the launch stand upright,
+        // facing the flight, instead of lying on the floor.
         public bool MissileFrame;
         static readonly Quaternion MissileTilt = Quaternion.Euler(90, 0, 0);
         public readonly List<Vector3> TrailPositions = new List<Vector3>();
@@ -164,7 +165,12 @@ namespace MidLane
                     float emitterTime = Mathf.Clamp01(Mathf.Max(0, local) / duration);
                     if (d.single)
                     {
-                        if (!e.emittedSingle) { e.emittedSingle = true; Spawn(e, emitterTime, Mathf.Max(0, local)); }
+                        if (!e.emittedSingle)
+                        {
+                            e.emittedSingle = true;
+                            int count = d.burst ? Mathf.Clamp(Mathf.RoundToInt(RiotVfxEval.Float(d.rate, emitterTime, 1)), 1, 64) : 1;
+                            for (int i = 0; i < count; i++) Spawn(e, emitterTime, Mathf.Max(0, local));
+                        }
                     }
                     else
                     {
@@ -269,7 +275,7 @@ namespace MidLane
         // The emitter's frame now: the live pose, tilted onto the flight for a missile's particles.
         RiotVfxPose Frame(Emitter e)
         {
-            if (!MissileFrame || e.data.groundLayer) return pose;
+            if (!MissileFrame) return pose;
             RiotVfxPose frame = pose; frame.rotation = pose.rotation * MissileTilt;
             return frame;
         }
@@ -462,7 +468,8 @@ namespace MidLane
                 return draw;
             }
             Quaternion rotation = orientation * RiotVfxEval.Rotation(euler);
-            if (d.groundLayer)
+            // A missile's ground-layer rings keep its flight frame (see MissileFrame).
+            if (d.groundLayer && !MissileFrame)
             {
                 // Ground-layer quads lie flat, turned by their Z angle. LoL draws their texture a
                 // quarter turn from other quads: its top runs along the first size (birthScale X).
@@ -490,7 +497,17 @@ namespace MidLane
                 frame += d.frameRate > 0 ? Mathf.FloorToInt(p.age * d.frameRate) : Mathf.Min(frames - 1, Mathf.FloorToInt(t * frames));
             frame = frames > 0 ? ((frame % frames) + frames) % frames : 0;
             int column = frame % Mathf.RoundToInt(columns), row = frame / Mathf.RoundToInt(columns);
-            return new Vector4(1 / columns, 1 / rows, column / columns + p.uvOffset.x, row / rows + p.uvOffset.y);
+            // A fractional division on a mesh repeats its texture (R_Hit_Aoe's pulse: texDiv Y 0.5
+            // draws the lightning texture twice around the wall, as dense as in the footage).
+            float tileU = Tile(d, 0), tileV = Tile(d, 1);
+            return new Vector4(tileU / columns, tileV / rows, column / columns + p.uvOffset.x, row / rows + p.uvOffset.y);
+        }
+
+        static float Tile(RiotVfxEmitterData d, int axis)
+        {
+            if (d.primitive != "mesh" || d.texDiv == null || d.texDiv.Length <= axis) return 1;
+            float division = d.texDiv[axis];
+            return division > .01f && division < 1 ? 1 / division : 1;
         }
 
         static Vector4 MultTransform(RiotVfxEmitterData d, Particle p)

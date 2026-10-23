@@ -80,6 +80,7 @@ MonoBehaviour:
   rHalfWidth: 1.6
   rWallLifetime: 2.5
   rWallSlowDuration: 1.5
+  rWallArmTime: 0.15
   passiveDuration: 6
   passiveAttackSpeedStart: 0.1
   passiveAttackSpeedEnd: 0.25

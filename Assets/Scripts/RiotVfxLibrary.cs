@@ -29,6 +29,10 @@ namespace MidLane
         static readonly int MultTex = Shader.PropertyToID("_MultTex"), UseMult = Shader.PropertyToID("_UseMult");
         static readonly int VertexColor = Shader.PropertyToID("_VertexColor"), Linearize = Shader.PropertyToID("_Linearize");
         static readonly int EdgeFade = Shader.PropertyToID("_EdgeFade");
+        static readonly int ErosionMainUv = Shader.PropertyToID("_ErosionMainUV"), ErosionSlice = Shader.PropertyToID("_ErosionSlice");
+        // erosionSliceWidth below this draws only a thin band of the erosion map above the
+        // threshold (R_Hit_Aoe's lightning, 0.1); the usual width (1 and above) is plain erosion.
+        const float NarrowSlice = .25f;
         static readonly int PaletteTex = Shader.PropertyToID("_PaletteTex"), UsePalette = Shader.PropertyToID("_UsePalette"), PaletteV = Shader.PropertyToID("_PaletteV");
 
         public static RiotVfxLibrary For(LaneWorld world)
@@ -134,7 +138,7 @@ namespace MidLane
         Material BuildMaterial(RiotVfxEmitterData emitter, bool attached)
         {
             string key = emitter.texture + "|" + emitter.blend + "|" + emitter.twoSided + "|" + emitter.pass + "|" + emitter.groundLayer + "|" + attached +
-                "|" + (emitter.erosion != null ? emitter.erosion.map : "") + "|" + emitter.alphaRef +
+                "|" + (emitter.erosion != null ? emitter.erosion.map + "#" + SliceWidth(emitter) : "") + "|" + emitter.alphaRef +
                 "|" + (emitter.textureMult != null ? emitter.textureMult.texture : "") +
                 "|" + (emitter.palette != null && emitter.palette.Present ? emitter.palette.texture + "#" + emitter.palette.index + "/" + emitter.palette.count : "");
             Material material;
@@ -165,7 +169,14 @@ namespace MidLane
             material.SetFloat(VertexColor, attached ? 0 : 1);
             bool erosion = emitter.erosion != null && !string.IsNullOrEmpty(emitter.erosion.map);
             material.SetFloat(UseErosion, erosion ? 1 : 0);
-            if (erosion) material.SetTexture(ErosionTex, GetTexture(emitter.erosion.map));
+            if (erosion)
+            {
+                material.SetTexture(ErosionTex, GetTexture(emitter.erosion.map));
+                // An emitter eroded by its own texture erodes what it draws: the map scrolls and
+                // tiles with the texture (R_Hit_Aoe's pulse sweeps its lightning out to the wall).
+                material.SetFloat(ErosionMainUv, emitter.erosion.map == emitter.texture ? 1 : 0);
+                material.SetFloat(ErosionSlice, SliceWidth(emitter));
+            }
             bool mult = emitter.textureMult != null && emitter.textureMult.Present;
             material.SetFloat(UseMult, mult ? 1 : 0);
             if (mult) material.SetTexture(MultTex, GetTexture(emitter.textureMult.texture));
@@ -183,6 +194,12 @@ namespace MidLane
                 : 3000 + Mathf.Clamp(emitter.pass, -400, 400);
             materials[key] = material; owned.Add(material);
             return material;
+        }
+
+        static float SliceWidth(RiotVfxEmitterData e)
+        {
+            float width = e.erosion != null ? e.erosion.sliceWidth : 0;
+            return width > 0 && width < NarrowSlice ? width : 0;
         }
 
         // Billboards and quads get a soft border so a texture that is not fully transparent at

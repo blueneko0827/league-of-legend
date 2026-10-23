@@ -20,22 +20,49 @@
   30 cuadros por segundo: `cast` (33 cuadros: las cuchillas salen disparadas del impacto y caen
   sobre el muro), `cycle` (51, en bucle mientras dura el muro) y `death` (20, se hunden en el
   suelo al terminar). Eventos de su grafo: `R_Hit_Aoe` en el cuadro 0 y `R_Wall_Bladeglow` en
-  cada cuchilla desde el cuadro 9.
+  cada cuchilla desde el cuadro 9. Como en la grabación del juego, esta unidad aparece dos
+  cuadros (0,067 s) después de la explosión (`RWallUnitDelay` en `IreliaVfx.cs`).
 
 - Partículas, shaders, materiales e iluminación:
   - `Tools/Import-IreliaVfx.py` ahora importa también los sistemas `R_*` (65 sistemas,
     279 emisores, 19 eventos de animación).
   - **R, como en LoL:** `R_cas` (giro alrededor de Irelia al lanzar), `R_Mis` (las cuchillas
-    vuelan en abanico, de punta, con el anillo alrededor de Irelia al salir), y donde estalla
-    sobre un campeón: `R_Mis_Tar_Break` (explosión sobre él) y el muro: las cuchillas de
-    `IreliaBlades`, `R_groundlines` (franja oscura en el suelo y la valla translúcida, que sigue
-    exactamente el contorno del muro de daño), `R_Hit_Aoe` (pulso desde el centro) y
-    `R_Wall_Bladeglow` (brillo en cada cuchilla). Al cruzar el muro, un enemigo recibe
-    `R_Wall_Hit` y la marca `R_Wall_Disarm` mientras dura su ralentización. Las versiones
+    vuelan en abanico, de punta, y al salir atraviesan un anillo vertical, de frente al vuelo),
+    y donde estalla sobre un campeón: `R_Mis_Tar_Break` (explosión con rayos sobre él) y el
+    muro: las cuchillas de `IreliaBlades`, `R_groundlines` (líneas en el suelo y la valla
+    translúcida, que siguen exactamente el contorno del muro de daño), `R_Hit_Aoe` (el triángulo
+    grande de la marca en el suelo, apuntando hacia donde voló la R; los rayos eléctricos que
+    recorren el muro desde el centro hacia afuera; el resplandor y el abanico de estelas) y
+    `R_Wall_Bladeglow` (brillo en cada cuchilla). Cuando el muro golpea a un enemigo, este
+    recibe `R_Wall_Hit` (estallido y luego un brillo dorado que pasa a violeta). Las versiones
     `_Enemy` se usan para una Irelia enemiga.
-  - Runtime: LoL dibuja las partículas de un misil en un marco cuyo eje Y es la dirección de
-    vuelo (`MissileFrame` en `RiotVfxSimulation.cs`); los efectos del suelo conservan el marco
-    vertical. Con ese marco las cuchillas de `R_Mis` vuelan de punta, como en la grabación.
+  - **Revisión con la grabación del juego** (cuadro a cuadro, `videoRealGameplay_100` y
+    `videoRealGameplay_0`): se corrigió lo que difería.
+    - El anillo de la salida del misil estaba acostado en el suelo alrededor de Irelia; en LoL
+      está de pie, de frente al vuelo.
+    - El triángulo de la marca en el suelo (`R_Hit_Aoe`) salía a la mitad del tamaño, detrás del
+      objetivo y girado de costado. Ahora mide unas 900 unidades, centrado 100 unidades por
+      delante del impacto y con una punta hacia donde voló la R, como en el juego (tamaño del
+      objeto de referencia 220, `RHitAoeBoundSize`).
+    - Los rayos eléctricos de `R_Hit_Aoe` (`pulse`) no se veían (en su lugar quedaba una lámina
+      azul). Ahora son líneas finas que recorren el muro hacia afuera.
+    - Los emisores de una sola tanda de la R lanzaban una partícula en lugar de toda la tanda:
+      los rayos de la explosión, el abanico de estelas, y las puntas y esquirlas del golpe del
+      muro.
+    - `R_Wall_Disarm` (icono de espada naranja sobre el enemigo) ya no se usa: la R actual de
+      LoL no desarma y la grabación no lo muestra.
+  - Runtime (`RiotVfxSimulation.cs`, `RiotVfxLibrary.cs`, `RiotParticle.shader`):
+    - LoL dibuja las partículas de un misil en un marco cuyo eje Y es la dirección de vuelo
+      (`MissileFrame`). Con ese marco las cuchillas de `R_Mis` vuelan de punta y sus anillos de
+      salida quedan de pie, como en la grabación.
+    - `burst` (nuevo, lo marca el importador en los sistemas `R_*`): un emisor de una sola
+      partícula lanza toda su tasa de una vez.
+    - Erosión: si el mapa de erosión es la misma textura del emisor, se desplaza y se repite con
+      ella; un `erosionSliceWidth` angosto (menos de 0,25) dibuja solo una franja fina sobre el
+      umbral. Solo lo usa el `pulse` de `R_Hit_Aoe` (los rayos).
+    - Un `texDiv` fraccionario en una malla repite la textura (el `pulse`: 0,5 = dos veces
+      alrededor del muro).
+    - Los demás efectos (ataques, pasiva, Q, W, E) no cambian: ninguno usa estos casos.
   - Material de las cuchillas del muro: `IreliaRWallBlade.shader` (nuevo) con la textura de las
     cuchillas de Irelia y el brillo de borde y resplandor de su material del juego
     (`Irelia_bladeglow_inst`).
@@ -97,13 +124,24 @@
   `Tools/Import-IreliaVfx.py`, `Tools/Import-IreliaRBlades.py` y `Tools/Import-IreliaVoice.py`.
 
 - Cambios que requieren fusionar código o afectan contratos con la simulación:
+  - **R con lanzamiento rápido, sin flecha:** en el juego la R se lanza al presionarla, sin
+    indicador de apuntado. `PlayerCommands.cs` ahora la lanza al presionar R hacia el cursor.
+    `ScenePresentation.json` → `"r_aim_indicator": false` (por defecto). Con `true` vuelve el
+    modo anterior: mantener R para apuntar con la flecha y soltar para lanzar.
+    `IreliaRAim.Begin(punto, mostrar)` toma la dirección sin dibujar la flecha. El texto de
+    ayuda de la R lo explica.
   - `BladeWave.cs`: `Launched` (solo lectura); con `official_vfx` también oculta el proyectil de
     la R; avisa a `IreliaAudio` cuando el misil de la R termina (cada misil apaga su propio
     sonido de salida).
   - `BladeWall.cs`: `Blade`, `Impact`, `Direction`, `ExpiresAt` y `OwnerTeam` (solo lectura);
     crea su muro propio solo sin `official_vfx`; avisa cada golpe del muro.
+  - `BladeWall.cs` y `BladeTuning` (`rWallArmTime`, nuevo, 0,15 s): como en la grabación, las
+    cuchillas caen sobre el muro un momento después de la explosión, y recién entonces golpea.
+    Un enemigo parado sobre la línea o que la cruzó mientras caían recibe el golpe al caer y,
+    como los golpeados por la explosión, la marca. Los 2,5 s del muro cuentan desde que caen,
+    como en LoL (en la grabación se hunden unos 2,7 s después del impacto).
   - `BladeDuelist.cs`: evento de solo lectura `RWallHit(objetivo)`.
-  - `RiotVfxSimulation.cs`: `MissileFrame`.
+  - `RiotVfxSimulation.cs`: `MissileFrame`; `RiotVfxEmitterData.burst` (nuevo).
   - `IreliaAudio.cs`:
     - Voces nuevas: enum `IreliaVoiceCue` y evento `VoicePlayed`.
     - `RMissileEnded`, `MoveOrdered`, `AttackOrdered`, `ItemBought`, `ChampionKilled`, `Died`,
@@ -116,13 +154,18 @@
   - `PlayerCommands.cs`: las órdenes de mover y atacar avisan a la voz en el clic. La orden no
     cambia.
   - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: pruebas nuevas `OfficialREffectsPlay` y
-    `OfficialVoiceLinesPlay`.
+    `OfficialVoiceLinesPlay`. `OfficialREffectsPlay` también comprueba que el muro llega después
+    de la explosión y que no aparece `R_Wall_Disarm`.
 
 - Capturas de comparación y resolución utilizada: pendientes, 1280×720 en Game.
 
 - Limitaciones pendientes:
-  - El indicador de apuntado de la R sigue siendo el anterior (`IreliaDirectionIndicator`): no
-    hay grabación del indicador de LoL para la R.
+  - La comparación con la grabación se hizo con la vista previa del simulador de efectos (fuera
+    de Unity, con la misma cámara y la misma escala que la grabación). Conviene revisarla en el
+    editor.
+  - LoL suma un resplandor (bloom) que el proyecto no tiene; los rayos y el estallido se ven un
+    poco menos brillantes que en el juego.
+  - El área de la explosión sigue siendo un círculo de 320 unidades alrededor del objetivo.
   - Voz de la R: en las grabaciones del juego Irelia dice una línea en cada R (3 de 3). Acá
     sigue en 30 %, como estaba definido (`RVoiceChance`).
   - La frecuencia de las voces de órdenes y de los esfuerzos del ataque básico no está en los

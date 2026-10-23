@@ -17,6 +17,8 @@ Shader "MidLane/RiotParticle"
         _UV ("UV scale/offset", Vector) = (1,1,0,0)
         _Erosion ("Erosion (drive, feather in, feather out, use alpha)", Vector) = (0,0,0.1,0)
         _UseErosion ("Use erosion", Float) = 0
+        _ErosionMainUV ("Erosion map follows the texture's UV motion", Float) = 0
+        _ErosionSlice ("Narrow erosion slice width (0 = plain erosion)", Float) = 0
         _Premultiply ("Premultiply color by alpha", Float) = 0
         _AlphaClip ("Alpha clip", Float) = 0
         _Inflate ("Normal inflate (world units)", Float) = 0
@@ -50,7 +52,7 @@ Shader "MidLane/RiotParticle"
                 float4 _MainTex_ST; float4 _ErosionTex_ST; float4 _MultTex_ST; float4 _PaletteTex_ST;
                 float _UsePalette; float _PaletteV;
                 float4 _Color; float4 _UV; float4 _UV2; float4 _Erosion;
-                float _UseErosion; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize; float _EdgeFade; float _DepthPull;
+                float _UseErosion; float _ErosionMainUV; float _ErosionSlice; float _UseMult; float _Premultiply; float _AlphaClip; float _Inflate; float _VertexColor; float _Linearize; float _EdgeFade; float _DepthPull;
                 float _SrcBlend; float _DstBlend; float _Cull;
             CBUFFER_END
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; };
@@ -83,11 +85,14 @@ Shader "MidLane/RiotParticle"
                 if (_UseMult > 0.5) color *= SAMPLE_TEXTURE2D(_MultTex, sampler_MultTex, i.uv2);
                 if (_UseErosion > 0.5)
                 {
-                    half4 map = SAMPLE_TEXTURE2D(_ErosionTex, sampler_ErosionTex, i.raw);
+                    half4 map = SAMPLE_TEXTURE2D(_ErosionTex, sampler_ErosionTex, _ErosionMainUV > 0.5 ? i.uv : i.raw);
                     half value = lerp(map.r, map.a, _Erosion.w);
                     half feather = max(_Erosion.z, 0.01);
                     half threshold = _Erosion.x * (1 + feather);
                     color.a *= saturate((value - threshold + feather) / feather);
+                    // A narrow slice keeps only the values just above the threshold: thin contour
+                    // lines that move with the drive (the R's lightning sweeping over the wall).
+                    if (_ErosionSlice > 0) color.a *= saturate((threshold + _ErosionSlice - value) / feather);
                 }
                 // Quads never show their rectangle: a soft border, or an elliptical fade for
                 // scrolled/tiled textures whose content does not fade out at the quad's edge.

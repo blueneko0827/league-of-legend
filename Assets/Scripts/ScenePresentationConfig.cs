@@ -44,6 +44,9 @@ namespace MidLane
         // to Irelia; 1.3 gives it LoL's proportion to her (measured on in-game footage: its point
         // is 3.9 times her height away). 1 = exactly the W's hit range and width.
         public float w_indicator_scale = 1.3f;
+        // R as in LoL's quick cast: pressing R sends it toward the cursor, with no aiming arrow (the
+        // game footage shows none). true = the previous mode: hold R to aim with an arrow, release to cast.
+        public bool r_aim_indicator = false;
         // Extra height of the champions' overhead bar, as a fraction of the champion's visual
         // height. The official models (hair, floating blades) rise above the selection height,
         // so without it the bar covers Irelia's face; LoL leaves a gap above the head.

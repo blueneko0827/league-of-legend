@@ -227,7 +227,7 @@ namespace MidLane
         }
         void DrawAbilityTooltip(int slot)
         {
-            string text = IreliaAbilityHelp.Describe(world.Player, slot);
+            string text = IreliaAbilityHelp.Describe(world.Player, slot, world.Presentation.r_aim_indicator);
             if (slot == 2 && world.PracticeModeActive)
                 text += world.PermanentPracticeMarks ? "\n\nPráctica: marcas infinitas y E sin enfriamiento. Mantené el clic izquierdo aquí durante 2 s para desactivar ambos efectos." :
                     "\n\nPráctica: mantené el clic izquierdo sobre este icono durante 2 s para activar marcas infinitas en todos los dummies y E sin enfriamiento.";

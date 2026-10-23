@@ -57,7 +57,10 @@ namespace MidLane
             public IreliaRBlades blades;
             public RiotVfxPlayer lines;
             public readonly List<RiotVfxPlayer> glows = new List<RiotVfxPlayer>();
-            public bool hostile, glowing;
+            public bool hostile, glowing, formed;
+            // Seconds since the detonation (game time: it waits while the game is paused).
+            public float age;
+            public Vector3 impact, direction;
             // The wall ended (or Irelia died): the blades sink and the particles play out.
             public void End()
             {
@@ -403,11 +406,17 @@ namespace MidLane
 
         // R (Vanguard's Edge), as in LoL: the cast swirl (animation event of irelia_spell4), the
         // blades' missile from the end of the cast, and where it detonates on a champion the
-        // explosion on that champion and LoL's wall unit (IreliaRBlades: the blades burst out and
-        // land on the wall, stand, and sink when it ends) with the wall's lines on the ground, the
-        // pulse at its root and a glow on every blade; an enemy crossing the wall gets its hit and
-        // the disarm mark.
+        // explosion on that champion and, a moment later, LoL's wall unit (IreliaRBlades: the
+        // blades burst out and land on the wall, stand, and sink when it ends) with the wall's
+        // lines on the ground, the pulse at its root and a glow on every blade; an enemy the wall
+        // hits gets the wall's hit.
         const float RMissileHeight = 100;   // LoL units above the ground the blades fly at
+        // In the game footage the wall unit (its blades, the big mark triangle on the floor and the
+        // lightning) starts two frames (30 fps) after the explosion.
+        const float RWallUnitDelay = 2f / 30;
+        // FlexShape bound size of R_Hit_Aoe, measured on the footage: its mark triangle on the floor
+        // is about 900 LoL units across and centered 100 units past the impact.
+        const float RHitAoeBoundSize = 220;
         void ObserveR()
         {
             if (blade.RSequence != observedR)
@@ -437,6 +446,8 @@ namespace MidLane
             {
                 RVfx r = pair.Value;
                 if (pair.Key == null) { r.End(); rEnded.Add(pair.Key); continue; }
+                r.age += Time.deltaTime;
+                if (!r.formed && r.age >= RWallUnitDelay) FormWall(r);
                 // IreliaBlades' cast clip starts R_Wall_Bladeglow on every blade at its frame 9.
                 if (!r.glowing && r.blades != null && r.blades.Age >= IreliaRBlades.BladeGlowAt)
                 {
@@ -479,29 +490,38 @@ namespace MidLane
         RVfx StartWall(BladeWall wall)
         {
             // Enemy colors when the wall hurts the player's team (also a wall reflected back at her).
-            var r = new RVfx { hostile = wall.OwnerTeam != world.PlayerTeam };
-            Vector3 impact = wall.Impact, direction = Flat(wall.Direction);
-            Quaternion facing = Quaternion.LookRotation(direction);
+            var r = new RVfx { hostile = wall.OwnerTeam != world.PlayerTeam, impact = wall.Impact, direction = Flat(wall.Direction) };
+            Vector3 impact = r.impact;
+            Quaternion facing = Quaternion.LookRotation(r.direction);
             // The explosion on the champion the blades hit.
             Combatant target = ChampionAt(impact);
             RiotVfxPlayer explosion = RiotVfxPlayer.Play(world, "Irelia_Base_R_Mis_Tar_Break", () => new RiotVfxPose(impact, facing), 1, null,
                 TargetBoundSize(target));
             if (explosion != null && target != null) explosion.DepthPull = HitDepthPull(target);
+            return r;
+        }
+
+        // LoL's wall unit, RWallUnitDelay after the explosion.
+        void FormWall(RVfx r)
+        {
+            r.formed = true;
+            Vector3 impact = r.impact;
+            Quaternion facing = Quaternion.LookRotation(r.direction);
             // The wall's outline and the pulse inside it trace the wall itself: drawn at gameplay
             // scale so they stay on the damage boundary (like the blades).
             r.lines = RiotVfxPlayer.Play(world, r.hostile ? "Irelia_Base_R_groundlines_enemy" : "Irelia_Base_R_groundlines",
                 () => new RiotVfxPose(impact, facing));
             if (r.lines != null) r.lines.Instance.UnitScale = LeagueChampionStats.WorldUnitsPerLeagueUnit;
-            r.blades = IreliaRBlades.Create(world, impact, direction, RiotVfxPlayer.UnitScale(world));
+            r.blades = IreliaRBlades.Create(world, impact, r.direction, RiotVfxPlayer.UnitScale(world));
             if (r.blades != null)
             {
-                // IreliaBlades' cast clip, frame 0: R_Hit_Aoe on Sword_Root.
+                // IreliaBlades' cast clip, frame 0: R_Hit_Aoe on Sword_Root (the mark triangle on
+                // the floor, the lightning sweeping out to the wall and the streaks it throws).
                 Transform root = r.blades.Bone(0);
                 RiotVfxPose rootPose = new RiotVfxPose(root.position, root.rotation);
-                RiotVfxPlayer pulse = RiotVfxPlayer.Play(world, "Irelia_Base_R_Hit_Aoe", () => rootPose);
+                RiotVfxPlayer pulse = RiotVfxPlayer.Play(world, "Irelia_Base_R_Hit_Aoe", () => rootPose, 1, null, RHitAoeBoundSize);
                 if (pulse != null) pulse.Instance.UnitScale = LeagueChampionStats.WorldUnitsPerLeagueUnit;
             }
-            return r;
         }
 
         Combatant ChampionAt(Vector3 point)
@@ -524,7 +544,8 @@ namespace MidLane
             return target != null && target.VisualHeight > 0 ? target.VisualHeight / RiotVfxPlayer.UnitScale(world) : 100;
         }
 
-        // An enemy crossed the wall: the wall's hit on it and the disarm mark over it while slowed.
+        // The wall hit an enemy: the wall's hit on it (its burst, then a gold glow fading to violet).
+        // The game no longer disarms (R_Wall_Disarm's sword icon is not shown in the footage).
         void RWallHit(Combatant target)
         {
             if (!Enabled || target == null) return;
@@ -533,8 +554,6 @@ namespace MidLane
             float bound = TargetBoundSize(target);
             RiotVfxPlayer hit = RiotVfxPlayer.Play(world, "Irelia_Base_R_Wall_Hit", () => new RiotVfxPose(target != null ? target.Position : from, facing), 1, null, bound);
             if (hit != null) hit.DepthPull = HitDepthPull(target);
-            RiotVfxPlayer mark = RiotVfxPlayer.Play(world, "Irelia_Base_R_Wall_Disarm", () => new RiotVfxPose(target != null ? target.Position : from, facing), 1, null, bound);
-            if (mark != null) timedStops.Add(new KeyValuePair<RiotVfxPlayer, float>(mark, Time.time + blade.Tuning.rWallSlowDuration));
         }
 
         // Passive: glow on one blade per stack, the activation burst and aura at four stacks.

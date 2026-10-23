@@ -173,6 +173,9 @@ namespace MidLane.Tests
                 foreach (string name in new[] { "Irelia_Base_R_cas", "Irelia_Base_R_Mis", "Irelia_Base_R_Mis_Tar_Break",
                     "Irelia_Base_R_groundlines", "Irelia_Base_R_Hit_Aoe", "Irelia_Base_R_Wall_Bladeglow" })
                     Assert.Contains(name, started, name);
+                // As in the footage: the wall unit comes after the explosion, and no disarm icon.
+                Assert.Less(started.IndexOf("Irelia_Base_R_Mis_Tar_Break"), started.IndexOf("Irelia_Base_R_Hit_Aoe"));
+                Assert.IsFalse(started.Contains("Irelia_Base_R_Wall_Disarm"));
                 Assert.AreEqual(1, world.BladeWalls.Count);
                 var wall = Object.FindAnyObjectByType<IreliaRBlades>();
                 Assert.NotNull(wall); Assert.AreEqual(26, wall.BladeCount);

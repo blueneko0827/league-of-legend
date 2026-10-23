@@ -517,6 +517,9 @@ GOLD_RAYS = {'c': [1, .8, .4, 1], 't': [0, 1], 'v': [1, .88, .52, 1, 1, .52, .1,
 # and brightest in its first tenth of a second, with sparks streaking out; read literally its star
 # starts invisible and only turns blue, and the sparks are specks.
 W_HIT_STAR = {'c': [1, 1, 1, 1], 't': [0, .2, .55, 1], 'v': [1, 1, 1, 1, .82, .9, 1, 1, .35, .5, 1, .55, .3, .4, 1, 0]}
+# R_Hit_Aoe: when the R detonates, the game lays a big pale Irelia-mark triangle on the floor
+# with one corner pointing where the R flew; read literally it turned sideways (its particle
+# orientation would follow the world, not the wall).
 ARTIST_TWEAKS = {
     ('Irelia_Base_W_Hit', 'large'): {'color': W_HIT_STAR, 'size': 1.6},
     ('Irelia_Base_W_Hit', 'glow'): {'size': 1.5},
@@ -528,6 +531,7 @@ ARTIST_TWEAKS = {
     ('Irelia_Base_P_buf', 'glow1'): {'color': ORANGE_HAZE, 'size': 1.35},
     ('Irelia_Base_P_buf', 'Sparks1'): {'color': GOLD_RAYS},
     ('Irelia_Base_P_buf', 'Sparks2'): {'color': GOLD_RAYS, 'alpha': .45, 'rate': .4},
+    ('Irelia_Base_R_Hit_Aoe', 'large_yellow'): {'localOrientation': True, 'birthRotation': [90.0, 180.0, 0.0]},
 }
 for system in library['systems']:
     for e in system['emitters']:
@@ -553,7 +557,23 @@ for system in library['systems']:
             if curve:
                 curve['c'][3] *= tweak['alpha']
                 curve['v'] = [v * tweak['alpha'] if i % 4 == 3 else v for i, v in enumerate(curve.get('v') or [])]
+        if 'localOrientation' in tweak:
+            e['localOrientation'] = tweak['localOrientation']
+        if 'birthRotation' in tweak:
+            e['birthRotation'] = {'c': [float(v) for v in tweak['birthRotation']]}
         notes.append(f"{system['name']}/{e['name']}: adjusted to match in-game footage {sorted(tweak)}.")
+
+# The R in the game footage bursts: its explosion throws a spray of rays, the hit throws a fan of
+# streaks forward, the wall's hit a crown of spikes and shards. Its single-particle emitters
+# emit their whole rate at once (a burst), not one particle.
+for system in library['systems']:
+    if not system['name'].startswith('Irelia_Base_R_'):
+        continue
+    for e in system['emitters']:
+        rate = (e.get('rate') or {}).get('c') or [1]
+        if e.get('single') and rate[0] > 1.01:
+            e['burst'] = True
+            notes.append(f"{system['name']}/{e['name']}: emits a burst of {rate[0]:g} particles, as in the game footage.")
 
 
 # ---------------------------------------------------------------------------------------------

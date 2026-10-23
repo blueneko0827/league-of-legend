@@ -219,7 +219,7 @@ namespace MidLane
             for (int slot = 0; slot < SkillKeys.Length; slot++)
                 if (Input.GetKeyDown(SkillKeys[slot]))
                 {
-                    bool cast = slot == 3 && blade != null ? !cancelledAim && rAim.Begin(aim) :
+                    bool cast = slot == 3 && blade != null ? !cancelledAim && BeginR(aim) :
                         RequestAbility(slot, aim, target);
                     if (cast && slot == 1 && blade != null) keyboardCharge = true;
                     if (!cast)
@@ -227,6 +227,16 @@ namespace MidLane
                             slot == 0 ? QFeedback(target) :
                             "Habilidad no disponible: maná, enfriamiento o acción en curso");
                 }
+        }
+        // R as in LoL's quick cast: on the key press, toward the cursor, with no aiming arrow.
+        // "r_aim_indicator" (ScenePresentation.json) restores holding R to aim with the arrow.
+        bool BeginR(Vector3 aim)
+        {
+            bool arrow = world.Presentation.r_aim_indicator;
+            if (!rAim.Begin(aim, arrow)) return false;
+            if (arrow) return true;
+            Combatant caster; Vector3 point;
+            return rAim.TakeAim(out caster, out point) && RequestAbility(3, point);
         }
         string QFeedback(Combatant target)
         {

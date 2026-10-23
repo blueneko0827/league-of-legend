@@ -10,20 +10,22 @@ namespace MidLane
         Vector3 cursor;
         int actorLife;
         IreliaDirectionIndicator indicator;
+        bool showIndicator;
         public bool IsAiming { get; private set; }
         public Vector3 Direction { get; private set; }
         public GameObject Indicator { get { return indicator != null ? indicator.gameObject : null; } }
         public float Range { get { return actor != null ? actor.Blade.Tuning.rRange : 0; } }
         public float Width { get { return actor != null ? actor.Blade.Tuning.rHalfWidth * 2 : 0; } }
         public void Initialize(LaneWorld lane) { world = lane; }
-        public bool Begin(Vector3 point)
+        // show: draw the aiming arrow (hold-to-aim mode); quick cast only takes the direction.
+        public bool Begin(Vector3 point, bool show = true)
         {
             Cancel();
             Combatant player = world.Player;
             if (player == null || player.Blade == null) return false;
-            actor = player; actorLife = actor.Deaths; cursor = point; IsAiming = true;
+            actor = player; actorLife = actor.Deaths; cursor = point; IsAiming = true; showIndicator = show;
             if (!CanContinue()) { Cancel(); return false; }
-            if (indicator == null) indicator=IreliaDirectionIndicator.Create(transform,"R · hold to aim");
+            if (show && indicator == null) indicator=IreliaDirectionIndicator.Create(transform,"R · hold to aim");
             Present(); return true;
         }
         bool CanContinue()
@@ -62,7 +64,8 @@ namespace MidLane
         {
             Vector3 delta = cursor - actor.Position; delta.y = 0;
             Direction = delta.sqrMagnitude > .0001f ? delta.normalized : actor.Team == Team.Blue ? Vector3.right : Vector3.left;
-            indicator.Present(actor.Position,Direction,Range,Width);
+            if (indicator == null) return;
+            if (showIndicator) indicator.Present(actor.Position,Direction,Range,Width); else indicator.Hide();
         }
         void OnDisable() { Cancel(); }
         void OnDestroy()

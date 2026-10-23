@@ -32,6 +32,9 @@ namespace MidLane
         [Header("R")]
         public float rRange = PracticeAbilityGeometry.IreliaRRange, rMana = 100, rCastTime = 0.4f, rSpeed = 20, rHalfWidth = PracticeAbilityGeometry.IreliaRHalfWidth;
         public float rWallLifetime = PracticeAbilityGeometry.IreliaRWallLifetime, rWallSlowDuration = 1.5f;
+        // The blades drop on the wall a moment after the explosion (game footage: a target standing
+        // on the wall line is hit 0.13-0.18 s after it); the wall hits from then on.
+        public float rWallArmTime = 0.15f;
         [Header("Passive and attack timing")]
         public float passiveDuration = 6, passiveAttackSpeedStart = 0.1f, passiveAttackSpeedEnd = 0.25f;
         public float inputBufferWindow = 0.2f;
