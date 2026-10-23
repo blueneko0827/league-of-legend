@@ -68,17 +68,18 @@
       - W al cargar y al soltar: el banco solo tiene líneas para 4 cargas. Al soltar se corta
         la línea de la carga, como en la grabación del juego.
       - E: en la primera y la segunda cuchilla.
-      - R: las 8 líneas que ya estaban, con su 30 % de probabilidad, que no cambia. Ahora no se
-        repiten seguidas, como el contenedor del banco.
-    - Órdenes del jugador:
-      - Primera orden de movimiento de la partida: `Move2DFirst`.
-      - Movimiento: `Move2DStandard`. Desde la fuente, con un clic a más de 900 unidades:
-        `Move2DLong`.
-      - Ataque a un campeón enemigo: `Attack2DGeneral`.
-      - Esfuerzos del ataque básico.
-      - Estas suenan solo después de 8 s sin voces y con 35 % de probabilidad
-        (`ChatterQuietSeconds`, `ChatterChance`). LoL no documenta su frecuencia, y en las
-        grabaciones del juego no suenan mientras Irelia sigue lanzando habilidades.
+      - R: las 8 líneas que ya estaban, con su 30 % de probabilidad (cuando no está sonando otra
+        voz), que no cambia. Ahora no se repiten seguidas, como el contenedor del banco.
+    - Órdenes del jugador y esfuerzos del ataque básico:
+      - Primera orden de movimiento de la partida: `Move2DFirst` (se intenta una sola vez).
+      - Al salir de la fuente con un clic a más de 900 unidades: `Move2DLong`, una vez por
+        salida.
+      - Movimiento (`Move2DStandard`), ataque a un campeón enemigo (`Attack2DGeneral`) y
+        esfuerzos del ataque básico: después de 5 s sin voces, la siguiente orden o ataque tiene
+        50 % de probabilidad; si no suena, se esperan otros 5 s (`ChatterQuietSeconds`,
+        `ChatterChance`). Con clics seguidos sale más o menos una línea cada 15 s. LoL no
+        documenta su frecuencia, y en las grabaciones del juego no suenan mientras Irelia sigue
+        lanzando habilidades.
     - Compras: B. F. Sword, Trinity Force y Blade of the Ruined King tienen su línea. Titanic
       Hydra también, pero la práctica todavía no permite comprarla.
     - Muerte, reaparición y eliminación de un campeón: sus líneas. No ocurren en la práctica;
@@ -97,16 +98,19 @@
 
 - Cambios que requieren fusionar código o afectan contratos con la simulación:
   - `BladeWave.cs`: `Launched` (solo lectura); con `official_vfx` también oculta el proyectil de
-    la R; avisa a `IreliaAudio` cuando el misil de la R termina.
-  - `BladeWall.cs`: `Blade`, `Impact`, `Direction` y `ExpiresAt` (solo lectura); crea su muro
-    propio solo sin `official_vfx`; avisa cada golpe del muro.
+    la R; avisa a `IreliaAudio` cuando el misil de la R termina (cada misil apaga su propio
+    sonido de salida).
+  - `BladeWall.cs`: `Blade`, `Impact`, `Direction`, `ExpiresAt` y `OwnerTeam` (solo lectura);
+    crea su muro propio solo sin `official_vfx`; avisa cada golpe del muro.
   - `BladeDuelist.cs`: evento de solo lectura `RWallHit(objetivo)`.
   - `RiotVfxSimulation.cs`: `MissileFrame`.
   - `IreliaAudio.cs`:
     - Voces nuevas: enum `IreliaVoiceCue` y evento `VoicePlayed`.
     - `RMissileEnded`, `MoveOrdered`, `AttackOrdered`, `ItemBought`, `ChampionKilled`, `Died`,
-      `Respawned`.
+      `Respawned`. `RLaunched` ahora devuelve un identificador del sonido para `RMissileEnded`.
     - La voz de la R usa la misma fuente que las demás voces (`Irelia voice`).
+    - Las fuentes de sonido se pausan con el juego también antes de reproducir algo (al
+      reanudar, la primera jugada no pisa una voz pausada).
   - `Combatant.cs`: avisa a la voz al comprar, al eliminar a un campeón y al reaparecer. Al
     morir llama a `Died` en lugar de `StopAll`; también detiene los efectos de sonido.
   - `PlayerCommands.cs`: las órdenes de mover y atacar avisan a la voz en el clic. La orden no
@@ -122,7 +126,7 @@
   - Voz de la R: en las grabaciones del juego Irelia dice una línea en cada R (3 de 3). Acá
     sigue en 30 %, como estaba definido (`RVoiceChance`).
   - La frecuencia de las voces de órdenes y de los esfuerzos del ataque básico no está en los
-    datos; se ajusta con las dos constantes de arriba.
+    datos; se ajusta con `ChatterQuietSeconds` y `ChatterChance`.
   - El interruptor de las líneas de la Q con 4 cargas no tiene nombre en el banco, y los datos
     no dicen cuál de los tres conjuntos elige LoL al perder las cargas: se elige al azar.
   - Sin conectar: primer encuentro con cada campeón, burlas, bromas, risas, recall, wards y

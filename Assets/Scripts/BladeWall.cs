@@ -21,6 +21,8 @@ namespace MidLane
         public Vector3 Impact { get; private set; }
         public Vector3 Direction { get; private set; }
         public float ExpiresAt { get { return expiresAt; } }
+        // The team its damage belongs to (another champion's after a reflection).
+        public Team OwnerTeam { get { return DamageOwner.Team; } }
         readonly HashSet<Combatant> hit = new HashSet<Combatant>();
         readonly Dictionary<Combatant, Vector3> previous = new Dictionary<Combatant, Vector3>();
         public void Initialize(LaneWorld lane, BladeDuelist owner, Vector3 impact, Vector3 direction, int spellCastId = 0, Combatant reflectedSource = null, float reflectedMultiplier = 1)

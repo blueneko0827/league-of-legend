@@ -49,6 +49,8 @@ namespace MidLane
         readonly List<BladeWave> rFlown = new List<BladeWave>();
         readonly Dictionary<BladeWall, RVfx> rWalls = new Dictionary<BladeWall, RVfx>();
         readonly List<BladeWall> rEnded = new List<BladeWall>();
+        // Walls already shown and ended early (Irelia died): not shown again after a quick respawn.
+        readonly HashSet<BladeWall> rShown = new HashSet<BladeWall>();
 
         sealed class RVfx
         {
@@ -131,7 +133,7 @@ namespace MidLane
             if (!actor.Alive || actor.Deaths != observedDeaths)
             {
                 // A standing blade wall sinks as when it ends; the rest stops at once.
-                foreach (RVfx wall in rWalls.Values) wall.End();
+                foreach (KeyValuePair<BladeWall, RVfx> pair in rWalls) { pair.Value.End(); if (pair.Key != null) rShown.Add(pair.Key); }
                 rWalls.Clear();
                 StopPersistent(); pending.Clear(); swipes.Clear(); swipeSequence = -1; observedDeaths = actor.Deaths;
                 observedBasic = actor.BasicAttackSequence; observedQ = blade.QSequence; observedStacks = 0;
@@ -427,8 +429,9 @@ namespace MidLane
                 if (pair.Key == null) { if (pair.Value != null) pair.Value.Stop(); rFlown.Add(pair.Key); }
             foreach (BladeWave wave in rFlown) rMissiles.Remove(wave);
 
+            rShown.RemoveWhere(wall => wall == null);
             foreach (BladeWall wall in world.BladeWalls)
-                if (wall != null && wall.Blade == blade && !rWalls.ContainsKey(wall)) rWalls[wall] = StartWall(wall);
+                if (wall != null && wall.Blade == blade && !rWalls.ContainsKey(wall) && !rShown.Contains(wall)) rWalls[wall] = StartWall(wall);
             rEnded.Clear();
             foreach (KeyValuePair<BladeWall, RVfx> pair in rWalls)
             {
@@ -475,7 +478,8 @@ namespace MidLane
 
         RVfx StartWall(BladeWall wall)
         {
-            var r = new RVfx { hostile = actor.Team != world.PlayerTeam };
+            // Enemy colors when the wall hurts the player's team (also a wall reflected back at her).
+            var r = new RVfx { hostile = wall.OwnerTeam != world.PlayerTeam };
             Vector3 impact = wall.Impact, direction = Flat(wall.Direction);
             Quaternion facing = Quaternion.LookRotation(direction);
             // The explosion on the champion the blades hit.

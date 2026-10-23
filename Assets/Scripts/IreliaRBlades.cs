@@ -41,15 +41,18 @@ namespace MidLane
 
         static bool Load()
         {
-            // Meshes and material are built once; rebuilt if Unity unloaded them (play mode without domain reload).
-            if (library != null && (library.blades == null || library.blades.Length == 0)) return false;
-            if (library != null && material != null && meshes != null && Array.TrueForAll(meshes, m => m != null)) return true;
             if (library == null)
             {
                 TextAsset source = Resources.Load<TextAsset>(ResourcePath);
                 library = source != null ? JsonUtility.FromJson<Library>(source.text) : new Library();
             }
-            if (library.blades == null || library.blades.Length == 0) return false;
+            // Needs the blades and the cast, cycle and death clips.
+            if (library.blades == null || library.blades.Length == 0 || library.bones == null || library.clips == null ||
+                Clip("cast") == null || Clip("cycle") == null || Clip("death") == null) return false;
+            // Meshes and material are built once; rebuilt if Unity unloaded them (play mode without domain reload).
+            if (material != null && meshes != null && Array.TrueForAll(meshes, m => m != null)) return true;
+            if (meshes != null) foreach (Mesh old in meshes) if (old != null) UnityEngine.Object.Destroy(old);
+            if (material != null) UnityEngine.Object.Destroy(material);
             meshes = new Mesh[library.blades.Length];
             for (int i = 0; i < meshes.Length; i++) meshes[i] = BuildMesh(library.blades[i]);
             Shader shader = Shader.Find("MidLane/IreliaRWallBlade");

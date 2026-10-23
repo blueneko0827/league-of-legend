@@ -22,6 +22,7 @@ namespace MidLane
         bool ultimate;
         bool launched;
         bool impactSoundPlayed;
+        long launchSound;
         int castId;
         GameObject visual;
         readonly HashSet<Combatant> hit = new HashSet<Combatant>();
@@ -52,7 +53,7 @@ namespace MidLane
                 if (ultimate) origin = blade.Actor.Position;
                 if (Time.time < delayUntil) return;
                 launched = true;
-                if (ultimate && blade.Actor.Audio != null) blade.Actor.Audio.RLaunched();
+                if (ultimate && blade.Actor.Audio != null) launchSound = blade.Actor.Audio.RLaunched();
                 // The proximity check is not a projectile. Resolve it at the end of
                 // the cast from the updated origin, preserving the R + Flash combo.
                 if (ultimate && CheckOrigin()) return;
@@ -155,7 +156,7 @@ namespace MidLane
         {
             if (world != null) world.BladeWaves.Remove(this);
             // Stop_sfx_Irelia_IreliaR_onmissilelaunch: the launch sound fades when the missile ends.
-            if (ultimate && launched && blade != null && blade.Actor != null && blade.Actor.Audio != null) blade.Actor.Audio.RMissileEnded();
+            if (ultimate && launched && blade != null && blade.Actor != null && blade.Actor.Audio != null) blade.Actor.Audio.RMissileEnded(launchSound);
         }
     }
 }
