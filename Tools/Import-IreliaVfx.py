@@ -533,9 +533,10 @@ ARTIST_TWEAKS = {
     ('Irelia_Base_P_buf', 'Sparks2'): {'color': GOLD_RAYS, 'alpha': .45, 'rate': .4},
     ('Irelia_Base_R_Hit_Aoe', 'large_yellow'): {'localOrientation': True, 'birthRotation': [90.0, 180.0, 0.0]},
     # The runtime mirrors the R missile's flat quads along the flight (apex of this chevron toward
-    # the flight, as in the game). Half a texture of V offset keeps the chevron (top half of its
-    # texture) where it is authored, well behind the blades, instead of moving it onto them.
-    ('Irelia_Base_R_Mis', 'Glow'): {'birthUvOffset': [0.0, 0.5]},
+    # the flight, as in the game). A V offset keeps the chevron (top half of its texture) behind
+    # the blades instead of on them: 0.6 leaves a short gap, a third of the authored one (0.5),
+    # as the client asked after comparing with the game.
+    ('Irelia_Base_R_Mis', 'Glow'): {'birthUvOffset': [0.0, 0.6]},
 }
 for system in library['systems']:
     for e in system['emitters']:
