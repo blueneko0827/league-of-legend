@@ -18,7 +18,10 @@ namespace MidLane
         public float[] qDamage = { 5, 25, 45, 65, 85 };
         public float qAttackDamageRatio = 0.8f;
         public float[] qHealingRatio = { 0.09f, 0.10f, 0.11f, 0.12f, 0.13f };
-        public float qResetLock = 0.1f;
+        // LoL: hitting a marked target drops the current cooldown to 0.2 s (from the contact).
+        public float qResetLock = 0.2f;
+        // LoL: the dash ends 100 units past the target's location.
+        public float qPassThrough = 100 * LeagueChampionStats.WorldUnitsPerLeagueUnit;
         [Header("W / hold then release")]
         public float wRange = PracticeAbilityGeometry.IreliaWRange, wHalfWidth = PracticeAbilityGeometry.IreliaWHalfWidth;
         public float wMaxHold = 1.5f, wFullCharge = 0.75f, wReleaseTime = 0.25f;
@@ -35,9 +38,14 @@ namespace MidLane
         // The blades drop on the wall a moment after the explosion (game footage: a target standing
         // on the wall line is hit 0.13-0.18 s after it); the wall hits from then on.
         public float rWallArmTime = 0.15f;
+        // Presentation: an R cast within this time after the end of a W release is a W → R
+        // (higher hop, IreliaRigAnimation.TickR).
+        public float rAfterWWindow = 0.3f;
         [Header("Passive and attack timing")]
         public float passiveDuration = 6, passiveAttackSpeedStart = 0.1f, passiveAttackSpeedEnd = 0.25f;
-        public float inputBufferWindow = 0.2f;
+        // LoL's queue threshold (Q and R: 0.5 s): an ability pressed this long before it can be
+        // cast (cooldown or another ability's cast time) is queued instead of dropped.
+        public float inputBufferWindow = 0.5f;
 
         public float Cooldown(int slot, int rank)
         {

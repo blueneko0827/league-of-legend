@@ -52,7 +52,8 @@ MonoBehaviour:
   - 0.11
   - 0.12
   - 0.13
-  qResetLock: 0.1
+  qResetLock: 0.2
+  qPassThrough: 1
   wRange: 8.25
   wHalfWidth: 1.2
   wMaxHold: 1.5
@@ -81,7 +82,8 @@ MonoBehaviour:
   rWallLifetime: 2.5
   rWallSlowDuration: 1.5
   rWallArmTime: 0.15
+  rAfterWWindow: 0.3
   passiveDuration: 6
   passiveAttackSpeedStart: 0.1
   passiveAttackSpeedEnd: 0.25
-  inputBufferWindow: 0.2
+  inputBufferWindow: 0.5

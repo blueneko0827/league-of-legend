@@ -66,10 +66,12 @@ namespace MidLane
                 bool w = (actor.Blade.IsCharging || suppressedWCastId != actor.Blade.WCastId) &&
                     rig.TickW(actor.Blade.IsCharging, actor.Blade.WChargeElapsed, actor.Blade.WReleaseElapsed, actor.Blade.Tuning.wReleaseTime, Time.deltaTime);
                 bool rWindup = actor.Blade.RAnimationElapsed < actor.Blade.Tuning.rCastTime;
-                if (attacking || actor.IsStunned || actor.IsInStasis || actor.Blade.IsCharging || actor.Blade.IsDashing || actor.SpellCastId != actor.Blade.RSpellCastId)
+                // An R cast during the Q dash plays over it (the dash goes on, as in LoL).
+                if (attacking || actor.IsStunned || actor.IsInStasis || actor.Blade.IsCharging || actor.SpellCastId != actor.Blade.RSpellCastId)
                     suppressedRSequence = actor.Blade.RSequence;
+                float hop = actor.Blade.RAfterW ? world.Presentation.r_after_w_hop_scale : 1;
                 bool r = !w && !actor.IsStunned && !actor.IsInStasis && (rWindup || suppressedRSequence != actor.Blade.RSequence) &&
-                    rig.TickR(actor.Blade.RAnimationElapsed, actor.Blade.Tuning.rCastTime, walking, Time.deltaTime);
+                    rig.TickR(actor.Blade.RAnimationElapsed, actor.Blade.Tuning.rCastTime, walking, Time.deltaTime, hop);
                 if (!actor.Blade.IsDashing && (attacking || actor.IsStunned || actor.IsInStasis || actor.Blade.IsCharging || actor.SpellCastId != actor.Blade.QFinishedSpellId))
                     suppressedQSequence = actor.Blade.QSequence;
                 bool q = !w && !r && !actor.IsStunned && !actor.IsInStasis && (actor.Blade.IsDashing || suppressedQSequence != actor.Blade.QSequence) &&

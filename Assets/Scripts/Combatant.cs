@@ -77,7 +77,9 @@ namespace MidLane
         public float RootRemaining { get { return Mathf.Max(0, rootedUntil - Time.time); } }
         public float StunRemaining { get { return Mathf.Max(0, stunnedUntil - Time.time); } }
         public float ActionLockRemaining { get { return Mathf.Max(0, busyUntil - Time.time); } }
-        public bool CanAct { get { return gameObject.activeInHierarchy && Alive && !IsInStasis && (ItemEffects == null || !ItemEffects.IsReviving) && !world.RoundOver && !world.Paused && !IsStunned && Time.time >= busyUntil && (Blade == null || !Blade.BlocksActions); } }
+        public bool CanAct { get { return CanActDuringDash && (Blade == null || !Blade.IsDashing); } }
+        // CanAct without Irelia's Q dash: in LoL she can cast her other abilities during it.
+        public bool CanActDuringDash { get { return gameObject.activeInHierarchy && Alive && !IsInStasis && (ItemEffects == null || !ItemEffects.IsReviving) && !world.RoundOver && !world.Paused && !IsStunned && Time.time >= busyUntil && (Blade == null || !Blade.IsCharging); } }
         public bool Marked { get { return Time.time < markUntil || Dummy != null && Dummy.PracticeMark; } }
         public bool AttackReady { get { return Time.time >= nextAttack && windingTarget == null; } }
         public float AttackWindupDuration { get { return Sett != null ? Sett.AttackWindupDuration : Kind == UnitKind.Champion ?

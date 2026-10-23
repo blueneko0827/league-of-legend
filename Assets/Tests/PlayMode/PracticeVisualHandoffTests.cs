@@ -227,6 +227,61 @@ namespace MidLane.Tests
             // spell4's hop: the root rises ~230 units over its idle height and lunges forward.
             Assert.Greater(highest, rest + 150); Assert.Greater(farthest, 100);
         }
+        [UnityTest] public IEnumerator WThenRHopsHigherThanAPlainR()
+        {
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            world.Player.transform.position = dummy.Home - Vector3.right * 3; world.Player.Stop();
+            var rig = world.Player.GetComponentInChildren<IreliaRigAnimation>();
+            Transform root = System.Array.Find(rig.GetComponentsInChildren<Transform>(), t => t.name == "Root");
+            Assert.NotNull(root);
+            Assert.IsTrue(world.Player.Cast(3, dummy.Actor.Position));
+            Assert.IsFalse(world.Player.Blade.RAfterW);
+            float plain = float.MinValue;
+            for (float t = 0; t < .9f; t += Time.deltaTime) { yield return null; plain = Mathf.Max(plain, root.localPosition.y); }
+            world.Player.Cooldowns.Reset(1); world.Player.Cooldowns.Reset(3);
+            yield return new WaitForSeconds(.6f);
+            Assert.IsTrue(world.Player.Cast(1, dummy.Actor.Position));
+            yield return new WaitForSeconds(.3f);
+            world.Player.Blade.RequestWRelease(dummy.Actor.Position);
+            yield return null;
+            Assert.IsTrue(world.Player.Blade.Command(3, dummy.Actor.Position, null));
+            float afterW = float.MinValue;
+            for (float t = 0; t < .9f; t += Time.deltaTime) { yield return null; afterW = Mathf.Max(afterW, root.localPosition.y); }
+            Assert.IsTrue(world.Player.Blade.RAfterW);
+            // The default r_after_w_hop_scale (1.5) adds about half of the ~230-unit hop.
+            Assert.Greater(afterW, plain + 60);
+        }
+        [UnityTest] public IEnumerator RCastDuringTheQDashAndTheDashRunsThroughTheTarget()
+        {
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            world.Player.transform.position = dummy.Home - Vector3.right * 5; world.Player.Stop();
+            Assert.IsTrue(world.Player.Cast(0, dummy.Actor.Position, dummy.Actor));
+            yield return null;
+            Assert.IsTrue(world.Player.Blade.IsDashing);
+            // As in LoL, the R goes out during the dash (not queued after it) and the dash goes on.
+            int r = world.Player.Blade.RSequence;
+            Assert.IsTrue(world.Player.Cast(3, dummy.Actor.Position));
+            Assert.AreEqual(r + 1, world.Player.Blade.RSequence);
+            Assert.IsTrue(world.Player.Blade.IsDashing);
+            for (float t = 0; t < 1 && world.Player.Blade.IsDashing; t += Time.deltaTime) yield return null;
+            Assert.IsFalse(world.Player.Blade.IsDashing);
+            Assert.Greater(dummy.TotalDamage, 0);
+            // The dash ends 100 LoL units past the target's location.
+            Assert.AreEqual(1, Vector3.Distance(world.Player.Position, dummy.Actor.Position), .1f);
+        }
+        [UnityTest] public IEnumerator AQPressedEarlyInTheRCastIsQueued()
+        {
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            world.Player.transform.position = dummy.Home - Vector3.right * 3; world.Player.Stop();
+            Assert.IsTrue(world.Player.Cast(3, dummy.Actor.Position));
+            yield return new WaitForSeconds(.1f);
+            // 0.3 s of the R's cast time left: within LoL's 0.5 s queue threshold.
+            int q = world.Player.Blade.QSequence;
+            Assert.IsTrue(world.Player.Blade.Command(0, dummy.Actor.Position, dummy.Actor));
+            Assert.AreEqual(q, world.Player.Blade.QSequence);
+            yield return new WaitForSeconds(.4f);
+            Assert.AreEqual(q + 1, world.Player.Blade.QSequence);
+        }
         [UnityTest] public IEnumerator OfficialVoiceLinesPlay()
         {
             var audio = world.Player.Audio; Assert.NotNull(audio);

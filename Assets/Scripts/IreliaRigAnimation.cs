@@ -40,6 +40,7 @@ namespace MidLane
         Transform[] joints;
         Transform pelvis;
         Vector3 pelvisRest;
+        float idleRootHeight;
         Vector3[] positions, scales, previousPositions, previousScales;
         Quaternion[] rotations, previousRotations;
         float attackTime, attackWindup, attackCycle;
@@ -66,6 +67,8 @@ namespace MidLane
             }
             pelvisRest = pelvis.localPosition;
             ResetPose();
+            // The root's height standing in idle: the R hop is measured from it.
+            idleRootHeight = pelvis.localPosition.y;
         }
         public void ConfigureEAndR(AnimationClip eFirst, AnimationClip eFirstRun, AnimationClip eFirstIdle,
             AnimationClip eSecond, AnimationClip eSecondRun, AnimationClip eSecondIdle,
@@ -111,7 +114,9 @@ namespace MidLane
             EOverlayActive = true; EAnimationClip = clip; EAnimationTime = sample;
             return true;
         }
-        public bool TickR(float elapsed, float castDuration, bool walking, float dt)
+        // hopScale: multiplies how far spell4's hop rises above the idle height (1 = the clip as is).
+        // A W → R uses more than 1: Irelia hops higher and, in the same time, comes down faster.
+        public bool TickR(float elapsed, float castDuration, bool walking, float dt, float hopScale = 1)
         {
             if (RCastClip == null || RToIdleClip == null || RToRunClip == null || float.IsInfinity(elapsed) || elapsed < 0) return false;
             AnimationClip clip; float sample;
@@ -128,6 +133,12 @@ namespace MidLane
             // (spell4_to_idle's first frames). Irelia does not move in gameplay, so keep the
             // clip's whole root motion here instead of pinning it like the dash/attack clips.
             Sample(clip, sample, dt, elapsed >= .06f, Pose == IreliaPose.RRecovery ? RHoldClip : null, true);
+            // The hop is spell4 plus the first frames of spell4_to_idle/run (the drop into the slam).
+            if (hopScale != 1 && (Pose == IreliaPose.RCast || sample < .1f))
+            {
+                Vector3 p = pelvis.localPosition;
+                if (p.y > idleRootHeight) { p.y = idleRootHeight + (p.y - idleRootHeight) * hopScale; pelvis.localPosition = p; }
+            }
             return true;
         }
         public void Tick(IreliaPose desired, float speed, float dt, bool attackStarted, float windup, float interval, int requestedAttackVariant = 0)

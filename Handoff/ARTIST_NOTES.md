@@ -2,6 +2,34 @@
 
 ## Hito 2.3 · R (Filo de la Vanguardia), sonidos y voces
 
+- **Ajustes tras la tercera revisión del cliente:**
+  - Secuencias de golpes más rápidas, con las reglas de LoL:
+    - Durante el dash de la Q se pueden lanzar la W y la R (la E ya se podía); el dash sigue
+      hasta el final. Antes quedaban en cola hasta que terminaba el dash
+      (`BladeDuelist.Ready`, `Combatant.CanActDuringDash`). La animación de la R se ve aunque
+      se lance durante el dash (`IreliaModelAnimation`).
+    - Cola de habilidades de 0,5 s (el umbral de cola de la Q y la R en LoL; antes 0,2 s): una
+      habilidad pedida durante el lanzamiento de otra (por ejemplo, la Q al comienzo de los
+      0,4 s de la R) o poco antes de que termine su enfriamiento ya no se pierde
+      (`inputBufferWindow` en `BladeTuning`).
+  - Movimiento de la Q en golpes consecutivos, como en LoL: Irelia atraviesa el objetivo y el
+    dash termina 100 unidades más allá de su posición (`qPassThrough`; antes se detenía apenas
+    pasado su borde). El golpe (daño, curación, cargas, reinicio, `Q_tar`/`Q_Proc`) llega al
+    tocar al objetivo y el dash continúa hasta el final. Con un objetivo marcado el
+    enfriamiento baja a 0,2 s desde ese contacto (`qResetLock`, antes 0,1 s desde el final del
+    dash); si el golpe lo mata, se reinicia por completo.
+  - W → R: la R lanzada justo después de soltar la W (hasta 0,3 s después del final de la
+    liberación, `rAfterWWindow`) salta más alto y, en el mismo tiempo, cae más rápido al golpe.
+    `ScenePresentation.json` → `"r_after_w_hop_scale": 1.5` (cuánto más sube respecto del salto
+    normal de `irelia_spell4`; 1 = igual que una R normal; ajustable de 1 a 2,5). Es una
+    calibración a partir de la descripción del cliente: los datos de animación de LoL no tienen
+    un clip aparte para la W → R.
+  - Pendiente: el efecto en las manos de Irelia después de la R. No aparece en los datos de la
+    R entregados (los sistemas `R_*` del `.bin` de la skin base no tienen ninguno anclado a las
+    manos); hace falta una captura o el segundo del video donde se ve.
+  - Pruebas nuevas: `WThenRHopsHigherThanAPlainR`, `RCastDuringTheQDashAndTheDashRunsThroughTheTarget`
+    y `AQPressedEarlyInTheRCastIsQueued`.
+
 - **Ajustes tras la segunda revisión del cliente** (comparados cuadro a cuadro con
   `videoRealGameplay_100` y `videoRealGameplay_0`):
   - Forma detrás de las cuchillas de la R en vuelo: los quads del misil (`R_Mis`: `Glow`,

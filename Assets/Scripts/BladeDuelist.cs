@@ -36,8 +36,8 @@ namespace MidLane
         { if (RWallHit != null) try { RWallHit(target); } catch (System.Exception e) { Debug.LogException(e); } }
         public Vector3 PredictDashPosition(float seconds)
         {
-            if (!IsDashing || dashTarget == null) return self.Position;
-            Vector3 endpoint = world.AvoidTower(self, dashTarget.Position + dashDirection * (self.Radius + dashTarget.Radius + 0.05f));
+            if (!IsDashing || (!dashHit && dashTarget == null)) return self.Position;
+            Vector3 endpoint = dashHit ? dashEndpoint : DashEndpoint(dashTarget);
             return Vector3.MoveTowards(self.Position, endpoint, (Tuning.qSpeed + self.MoveSpeed) * Mathf.Max(0, seconds));
         }
         public float QMinionBonusDamage { get { return 50 + 11 * (Progress.Level - 1); } }
@@ -63,6 +63,9 @@ namespace MidLane
         public int RSpellCastId { get; private set; }
         public float RAnimationElapsed { get { return Time.time - rAnimationAt; } }
         public Vector3 RDirection { get; private set; }
+        // Presentation: this R was cast right after a W release (W → R), which in LoL makes
+        // Irelia hop higher before the slam (IreliaRigAnimation.TickR).
+        public bool RAfterW { get; private set; }
         public bool WaitingSecondBlade { get; private set; }
         public bool BlocksActions { get { return IsDashing || IsCharging; } }
         public float ERemaining { get { return WaitingSecondBlade ? Mathf.Max(0, eExpiresAt - Time.time) : 0; } }
@@ -77,7 +80,10 @@ namespace MidLane
         }
         LaneWorld world;
         Combatant self, dashTarget;
-        Vector3 dashDirection, chargeAim, firstBladePoint;
+        Vector3 dashDirection, dashEndpoint, chargeAim, firstBladePoint;
+        // LoL: the hit lands on contact and the dash then runs on to its end (dashHit).
+        bool dashHit;
+        Combatant dashVictim;
         float dashStartedAt, chargeAt, guardUntil, ePlacedAt, eExpiresAt, passiveExpiresAt;
         float wReleasedAt = float.NegativeInfinity;
         float qCompletedAt = float.NegativeInfinity, qTraveled;
@@ -126,7 +132,8 @@ namespace MidLane
             if (self.IsStunned || IsCharging) return false;
             if (slot == 0 && self.IsRooted) return false;
             if (slot == 2 && WaitingSecondBlade) return Time.time >= ePlacedAt + Tuning.eRecastLock;
-            bool canCast = slot == 2 || self.CanAct;
+            // LoL: Irelia can cast her other abilities during the Q dash, which goes on.
+            bool canCast = slot == 2 || (slot == 0 ? self.CanAct : self.CanActDuringDash);
             return canCast && self.Cooldowns.Ready(slot, Time.time) && self.Resource >= AbilityCost(slot);
         }
         public bool Cast(int slot, Vector3 aim, Combatant target)
@@ -145,6 +152,7 @@ namespace MidLane
             if (slot == 0)
             {
                 dashTarget = target; IsDashing = true; dashStartedAt = Time.time; attackAfterDash = true;
+                dashHit = false; dashVictim = null;
                 if(self.Runes!=null) self.Runes.NotifyDash();
                 QChained = Time.time - qCompletedAt < 0.4f; QSequence++;
                 qCompletedAt = float.NegativeInfinity; qTraveled = 0; QDashProgress = 0;
@@ -175,6 +183,7 @@ namespace MidLane
             }
             else
             {
+                RAfterW = Time.time - wReleasedAt <= Tuning.wReleaseTime + Tuning.rAfterWWindow;
                 rAnimationAt = Time.time; RSequence++; RSpellCastId = self.SpellCastId; RDirection = Direction(aim);
                 self.LockActions(Tuning.rCastTime);
                 if (self.Audio != null) self.Audio.RStart();
@@ -302,37 +311,50 @@ namespace MidLane
                 }
             }
         }
+        // LoL: Irelia dashes 100 units through the target's location; damage and on-hit land on
+        // contact (or at the end of the dash if the target moved away), and she then finishes
+        // the dash. A marked target drops the cooldown to 0.2 s from that contact; a kill resets it.
+        Vector3 DashEndpoint(Combatant target)
+        { return world.AvoidTower(self, target.Position + dashDirection * Tuning.qPassThrough); }
         void AdvanceDash()
         {
-            if (dashTarget == null || !dashTarget.Targetable || self.IsStunned || Time.time - dashStartedAt > 1)
+            if (self.IsStunned || Time.time - dashStartedAt > 1 || (!dashHit && (dashTarget == null || !dashTarget.Targetable)))
             { InterruptDash(); return; }
-            // Follow a moving target; stop just beyond it, rather than teleporting to a cached position.
-            Vector3 endpoint = world.AvoidTower(self, dashTarget.Position + dashDirection * (self.Radius + dashTarget.Radius + 0.05f));
+            // Before contact, follow a moving target rather than teleporting to a cached position.
+            Vector3 endpoint = dashHit ? dashEndpoint : DashEndpoint(dashTarget);
             Vector3 before = self.Position;
             self.transform.position = Vector3.MoveTowards(self.Position, endpoint, (Tuning.qSpeed + self.MoveSpeed) * Time.deltaTime);
             Vector3 traveled = self.Position - before; qTraveled += traveled.magnitude;
             if (traveled.sqrMagnitude > 0.000001f) QDirection = traveled.normalized;
             QDashProgress = Mathf.Max(QDashProgress, qTraveled / Mathf.Max(0.001f, qTraveled + Vector3.Distance(self.Position, endpoint)));
-            if (Vector3.Distance(self.Position, endpoint) > 0.04f) return;
-            Combatant victim = dashTarget; bool marked = victim.Marked;
-            IsDashing = false; dashTarget = null;
+            bool arrived = Vector3.Distance(self.Position, endpoint) <= 0.04f;
+            if (!dashHit && (arrived || Vector3.Distance(self.Position, dashTarget.Position) <= self.Radius + dashTarget.Radius + 0.05f))
+                LandQ();
+            if (!arrived) return;
+            Combatant victim = dashVictim;
+            IsDashing = false; dashTarget = null; dashHit = false; dashVictim = null;
             qCompletedAt = Time.time; QFinishedSpellId = self.SpellCastId; QDashProgress = 1;
+            self.ResetAttackTimer();
+            if (attackAfterDash && victim != null && victim.Targetable) self.OrderAttackAfterAbility(victim);
+        }
+        void LandQ()
+        {
+            Combatant victim = dashTarget; bool marked = victim.Marked;
+            dashHit = true; dashVictim = victim; dashEndpoint = DashEndpoint(victim);
             float raw = QRawDamage(victim);
             self.ApplyAttackHit(victim, raw, false);
             if (self.Audio != null) self.Audio.QImpact();
             OnBasicAttackHit(victim, false, true); AwardSpellHits(new[] { victim });
             self.Heal(self.AttackDamage * Tuning.qHealingRatio[Mathf.Clamp(Rank(0) - 1, 0, 4)]);
             // A lethal champion hit already cleared both champions' clocks in UnitDied.
-            if ((marked || !victim.Alive) && self.Cooldowns.Remaining(0, Time.time) > 0)
-                self.Cooldowns.Start(0, Time.time, Tuning.qResetLock);
+            if (!victim.Alive) self.Cooldowns.Reset(0);
+            else if (marked && self.Cooldowns.Remaining(0, Time.time) > 0) self.Cooldowns.Start(0, Time.time, Tuning.qResetLock);
             victim.ClearMark();
             if (QLanded != null)
                 try { QLanded(victim, marked || !victim.Alive); } catch (System.Exception e) { Debug.LogException(e); }
-            self.ResetAttackTimer();
-            if (attackAfterDash && victim.Targetable) self.OrderAttackAfterAbility(victim);
         }
         public void MovementOrdered() { CancelInput(); if (IsDashing) attackAfterDash = false; }
-        public void InterruptDash() { IsDashing = false; dashTarget = null; qCompletedAt = float.NegativeInfinity; }
+        public void InterruptDash() { IsDashing = false; dashTarget = null; dashHit = false; dashVictim = null; qCompletedAt = float.NegativeInfinity; }
         public void CancelTransient()
         {
             if (self.Audio != null) self.Audio.StopWCharge();

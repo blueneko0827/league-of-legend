@@ -47,6 +47,9 @@ namespace MidLane
         // R as in LoL's quick cast: pressing R sends it toward the cursor, with no aiming arrow (the
         // game footage shows none). true = the previous mode: hold R to aim with an arrow, release to cast.
         public bool r_aim_indicator = false;
+        // W → R: in LoL an R cast right after the W release hops higher before the fast drop into
+        // the slam. Multiplies how far the hop rises above Irelia's idle height (1 = like any R).
+        public float r_after_w_hop_scale = 1.5f;
         // Extra height of the champions' overhead bar, as a fraction of the champion's visual
         // height. The official models (hair, floating blades) rise above the selection height,
         // so without it the bar covers Irelia's face; LoL leaves a gap above the head.
@@ -90,6 +93,7 @@ namespace MidLane
             shadow_strength = Mathf.Clamp01(shadow_strength);
             vfx_scale = Mathf.Clamp(vfx_scale, .5f, 2);
             w_indicator_scale = Mathf.Clamp(w_indicator_scale, .5f, 2);
+            r_after_w_hop_scale = Mathf.Clamp(r_after_w_hop_scale, 1, 2.5f);
             champion_bar_lift = Mathf.Clamp(champion_bar_lift, 0, 1);
             // Fixed at the farthest framing previously reachable with the scroll wheel, times the zoom.
             camera_distance = CameraDistance;
