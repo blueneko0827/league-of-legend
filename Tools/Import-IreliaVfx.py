@@ -321,11 +321,12 @@ textures, meshes, notes = {}, {}, []
 # supplied files, with the Irelia texture of the same kind that stands in for each (soft glow for
 # glows and flashes, a mote for sparks).
 SUBSTITUTE_TEXTURES = {
-    'irelia_skin16_glow': 'irelia_base_z_glow_bright',        # W_Swipe_Empowered: gold streak to the target
     'zoe_base_z_spark': 'irelia_base_z_glow_bright',           # W_Hit: sparks (streaks along their flight)
     'zoe_base_q_impactglow': 'irelia_base_z_spotlight',        # E_Blades: dark circle under the blade
 }
-# Not replaced: the dust textures (TahmKench smoke, Kaisa recall dust). Irelia has no soft smoke
+# Not replaced: Irelia_Skin16_Glow (W_Swipe_Empowered/Center): a soft glow stretched along the
+# slash showed as a sharp spike pointing ahead of Irelia for a frame when the W is released.
+# Not replaced either: the dust textures (TahmKench smoke, Kaisa recall dust). Irelia has no soft smoke
 # texture, and her cloudy noise drawn instead shows square patches on the ground.
 
 
