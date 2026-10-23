@@ -60,8 +60,8 @@
     - Erosión: si el mapa de erosión es la misma textura del emisor, se desplaza y se repite con
       ella; un `erosionSliceWidth` angosto (menos de 0,25) dibuja solo una franja fina sobre el
       umbral. Solo lo usa el `pulse` de `R_Hit_Aoe` (los rayos).
-    - Un `texDiv` fraccionario en una malla repite la textura (el `pulse`: 0,5 = dos veces
-      alrededor del muro).
+    - Un `texDiv` fraccionario en una malla erosionada por su propia textura la repite (solo el
+      `pulse`: 0,5 = dos veces alrededor del muro).
     - Los demás efectos (ataques, pasiva, Q, W, E) no cambian: ninguno usa estos casos.
   - Material de las cuchillas del muro: `IreliaRWallBlade.shader` (nuevo) con la textura de las
     cuchillas de Irelia y el brillo de borde y resplandor de su material del juego
@@ -166,6 +166,11 @@
   - LoL suma un resplandor (bloom) que el proyecto no tiene; los rayos y el estallido se ven un
     poco menos brillantes que en el juego.
   - El área de la explosión sigue siendo un círculo de 320 unidades alrededor del objetivo.
+  - Con el marco del misil también quedan de pie los conos y el remolino de polvo de la salida
+    (`ConeBurst`, `ConeBurst1`, `mesh_dustup`); en la vista previa se parecen al juego, pero se
+    dibujan en la capa del suelo (debajo de las cuchillas): conviene revisarlo en el editor.
+  - Al formarse el muro se revisa el recorrido de cada enemigo desde la explosión: quien estaba
+    sobre la línea o la cruzó en esos 0,15 s recibe el golpe y la marca.
   - Voz de la R: en las grabaciones del juego Irelia dice una línea en cada R (3 de 3). Acá
     sigue en 30 %, como estaba definido (`RVoiceChance`).
   - La frecuencia de las voces de órdenes y de los esfuerzos del ataque básico no está en los

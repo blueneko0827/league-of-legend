@@ -505,7 +505,9 @@ namespace MidLane
 
         static float Tile(RiotVfxEmitterData d, int axis)
         {
-            if (d.primitive != "mesh" || d.texDiv == null || d.texDiv.Length <= axis) return 1;
+            // Only a mesh eroded by its own texture (the pulse); other meshes keep one copy.
+            if (d.primitive != "mesh" || d.texDiv == null || d.texDiv.Length <= axis ||
+                d.erosion == null || d.erosion.map != d.texture) return 1;
             float division = d.texDiv[axis];
             return division > .01f && division < 1 ? 1 / division : 1;
         }

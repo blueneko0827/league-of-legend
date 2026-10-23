@@ -446,8 +446,8 @@ namespace MidLane
             {
                 RVfx r = pair.Value;
                 if (pair.Key == null) { r.End(); rEnded.Add(pair.Key); continue; }
-                r.age += Time.deltaTime;
                 if (!r.formed && r.age >= RWallUnitDelay) FormWall(r);
+                r.age += Time.deltaTime;
                 // IreliaBlades' cast clip starts R_Wall_Bladeglow on every blade at its frame 9.
                 if (!r.glowing && r.blades != null && r.blades.Age >= IreliaRBlades.BladeGlowAt)
                 {
