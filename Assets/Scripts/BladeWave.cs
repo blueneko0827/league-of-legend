@@ -10,6 +10,8 @@ namespace MidLane
         public bool IsUltimate { get { return ultimate; } }
         public float CreatedAt { get; private set; }
         public float Range { get { return range; } }
+        // Presentation: the R's blades have left Irelia (end of the cast).
+        public bool Launched { get { return launched; } }
         LaneWorld world;
         BladeDuelist blade;
         Combatant reflectedOwner;
@@ -35,8 +37,9 @@ namespace MidLane
             visual = ultimate ? IreliaRVisuals.CreateProjectile(transform) : world.Shape("W Danza de Insurrección", PrimitiveType.Cube, transform,
                 origin + Vector3.up * 0.65f, new Vector3(width * 2, 0.2f, 0.5f), blade.Actor.Color);
             visual.transform.rotation = Quaternion.LookRotation(direction); visual.SetActive(false);
-            // The official W slash particles (IreliaVfx) replace the placeholder bar.
-            if (!ultimate && world.Presentation.official_vfx)
+            // The official W slash and R missile particles (IreliaVfx) replace the placeholder
+            // bar and the hand-made R blades.
+            if (world.Presentation.official_vfx)
                 foreach (Renderer renderer in visual.GetComponentsInChildren<Renderer>()) renderer.enabled = false;
         }
         void Update()
@@ -148,6 +151,11 @@ namespace MidLane
             return CombatRules.SegmentDistanceSquared(target.Position.x, target.Position.z, Head.x, Head.z, end.x, end.z) < radius * radius;
         }
         public Vector3 Direction { get { return direction; } }
-        void OnDestroy() { if (world != null) world.BladeWaves.Remove(this); }
+        void OnDestroy()
+        {
+            if (world != null) world.BladeWaves.Remove(this);
+            // Stop_sfx_Irelia_IreliaR_onmissilelaunch: the launch sound fades when the missile ends.
+            if (ultimate && launched && blade != null && blade.Actor != null && blade.Actor.Audio != null) blade.Actor.Audio.RMissileEnded();
+        }
     }
 }

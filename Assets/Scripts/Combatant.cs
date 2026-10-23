@@ -417,7 +417,7 @@ namespace MidLane
             if (!world.PvpModeActive && !world.NormalplayModeActive)
                 GrantGold(victim.Kind == UnitKind.Minion ? victim.MinionStats.Gold : victim.Kind == UnitKind.Champion ? 300 : 150);
             if (victim.Kind == UnitKind.Minion) LastHits++;
-            if (victim.Kind == UnitKind.Champion) Kills++;
+            if (victim.Kind == UnitKind.Champion) { Kills++; if (Audio != null) Audio.ChampionKilled(); }
         }
         public void ResetAbilityCooldowns()
         {
@@ -448,7 +448,7 @@ namespace MidLane
         }
         public void ScheduleRespawn(float duration)
         {
-            if (Audio != null) Audio.StopAll();
+            if (Audio != null) Audio.Died();
             if (Sett != null) Sett.Cancel();
             if (Mel != null) Mel.ClearTemporaryEffects();
             Deaths++; RespawnAt = Time.time + duration;
@@ -467,6 +467,7 @@ namespace MidLane
             var hitbox = GetComponent<Collider>(); if (hitbox != null) hitbox.enabled = true;
             if (model != null) { model.localPosition = Vector3.zero; model.rotation = Quaternion.LookRotation(Team == Team.Blue ? Vector3.right : Vector3.left); }
             if (this == world.Player) world.View.GetComponent<IsometricCamera>().OnPlayerRespawn();
+            if (Audio != null && this == world.Player) Audio.Respawned();
         }
         public void Heal(float amount) { if (Alive) Health = Mathf.Min(MaxHealth, Health + Mathf.Max(0, amount) * (Time.time < grievousUntil ? 0.6f : 1)); }
         public void HealFromLifesteal(float amount)
@@ -610,7 +611,9 @@ namespace MidLane
             ItemDefinition item = Inventory.Get(id);
             if (item != null && !item.effectsImplemented) { reason = "Este objeto aÃºn no tiene todos sus efectos implementados."; return false; }
             int gold = Gold; if (!Inventory.Buy(id, ref gold, out reason)) return false;
-            Gold = gold; ItemEffects.OnInventoryChanged(); ApplyChampionLevel(); return true;
+            Gold = gold; ItemEffects.OnInventoryChanged(); ApplyChampionLevel();
+            if (Audio != null && this == world.Player) Audio.ItemBought(id);
+            return true;
         }
         public bool SellItem(int slot)
         {

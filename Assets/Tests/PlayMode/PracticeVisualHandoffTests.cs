@@ -155,6 +155,69 @@ namespace MidLane.Tests
             }
             finally { RiotVfxPlayer.Started -= record; }
         }
+        [UnityTest] public IEnumerator OfficialREffectsPlay()
+        {
+            Assert.IsTrue(RiotVfxLibrary.For(world).Loaded);
+            Assert.IsTrue(IreliaRBlades.Available);
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            var started = new System.Collections.Generic.List<string>();
+            System.Action<RiotVfxPlayer> record = player => started.Add(player.SystemName);
+            RiotVfxPlayer.Started += record;
+            try
+            {
+                world.Player.transform.position = dummy.Home - Vector3.right * 3; world.Player.Stop();
+                // R: cast swirl, the blades' missile, then the explosion on the dummy and LoL's wall
+                // (IreliaBlades with its lines, the pulse at its root and a glow on every blade).
+                Assert.IsTrue(world.Player.Cast(3, dummy.Actor.Position));
+                yield return new WaitForSeconds(1.2f);
+                foreach (string name in new[] { "Irelia_Base_R_cas", "Irelia_Base_R_Mis", "Irelia_Base_R_Mis_Tar_Break",
+                    "Irelia_Base_R_groundlines", "Irelia_Base_R_Hit_Aoe", "Irelia_Base_R_Wall_Bladeglow" })
+                    Assert.Contains(name, started, name);
+                Assert.AreEqual(1, world.BladeWalls.Count);
+                var wall = Object.FindAnyObjectByType<IreliaRBlades>();
+                Assert.NotNull(wall); Assert.AreEqual(26, wall.BladeCount);
+            }
+            finally { RiotVfxPlayer.Started -= record; }
+        }
+        [UnityTest] public IEnumerator OfficialVoiceLinesPlay()
+        {
+            var audio = world.Player.Audio; Assert.NotNull(audio);
+            foreach (var group in new[] { (IreliaVoiceCue.RCast, 8), (IreliaVoiceCue.Q, 4), (IreliaVoiceCue.QMaxA, 4), (IreliaVoiceCue.E, 5),
+                (IreliaVoiceCue.MoveFirst, 5), (IreliaVoiceCue.Move, 50), (IreliaVoiceCue.AttackOrder, 40), (IreliaVoiceCue.BuyBFSword, 3) })
+                Assert.AreEqual(group.Item2, audio.VoiceCount(group.Item1), group.Item1.ToString());
+            var spoken = new System.Collections.Generic.List<IreliaVoiceCue>();
+            System.Action<IreliaVoiceCue, AudioClip> record = (cue, clip) => spoken.Add(cue);
+            audio.VoicePlayed += record;
+            try
+            {
+                var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+                world.Player.transform.position = dummy.Home - Vector3.right * 4; world.Player.Stop();
+                // The round's first move order speaks Move2DFirst.
+                audio.MoveOrdered(dummy.Home);
+                Assert.AreEqual(1, spoken.Count); Assert.AreEqual(IreliaVoiceCue.MoveFirst, spoken[0]);
+                // One line at a time: while it plays, an effort of the same priority is dropped.
+                if (audio.VoiceActive) { audio.EPlace(false); Assert.AreEqual(1, spoken.Count); }
+                audio.StopAll();
+                Assert.IsTrue(world.Player.Cast(0, dummy.Actor.Position, dummy.Actor));
+                Assert.AreEqual(IreliaVoiceCue.Q, spoken[spoken.Count - 1]);
+                yield return new WaitForSeconds(.6f);
+                // Passive at 4 stacks: the Q lines step through their set, then shuffled efforts;
+                // W speaks only now.
+                world.Player.Blade.AwardSpellHits(new[] { dummy.Actor, dummy.Actor, dummy.Actor, dummy.Actor });
+                Assert.AreEqual(4, world.Player.Stacks);
+                int before = spoken.Count;
+                for (int i = 0; i < 5; i++) { audio.StopAll(); audio.QStart(); }
+                CollectionAssert.AreEqual(new[] { IreliaVoiceCue.QMaxA, IreliaVoiceCue.QMaxA, IreliaVoiceCue.QMaxA, IreliaVoiceCue.QMaxA, IreliaVoiceCue.QMax },
+                    spoken.GetRange(before, 5));
+                audio.StopAll(); audio.WStart(); Assert.AreEqual(IreliaVoiceCue.WMax, spoken[spoken.Count - 1]);
+                // Releasing the W cuts the charge line, so the release line plays at once.
+                audio.WRelease(); Assert.AreEqual(IreliaVoiceCue.W2Max, spoken[spoken.Count - 1]);
+                audio.StopAll(); string reason;
+                Assert.IsTrue(world.Player.BuyItem(1038, out reason), reason);
+                Assert.AreEqual(IreliaVoiceCue.BuyBFSword, spoken[spoken.Count - 1]);
+            }
+            finally { audio.VoicePlayed -= record; }
+        }
         [UnityTest] public IEnumerator EmpoweredHitBurstsAtTheDummyChest()
         {
             var dummy = world.PracticeDummies[0]; dummy.enabled = false;

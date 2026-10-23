@@ -30,6 +30,10 @@ namespace MidLane
         { if (WLanded != null) try { WLanded(target); } catch (System.Exception e) { Debug.LogException(e); } }
         internal void NotifyEHit(Combatant target, bool stunned)
         { if (ELanded != null) try { ELanded(target, stunned); } catch (System.Exception e) { Debug.LogException(e); } }
+        // Hito 2.3 presentation hook (read-only): an enemy crossed the R's blade wall.
+        public event System.Action<Combatant> RWallHit;
+        internal void NotifyRWallHit(Combatant target)
+        { if (RWallHit != null) try { RWallHit(target); } catch (System.Exception e) { Debug.LogException(e); } }
         public Vector3 PredictDashPosition(float seconds)
         {
             if (!IsDashing || dashTarget == null) return self.Position;

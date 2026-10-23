@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MidLane
 {
-    // Presentation only: plays Irelia's official basic attack, passive, Q, W and E particle systems
+    // Presentation only: plays Irelia's official basic attack, passive, Q, W, E and R particle systems
     // (Riot's emitter definitions, see RiotVfx*). It observes the committed gameplay state and
     // the BladeDuelist hit events; it never changes damage, timing or targeting.
     [DefaultExecutionOrder(250)]
@@ -43,6 +43,35 @@ namespace MidLane
         int observedE;
         readonly Dictionary<BladeLink, EVfx> eLinks = new Dictionary<BladeLink, EVfx>();
         readonly List<BladeLink> eFinished = new List<BladeLink>();
+        // R: the blades' missile per R wave, then LoL's wall unit and its particles per blade wall.
+        int observedR;
+        readonly Dictionary<BladeWave, RiotVfxPlayer> rMissiles = new Dictionary<BladeWave, RiotVfxPlayer>();
+        readonly List<BladeWave> rFlown = new List<BladeWave>();
+        readonly Dictionary<BladeWall, RVfx> rWalls = new Dictionary<BladeWall, RVfx>();
+        readonly List<BladeWall> rEnded = new List<BladeWall>();
+
+        sealed class RVfx
+        {
+            public IreliaRBlades blades;
+            public RiotVfxPlayer lines;
+            public readonly List<RiotVfxPlayer> glows = new List<RiotVfxPlayer>();
+            public bool hostile, glowing;
+            // The wall ended (or Irelia died): the blades sink and the particles play out.
+            public void End()
+            {
+                if (blades != null) blades.Die();
+                if (lines != null) lines.Stop();
+                foreach (RiotVfxPlayer glow in glows) if (glow != null) glow.Stop();
+                glows.Clear(); lines = null;
+            }
+            // Practice restarted: everything goes at once.
+            public void Remove()
+            {
+                End();
+                if (blades != null) Object.Destroy(blades.gameObject);
+                blades = null;
+            }
+        }
         // Effects that end on their own time (the converging blades after they reach the far end).
         readonly List<KeyValuePair<RiotVfxPlayer, float>> timedStops = new List<KeyValuePair<RiotVfxPlayer, float>>();
 
@@ -75,15 +104,20 @@ namespace MidLane
             rig = model != null ? model.GetComponentInChildren<IreliaRigAnimation>() : null;
             passiveGlow = new IreliaPassiveGlow(model);
             observedBasic = actor.BasicAttackSequence; observedQ = blade.QSequence; observedDeaths = actor.Deaths;
-            observedE = blade.ESequence;
+            observedE = blade.ESequence; observedR = blade.RSequence;
             blade.OnHitLanded += HitLanded; blade.QLanded += QLanded; blade.WLanded += WLanded; blade.ELanded += ELanded;
+            blade.RWallHit += RWallHit;
             if (actor.Audio != null) actor.Audio.Played += SoundPlayed;
             if (Enabled) RiotVfxLibrary.For(world);
         }
 
         void OnDestroy()
         {
-            if (blade != null) { blade.OnHitLanded -= HitLanded; blade.QLanded -= QLanded; blade.WLanded -= WLanded; blade.ELanded -= ELanded; }
+            if (blade != null)
+            {
+                blade.OnHitLanded -= HitLanded; blade.QLanded -= QLanded; blade.WLanded -= WLanded; blade.ELanded -= ELanded;
+                blade.RWallHit -= RWallHit;
+            }
             if (actor != null && actor.Audio != null) actor.Audio.Played -= SoundPlayed;
             StopPersistent();
             if (passiveGlow != null) passiveGlow.Destroy();
@@ -96,9 +130,12 @@ namespace MidLane
             if (actor == null || world == null || world.Paused) return;
             if (!actor.Alive || actor.Deaths != observedDeaths)
             {
+                // A standing blade wall sinks as when it ends; the rest stops at once.
+                foreach (RVfx wall in rWalls.Values) wall.End();
+                rWalls.Clear();
                 StopPersistent(); pending.Clear(); swipes.Clear(); swipeSequence = -1; observedDeaths = actor.Deaths;
                 observedBasic = actor.BasicAttackSequence; observedQ = blade.QSequence; observedStacks = 0;
-                observedE = blade.ESequence; observedCharging = false;
+                observedE = blade.ESequence; observedR = blade.RSequence; observedCharging = false;
                 return;
             }
             if (!Enabled) { StopPersistent(); return; }
@@ -107,6 +144,7 @@ namespace MidLane
             ObservePassive();
             ObserveW();
             ObserveE();
+            ObserveR();
             for (int i = timedStops.Count - 1; i >= 0; i--)
             {
                 if (Time.time < timedStops[i].Value) continue;
@@ -361,6 +399,140 @@ namespace MidLane
             }
         }
 
+        // R (Vanguard's Edge), as in LoL: the cast swirl (animation event of irelia_spell4), the
+        // blades' missile from the end of the cast, and where it detonates on a champion the
+        // explosion on that champion and LoL's wall unit (IreliaRBlades: the blades burst out and
+        // land on the wall, stand, and sink when it ends) with the wall's lines on the ground, the
+        // pulse at its root and a glow on every blade; an enemy crossing the wall gets its hit and
+        // the disarm mark.
+        const float RMissileHeight = 100;   // LoL units above the ground the blades fly at
+        void ObserveR()
+        {
+            if (blade.RSequence != observedR)
+            {
+                observedR = blade.RSequence;
+                RiotVfxPlayer.Play(world, "Irelia_Base_R_cas", BonePose("BUFFBONE_GLB_GROUND_LOC", true, true));
+            }
+            foreach (BladeWave wave in world.BladeWaves)
+            {
+                if (wave == null || !wave.IsUltimate || wave.Blade != blade || !wave.Launched || rMissiles.ContainsKey(wave)) continue;
+                // The missile is its own small object (bound size 1): the glow along each blade
+                // (R_Mis_child, scaled by its bound object) is as long as the blade.
+                RiotVfxPlayer missile = RiotVfxPlayer.Play(world, "Irelia_Base_R_Mis", RMissilePose(wave), 1, null, 1);
+                if (missile != null) missile.Instance.MissileFrame = true;
+                rMissiles[wave] = missile;
+            }
+            rFlown.Clear();
+            foreach (KeyValuePair<BladeWave, RiotVfxPlayer> pair in rMissiles)
+                if (pair.Key == null) { if (pair.Value != null) pair.Value.Stop(); rFlown.Add(pair.Key); }
+            foreach (BladeWave wave in rFlown) rMissiles.Remove(wave);
+
+            foreach (BladeWall wall in world.BladeWalls)
+                if (wall != null && wall.Blade == blade && !rWalls.ContainsKey(wall)) rWalls[wall] = StartWall(wall);
+            rEnded.Clear();
+            foreach (KeyValuePair<BladeWall, RVfx> pair in rWalls)
+            {
+                RVfx r = pair.Value;
+                if (pair.Key == null) { r.End(); rEnded.Add(pair.Key); continue; }
+                // IreliaBlades' cast clip starts R_Wall_Bladeglow on every blade at its frame 9.
+                if (!r.glowing && r.blades != null && r.blades.Age >= IreliaRBlades.BladeGlowAt)
+                {
+                    r.glowing = true;
+                    for (int i = 1; i <= r.blades.BladeCount; i++)
+                    {
+                        RiotVfxPlayer glow = RiotVfxPlayer.Play(world, r.hostile ? "Irelia_Base_R_Wall_Bladeglow_Enemy" : "Irelia_Base_R_Wall_Bladeglow",
+                            FollowPose(r.blades.Bone(i)));
+                        if (glow != null) r.glows.Add(glow);
+                    }
+                }
+            }
+            foreach (BladeWall wall in rEnded) rWalls.Remove(wall);
+        }
+
+        // Follows a transform (a wall blade); keeps its last place once the blade is gone.
+        static System.Func<RiotVfxPose> FollowPose(Transform anchor)
+        {
+            var last = new RiotVfxPose(anchor.position, Quaternion.identity);
+            return () =>
+            {
+                if (anchor != null) last = new RiotVfxPose(anchor.position, Quaternion.identity);
+                return last;
+            };
+        }
+
+        // The blades fly along the R's path at missile height, facing the flight.
+        System.Func<RiotVfxPose> RMissilePose(BladeWave wave)
+        {
+            Quaternion facing = Quaternion.LookRotation(Flat(wave.Direction));
+            float height = RMissileHeight * RiotVfxPlayer.UnitScale(world);
+            var last = new RiotVfxPose(wave.Head + Vector3.up * height, facing);
+            return () =>
+            {
+                if (wave != null) last = new RiotVfxPose(wave.Head + Vector3.up * height, Quaternion.LookRotation(Flat(wave.Direction)));
+                return last;
+            };
+        }
+
+        RVfx StartWall(BladeWall wall)
+        {
+            var r = new RVfx { hostile = actor.Team != world.PlayerTeam };
+            Vector3 impact = wall.Impact, direction = Flat(wall.Direction);
+            Quaternion facing = Quaternion.LookRotation(direction);
+            // The explosion on the champion the blades hit.
+            Combatant target = ChampionAt(impact);
+            RiotVfxPlayer explosion = RiotVfxPlayer.Play(world, "Irelia_Base_R_Mis_Tar_Break", () => new RiotVfxPose(impact, facing), 1, null,
+                TargetBoundSize(target));
+            if (explosion != null && target != null) explosion.DepthPull = HitDepthPull(target);
+            // The wall's outline and the pulse inside it trace the wall itself: drawn at gameplay
+            // scale so they stay on the damage boundary (like the blades).
+            r.lines = RiotVfxPlayer.Play(world, r.hostile ? "Irelia_Base_R_groundlines_enemy" : "Irelia_Base_R_groundlines",
+                () => new RiotVfxPose(impact, facing));
+            if (r.lines != null) r.lines.Instance.UnitScale = LeagueChampionStats.WorldUnitsPerLeagueUnit;
+            r.blades = IreliaRBlades.Create(world, impact, direction, RiotVfxPlayer.UnitScale(world));
+            if (r.blades != null)
+            {
+                // IreliaBlades' cast clip, frame 0: R_Hit_Aoe on Sword_Root.
+                Transform root = r.blades.Bone(0);
+                RiotVfxPose rootPose = new RiotVfxPose(root.position, root.rotation);
+                RiotVfxPlayer pulse = RiotVfxPlayer.Play(world, "Irelia_Base_R_Hit_Aoe", () => rootPose);
+                if (pulse != null) pulse.Instance.UnitScale = LeagueChampionStats.WorldUnitsPerLeagueUnit;
+            }
+            return r;
+        }
+
+        Combatant ChampionAt(Vector3 point)
+        {
+            Combatant best = null; float bestDistance = .5f;
+            foreach (Combatant unit in world.Units)
+            {
+                if (unit == null || unit.Kind != UnitKind.Champion || !actor.ValidEnemy(unit)) continue;
+                float distance = Vector3.Distance(Flat3(unit.Position), Flat3(point));
+                if (distance < bestDistance) { best = unit; bestDistance = distance; }
+            }
+            return best;
+        }
+
+        static Vector3 Flat3(Vector3 v) { v.y = 0; return v; }
+
+        // FlexShape bound size of a target (its height in LoL units), like SelfBoundSize for Irelia.
+        float TargetBoundSize(Combatant target)
+        {
+            return target != null && target.VisualHeight > 0 ? target.VisualHeight / RiotVfxPlayer.UnitScale(world) : 100;
+        }
+
+        // An enemy crossed the wall: the wall's hit on it and the disarm mark over it while slowed.
+        void RWallHit(Combatant target)
+        {
+            if (!Enabled || target == null) return;
+            Vector3 from = actor != null ? actor.Position : target.Position;
+            Quaternion facing = Quaternion.LookRotation(Flat(target.Position - from));
+            float bound = TargetBoundSize(target);
+            RiotVfxPlayer hit = RiotVfxPlayer.Play(world, "Irelia_Base_R_Wall_Hit", () => new RiotVfxPose(target != null ? target.Position : from, facing), 1, null, bound);
+            if (hit != null) hit.DepthPull = HitDepthPull(target);
+            RiotVfxPlayer mark = RiotVfxPlayer.Play(world, "Irelia_Base_R_Wall_Disarm", () => new RiotVfxPose(target != null ? target.Position : from, facing), 1, null, bound);
+            if (mark != null) timedStops.Add(new KeyValuePair<RiotVfxPlayer, float>(mark, Time.time + blade.Tuning.rWallSlowDuration));
+        }
+
         // Passive: glow on one blade per stack, the activation burst and aura at four stacks.
         void ObservePassive()
         {
@@ -527,6 +699,10 @@ namespace MidLane
             wShield = wFull = null;
             foreach (EVfx e in eLinks.Values) e.Stop();
             eLinks.Clear();
+            foreach (RiotVfxPlayer missile in rMissiles.Values) if (missile != null) missile.Stop();
+            rMissiles.Clear();
+            foreach (RVfx wall in rWalls.Values) wall.Remove();
+            rWalls.Clear();
             if (buff != null) buff.Stop();
             buff = null;
             if (dash != null) dash.Instance.StopBound();

@@ -16,6 +16,11 @@ namespace MidLane
         Vector3[] points;
         public IReadOnlyList<Vector3> Points { get { return points; } }
         public int SegmentCount { get { return points.Length - 1; } }
+        // Presentation: whose R it is, where it detonated, its flight and when the wall ends.
+        public BladeDuelist Blade { get { return blade; } }
+        public Vector3 Impact { get; private set; }
+        public Vector3 Direction { get; private set; }
+        public float ExpiresAt { get { return expiresAt; } }
         readonly HashSet<Combatant> hit = new HashSet<Combatant>();
         readonly Dictionary<Combatant, Vector3> previous = new Dictionary<Combatant, Vector3>();
         public void Initialize(LaneWorld lane, BladeDuelist owner, Vector3 impact, Vector3 direction, int spellCastId = 0, Combatant reflectedSource = null, float reflectedMultiplier = 1)
@@ -23,8 +28,11 @@ namespace MidLane
             world = lane; blade = owner; expiresAt = Time.time + blade.Tuning.rWallLifetime;
             reflectedOwner = reflectedSource; reflectionFactor = reflectedMultiplier;
             castId = spellCastId;
+            Impact = impact; Direction = direction;
             points = IreliaRGeometry.WallPoints(impact, direction);
-            IreliaRVisuals.CreateWall(transform, points, impact, blade.Tuning.rWallLifetime, DamageOwner.Team != world.PlayerTeam);
+            // With official_vfx, IreliaVfx shows LoL's own wall (IreliaRBlades and its particles).
+            if (!world.Presentation.official_vfx)
+                IreliaRVisuals.CreateWall(transform, points, impact, blade.Tuning.rWallLifetime, DamageOwner.Team != world.PlayerTeam);
             foreach (Combatant unit in world.Units) if (unit != null) previous[unit] = unit.Position;
         }
         void Update()
@@ -47,6 +55,7 @@ namespace MidLane
                 hit.Add(unit); DamageOwner.DealAbilityDamage(unit, (50 + blade.Rank(3) * 75 + blade.Actor.AbilityPower) * reflectionFactor, DamageType.Magic, castId, reflectedOwner != null ? 1 : 3);
                 if (blade.Actor.Audio != null) blade.Actor.Audio.RWallImpact();
                 if (unit.Alive) unit.Slow(0.1f, blade.Tuning.rWallSlowDuration);
+                blade.NotifyRWallHit(unit);
             }
         }
         public static bool TouchesWall(Vector3 from, Vector3 to, Vector3 a, Vector3 b, float bodyRadius)

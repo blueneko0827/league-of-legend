@@ -59,9 +59,20 @@ namespace MidLane
         }
         void OnDisable() { ResetPendingInputs(); }
         public bool RequestMove(Vector3 point)
-        { rAim.Cancel(); var actor = world.Player; return Latency.Submit(() => actor.MoveTo(point)); }
+        {
+            rAim.Cancel(); var actor = world.Player;
+            if (!Latency.Submit(() => actor.MoveTo(point))) return false;
+            // Order voice lines play on the click, as in LoL's client.
+            if (actor.Audio != null) actor.Audio.MoveOrdered(point);
+            return true;
+        }
         public bool RequestAttack(Combatant target)
-        { rAim.Cancel(); var actor = world.Player; return actor.ValidEnemy(target) && Latency.Submit(() => actor.OrderAttack(target), target); }
+        {
+            rAim.Cancel(); var actor = world.Player;
+            if (!actor.ValidEnemy(target) || !Latency.Submit(() => actor.OrderAttack(target), target)) return false;
+            if (actor.Audio != null) actor.Audio.AttackOrdered(target);
+            return true;
+        }
         public bool RequestStop()
         { rAim.Cancel(); var actor = world.Player; return Latency.Submit(() => actor.Stop()); }
         public bool RequestRecall()

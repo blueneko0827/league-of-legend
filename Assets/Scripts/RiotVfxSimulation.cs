@@ -52,6 +52,12 @@ namespace MidLane
         public float UnitScale = .01f;          // Unity units per LoL unit
         public float BoundSize = 100;           // FlexShape "bound object size", LoL units
         public float GroundHeight = 0;
+        // A missile's particles live in a frame whose Y axis is the flight (the pose faces it):
+        // Irelia_Base_R_Mis lays its blades along Y and trails its glows at negative Y, which is
+        // how they fly in the game footage, point first. Its ground-layer parts (the rings and
+        // swirl left where it starts) keep the upright frame.
+        public bool MissileFrame;
+        static readonly Quaternion MissileTilt = Quaternion.Euler(90, 0, 0);
         public readonly List<Vector3> TrailPositions = new List<Vector3>();
         public readonly List<Vector2> TrailUvs = new List<Vector2>();
         public readonly List<Color> TrailColors = new List<Color>();
@@ -218,7 +224,7 @@ namespace MidLane
             life = life < 0 ? float.PositiveInfinity : Mathf.Max(.01f, life);
             if (d.IsTrail)
             {
-                e.trail.Add(new TrailPoint { position = FramePoint(pose, RiotVfxEval.Point(offset)), life = life, age = initialAge });
+                e.trail.Add(new TrailPoint { position = FramePoint(Frame(e), RiotVfxEval.Point(offset)), life = life, age = initialAge });
                 return;
             }
             float scaleFactor = d.flexScale > 0 ? d.flexScale * BoundSize : 1;
@@ -234,7 +240,7 @@ namespace MidLane
                 uvOffset = RiotVfxEval.Vector2(d.birthUvOffset, emitterTime, Vector2.zero, random),
                 uvRate = RiotVfxEval.Vector2(d.birthUvScroll, emitterTime, Vector2.zero, random),
                 orbital = Pseudo(RiotVfxEval.Vector3(d.orbitalVelocity, emitterTime, Vector3.zero, random)),
-                frameAtBirth = pose
+                frameAtBirth = Frame(e)
             };
             if (d.HasChildren && ResolveChild != null)
                 foreach (string name in d.children)
@@ -260,11 +266,19 @@ namespace MidLane
         // Angular velocities are pseudo-vectors: the X mirror flips their Y and Z.
         static Vector3 Pseudo(Vector3 lol) { return new Vector3(lol.x, -lol.y, -lol.z); }
 
+        // The emitter's frame now: the live pose, tilted onto the flight for a missile's particles.
+        RiotVfxPose Frame(Emitter e)
+        {
+            if (!MissileFrame || e.data.groundLayer) return pose;
+            RiotVfxPose frame = pose; frame.rotation = pose.rotation * MissileTilt;
+            return frame;
+        }
+
         // A particle's children ride on it: their emitter frame is the particle's world pose.
         void TickChildren(Emitter e, Particle p, float dt)
         {
             if (p.children == null) return;
-            RiotVfxPose frame = e.Bound ? pose : p.frameAtBirth;
+            RiotVfxPose frame = e.Bound ? Frame(e) : p.frameAtBirth;
             var at = new RiotVfxPose(FramePoint(frame, p.position), frame.rotation);
             foreach (RiotVfxInstance child in p.children) child.Tick(dt, at);
         }
@@ -316,7 +330,7 @@ namespace MidLane
         {
             RiotVfxEmitterData d = e.data;
             float t = Mathf.Clamp01(p.age / p.life);
-            RiotVfxPose frame = e.Bound ? pose : p.frameAtBirth;
+            RiotVfxPose frame = e.Bound ? Frame(e) : p.frameAtBirth;
             // worldAcceleration is in world axes; bring it into the particle's frame.
             Vector3 acceleration = RiotVfxEval.Point(RiotVfxEval.Vector3(d.acceleration, t, Vector3.zero));
             if (acceleration != Vector3.zero) p.velocity += Quaternion.Inverse(frame.rotation) * acceleration * dt;
@@ -361,7 +375,7 @@ namespace MidLane
         {
             RiotVfxEmitterData d = e.data;
             float t = Mathf.Clamp01(p.age / p.life);
-            RiotVfxPose frame = e.Bound ? pose : p.frameAtBirth;
+            RiotVfxPose frame = e.Bound ? Frame(e) : p.frameAtBirth;
             Quaternion orientation = d.localOrientation ? frame.rotation : Quaternion.identity;
             Vector3 curve = RiotVfxEval.Vector3(d.scale, t, Vector3.one);
             Vector3 size = new Vector3(p.scale.x * curve.x, p.scale.y * curve.y, p.scale.z * curve.z);

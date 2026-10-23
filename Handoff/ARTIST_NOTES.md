@@ -1,5 +1,134 @@
 # Notas para la devolución
 
+## Hito 2.3 · R (Filo de la Vanguardia), sonidos y voces
+
+- Herramientas y versiones utilizadas: las mismas del Hito 2.2 (Unity 6000.6.5f1, URP 17.6.0,
+  Python 3 + Pillow, wwiser v20260808, vgmstream r2117). Sin paquetes nuevos de Unity.
+
+- Cambios de cámara, encuadre y escala: ninguno.
+
+- Modelos, pivotes, rig y prefabs modificados: ninguno. Nuevo: el muro de la R de LoL es una
+  unidad propia del juego (`IreliaBlades`: 26 cuchillas, cada una en su hueso).
+  `Tools/Import-IreliaRBlades.py` (nuevo) la convierte a
+  `Assets/Resources/Vfx/Irelia/IreliaRBlades.json` (mallas, huesos y clips) e
+  `IreliaRBlades.cs` (nuevo) la arma al formarse el muro; no hay prefab.
+
+- Animaciones modificadas/nuevas y su mapeo a acciones: no se agregaron clips de Irelia. Su
+  `irelia_spell4` se sigue reproduciendo a lo largo de los 0,4 s del lanzamiento, que coincide
+  con la grabación del juego (giro y salida de las cuchillas a los 0,4 s). Su evento `R_cas`
+  (cuadro 0, `Buffbone_Glb_Ground_Loc`) ahora lanza el giro de la R. Clips de `IreliaBlades`, a
+  30 cuadros por segundo: `cast` (33 cuadros: las cuchillas salen disparadas del impacto y caen
+  sobre el muro), `cycle` (51, en bucle mientras dura el muro) y `death` (20, se hunden en el
+  suelo al terminar). Eventos de su grafo: `R_Hit_Aoe` en el cuadro 0 y `R_Wall_Bladeglow` en
+  cada cuchilla desde el cuadro 9.
+
+- Partículas, shaders, materiales e iluminación:
+  - `Tools/Import-IreliaVfx.py` ahora importa también los sistemas `R_*` (65 sistemas,
+    279 emisores, 19 eventos de animación).
+  - **R, como en LoL:** `R_cas` (giro alrededor de Irelia al lanzar), `R_Mis` (las cuchillas
+    vuelan en abanico, de punta, con el anillo alrededor de Irelia al salir), y donde estalla
+    sobre un campeón: `R_Mis_Tar_Break` (explosión sobre él) y el muro: las cuchillas de
+    `IreliaBlades`, `R_groundlines` (franja oscura en el suelo y la valla translúcida, que sigue
+    exactamente el contorno del muro de daño), `R_Hit_Aoe` (pulso desde el centro) y
+    `R_Wall_Bladeglow` (brillo en cada cuchilla). Al cruzar el muro, un enemigo recibe
+    `R_Wall_Hit` y la marca `R_Wall_Disarm` mientras dura su ralentización. Las versiones
+    `_Enemy` se usan para una Irelia enemiga.
+  - Runtime: LoL dibuja las partículas de un misil en un marco cuyo eje Y es la dirección de
+    vuelo (`MissileFrame` en `RiotVfxSimulation.cs`); los efectos del suelo conservan el marco
+    vertical. Con ese marco las cuchillas de `R_Mis` vuelan de punta, como en la grabación.
+  - Material de las cuchillas del muro: `IreliaRWallBlade.shader` (nuevo) con la textura de las
+    cuchillas de Irelia y el brillo de borde y resplandor de su material del juego
+    (`Irelia_bladeglow_inst`).
+  - Escala: el contorno del muro, sus líneas en el suelo y el pulso van a escala de juego, sobre
+    el muro de daño; la altura y el tamaño de las cuchillas y de las partículas, a la escala de
+    los campeones, como los demás efectos.
+  - Con `"official_vfx": true` ya no se muestran las cuchillas propias de la R (proyectil y muro
+    de `IreliaRVisuals`). Con `false` vuelven tal como estaban.
+
+- Sonidos:
+  - R: sus eventos oficiales ya estaban conectados (lanzamiento, salida del misil, impacto en un
+    campeón, que ya incluye la capa de activación del muro `R2_OnBuffActivate`, impacto en
+    súbditos y golpe del muro). Nuevo: el sonido de salida del misil se apaga en 1 s cuando el
+    misil termina, como el evento oficial `Stop_sfx_Irelia_IreliaR_onmissilelaunch`; antes
+    sonaba completo. Revisado contra los datos: la R no tiene otros sonidos (de sus partículas,
+    solo `R_Wall_Hit` tiene uno, el golpe del muro).
+  - **Voces (nuevo):** `Tools/Import-IreliaVoice.py` importa las voces oficiales en inglés de
+    Irelia (172 líneas en 21 grupos) de `irelia_base_vo_events.bnk` y
+    `irelia_base_vo_audio.wpk`. El banco decide qué líneas pertenecen a cada evento y a cada
+    valor del interruptor de la pasiva (`Irelia_P_Stacks`: de 0 a 3 cargas, o 4). El nivel de
+    cada línea sale del volumen y la ganancia del banco, relativo a las voces de la R (que no
+    cambian). Manifiesto: `Assets/SourceAudio/IreliaOfficial/VoiceSources.json`.
+  - Reglas (`IreliaAudio.cs`):
+    - Una sola línea a la vez, como el mezclador de voces de LoL: mientras suena una, la nueva
+      de igual prioridad se descarta. La de muerte tiene prioridad mayor y la reemplaza.
+    - Habilidades, en cada lanzamiento (como en las grabaciones del juego):
+      - Q: esfuerzos. Con 4 cargas, una secuencia: las 4 líneas del conjunto actual y luego
+        esfuerzos al azar. Al perder las 4 cargas cambia el conjunto (los eventos
+        `Spell3DPEnd_01/02/03`).
+      - W al cargar y al soltar: el banco solo tiene líneas para 4 cargas. Al soltar se corta
+        la línea de la carga, como en la grabación del juego.
+      - E: en la primera y la segunda cuchilla.
+      - R: las 8 líneas que ya estaban, con su 30 % de probabilidad, que no cambia. Ahora no se
+        repiten seguidas, como el contenedor del banco.
+    - Órdenes del jugador:
+      - Primera orden de movimiento de la partida: `Move2DFirst`.
+      - Movimiento: `Move2DStandard`. Desde la fuente, con un clic a más de 900 unidades:
+        `Move2DLong`.
+      - Ataque a un campeón enemigo: `Attack2DGeneral`.
+      - Esfuerzos del ataque básico.
+      - Estas suenan solo después de 8 s sin voces y con 35 % de probabilidad
+        (`ChatterQuietSeconds`, `ChatterChance`). LoL no documenta su frecuencia, y en las
+        grabaciones del juego no suenan mientras Irelia sigue lanzando habilidades.
+    - Compras: B. F. Sword, Trinity Force y Blade of the Ruined King tienen su línea. Titanic
+      Hydra también, pero la práctica todavía no permite comprarla.
+    - Muerte, reaparición y eliminación de un campeón: sus líneas. No ocurren en la práctica;
+      quedan listas para los modos con rival.
+    - Cada grupo suena mezclado, sin repetir sus últimas N líneas, según su contenedor del banco.
+
+- Recursos o paquetes nuevos y sus requisitos:
+  - Texturas de la R en `Assets/Resources/Vfx/Irelia/Textures/`.
+  - `IreliaRBlades.json` y el shader `IreliaRWallBlade.shader`.
+  - Voces en `Assets/Resources/Audio/IreliaVoice/`: WAV de 16 bits; Unity las comprime a
+    Vorbis en memoria.
+  - Sin paquetes nuevos.
+
+- Archivos de autoría incluidos: ninguno nuevo. Todo sale de los archivos originales con
+  `Tools/Import-IreliaVfx.py`, `Tools/Import-IreliaRBlades.py` y `Tools/Import-IreliaVoice.py`.
+
+- Cambios que requieren fusionar código o afectan contratos con la simulación:
+  - `BladeWave.cs`: `Launched` (solo lectura); con `official_vfx` también oculta el proyectil de
+    la R; avisa a `IreliaAudio` cuando el misil de la R termina.
+  - `BladeWall.cs`: `Blade`, `Impact`, `Direction` y `ExpiresAt` (solo lectura); crea su muro
+    propio solo sin `official_vfx`; avisa cada golpe del muro.
+  - `BladeDuelist.cs`: evento de solo lectura `RWallHit(objetivo)`.
+  - `RiotVfxSimulation.cs`: `MissileFrame`.
+  - `IreliaAudio.cs`:
+    - Voces nuevas: enum `IreliaVoiceCue` y evento `VoicePlayed`.
+    - `RMissileEnded`, `MoveOrdered`, `AttackOrdered`, `ItemBought`, `ChampionKilled`, `Died`,
+      `Respawned`.
+    - La voz de la R usa la misma fuente que las demás voces (`Irelia voice`).
+  - `Combatant.cs`: avisa a la voz al comprar, al eliminar a un campeón y al reaparecer. Al
+    morir llama a `Died` en lugar de `StopAll`; también detiene los efectos de sonido.
+  - `PlayerCommands.cs`: las órdenes de mover y atacar avisan a la voz en el clic. La orden no
+    cambia.
+  - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: pruebas nuevas `OfficialREffectsPlay` y
+    `OfficialVoiceLinesPlay`.
+
+- Capturas de comparación y resolución utilizada: pendientes, 1280×720 en Game.
+
+- Limitaciones pendientes:
+  - El indicador de apuntado de la R sigue siendo el anterior (`IreliaDirectionIndicator`): no
+    hay grabación del indicador de LoL para la R.
+  - Voz de la R: en las grabaciones del juego Irelia dice una línea en cada R (3 de 3). Acá
+    sigue en 30 %, como estaba definido (`RVoiceChance`).
+  - La frecuencia de las voces de órdenes y de los esfuerzos del ataque básico no está en los
+    datos; se ajusta con las dos constantes de arriba.
+  - El interruptor de las líneas de la Q con 4 cargas no tiene nombre en el banco, y los datos
+    no dicen cuál de los tres conjuntos elige LoL al perder las cargas: se elige al azar.
+  - Sin conectar: primer encuentro con cada campeón, burlas, bromas, risas, recall, wards y
+    pings (la práctica no tiene emotes, recall ni wards).
+  - Las voces son las de los archivos entregados, solo en inglés (`en_US`), igual que las de la R.
+
 ## Hito 2.2 · W (Danza Desafiante) y E (Dueto Impecable): efectos y sonidos
 
 - Herramientas y versiones utilizadas: las mismas del Hito 2.1 (Unity 6000.6.5f1, URP 17.6.0,

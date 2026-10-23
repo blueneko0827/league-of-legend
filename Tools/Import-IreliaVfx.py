@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'CharacterAssets/Irelia/Base/Original'
 OUTPUT = ROOT / 'Assets/Resources/Vfx/Irelia'
 TEXTURES = OUTPUT / 'Textures'
-SYSTEMS = re.compile(r'^Irelia_Base_(BA|P|Q|W|E)_')
+SYSTEMS = re.compile(r'^Irelia_Base_(BA|P|Q|W|E|R)_')
 # Screen-space refraction needs a grab pass the project does not have; skipped, not faked.
 SKIPPED_EMITTER_KEYS = ('distortionDefinition',)
 

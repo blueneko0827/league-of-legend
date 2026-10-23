@@ -1,0 +1,1803 @@
+{
+  "language": "en_US",
+  "source": "CharacterAssets/Irelia/Base/Original/assets/sounds/wwise2016/vo/en_us/characters/irelia/skins/base",
+  "banks": [
+    {
+      "file": "irelia_base_vo_events.bnk",
+      "sha256": "b547e12351a795c4bbe49aecfc3e24c1eeacabfa8a51c0b26afd512dfb9beb5f"
+    },
+    {
+      "file": "irelia_base_vo_audio.wpk",
+      "sha256": "03702019a805ea22900f80be3c9e7ad46c94cc421b36fddc529ff6d08ad095ac"
+    }
+  ],
+  "reference": {
+    "event": "Play_vo_Irelia_IreliaR_cast3D",
+    "path_gain_db": -5.0,
+    "common_gain": 0.8945664912222409,
+    "note": "Each clip = decoded media x common_gain x 10^((path_gain_db - R path_gain_db)/20)."
+  },
+  "cues": [
+    {
+      "prefix": "BasicAttack",
+      "event": "Play_vo_Irelia_IreliaBasicAttack_cast3D",
+      "event_id": 1172363588,
+      "switches": {
+        "602999088": 711736988
+      },
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "BasicAttack_1.wav",
+          "media_id": 295261915,
+          "seconds": 0.3605895691609977,
+          "source_channels": 1,
+          "path_gain_db": -15.0,
+          "peak": 0.3035,
+          "sha256": "72f660feecd24967d15e509d2282a1d74266285e2254be9d13e7619c0a3104ff"
+        },
+        {
+          "file": "BasicAttack_2.wav",
+          "media_id": 871125107,
+          "seconds": 0.3138321995464853,
+          "source_channels": 1,
+          "path_gain_db": -15.0,
+          "peak": 0.2603,
+          "sha256": "f0387765200dece7f55bfefd5e6e1990cdb0df2a6a2b2ce7483ba5562f9c0a0f"
+        },
+        {
+          "file": "BasicAttack_3.wav",
+          "media_id": 899517771,
+          "seconds": 0.3110204081632653,
+          "source_channels": 1,
+          "path_gain_db": -15.0,
+          "peak": 0.293,
+          "sha256": "21c41bb6e949e5844ca1aea8e8c230064e6d8dbcf164dede2ecf1cfdbdd30145"
+        },
+        {
+          "file": "BasicAttack_4.wav",
+          "media_id": 906162699,
+          "seconds": 0.32643990929705213,
+          "source_channels": 1,
+          "path_gain_db": -15.0,
+          "peak": 0.2975,
+          "sha256": "c277fcaec9c0aa1b9700bf85115f462ae1aff6d428eb229dfa8c88544ffdbf1c"
+        }
+      ]
+    },
+    {
+      "prefix": "BasicAttackMax",
+      "event": "Play_vo_Irelia_IreliaBasicAttack_cast3D",
+      "event_id": 1172363588,
+      "switches": {
+        "602999088": 4275012430
+      },
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "BasicAttackMax_1.wav",
+          "media_id": 412841224,
+          "seconds": 0.3308843537414966,
+          "source_channels": 1,
+          "path_gain_db": -13.0,
+          "peak": 0.3473,
+          "sha256": "01ec1031858a75f078dd034604638b56052ea1e3fd1699ed362b4100beb7f49d"
+        },
+        {
+          "file": "BasicAttackMax_2.wav",
+          "media_id": 1055229181,
+          "seconds": 0.32360544217687076,
+          "source_channels": 1,
+          "path_gain_db": -13.0,
+          "peak": 0.3846,
+          "sha256": "b5871c3da08285a2e31ba0b63acee388151df46f71e146412c4cd4dd953af870"
+        },
+        {
+          "file": "BasicAttackMax_3.wav",
+          "media_id": 855837158,
+          "seconds": 0.3411791383219955,
+          "source_channels": 1,
+          "path_gain_db": -13.0,
+          "peak": 0.3285,
+          "sha256": "b6a40664dae1e70985ff207a4908a8d41078948973ae55b68ff96cab88f7c27f"
+        },
+        {
+          "file": "BasicAttackMax_4.wav",
+          "media_id": 169508195,
+          "seconds": 0.3000453514739229,
+          "source_channels": 1,
+          "path_gain_db": -13.0,
+          "peak": 0.3934,
+          "sha256": "73aebce7b0537b2d90b0f9b104236119e637d4dc31484ac1b6f7baf5c61b59cf"
+        }
+      ]
+    },
+    {
+      "prefix": "Q",
+      "event": "Play_vo_Irelia_IreliaQ_cast3D",
+      "event_id": 3422090865,
+      "switches": {
+        "602999088": 711736988
+      },
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "Q_1.wav",
+          "media_id": 231033665,
+          "seconds": 0.3260090702947846,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6001,
+          "sha256": "51a8954680ab43a6a5762145bd2aba1d9fcd686fc7031c3c4513f853173351e7"
+        },
+        {
+          "file": "Q_2.wav",
+          "media_id": 21865957,
+          "seconds": 0.33501133786848075,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.655,
+          "sha256": "84cd3cbd5c67c3f67991c5763a794165e4cfb76acd9859cd0fa41965ef9f969b"
+        },
+        {
+          "file": "Q_3.wav",
+          "media_id": 971870342,
+          "seconds": 0.3173469387755102,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.7065,
+          "sha256": "9359338e0623352c9a23ea7bc4ccd085fb7ba1c1b684dff0a177f477333cfeb6"
+        },
+        {
+          "file": "Q_4.wav",
+          "media_id": 990675713,
+          "seconds": 0.3191609977324263,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.7124,
+          "sha256": "42bb84c752aa7182b79c71e89d0f0b12a928104358207a215fb71bd16f277cdf"
+        }
+      ]
+    },
+    {
+      "prefix": "QMaxA",
+      "event": "Play_vo_Irelia_IreliaQ_cast3D",
+      "event_id": 3422090865,
+      "switches": {
+        "602999088": 4275012430,
+        "1967880116": 751793041
+      },
+      "selection": "sequence",
+      "avoid_repeat": 1,
+      "clips": [
+        {
+          "file": "QMaxA_1.wav",
+          "media_id": 29384051,
+          "seconds": 0.4977097505668934,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.5348,
+          "sha256": "4ea2a34879b0ba92a2b5c8823d97dfd0c41918c25094b711ab22c1a1ed43b075"
+        },
+        {
+          "file": "QMaxA_2.wav",
+          "media_id": 234774304,
+          "seconds": 0.6205895691609977,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.555,
+          "sha256": "fb38fc4586383d256d5e1859d07e46c94d1c1fa4312d936d24da00309b44d69d"
+        },
+        {
+          "file": "QMaxA_3.wav",
+          "media_id": 382695383,
+          "seconds": 0.46782312925170066,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6015,
+          "sha256": "cda7c9e9bfb2c366409d566ef3daeb95fb51ba681f4dd5cab134693b970bc1ec"
+        },
+        {
+          "file": "QMaxA_4.wav",
+          "media_id": 344392703,
+          "seconds": 0.5404761904761904,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6277,
+          "sha256": "c0ce7e0daf5a95aa8f3c5868cda94902807b465f962f9e670b81fc570b6debf5"
+        }
+      ]
+    },
+    {
+      "prefix": "QMaxB",
+      "event": "Play_vo_Irelia_IreliaQ_cast3D",
+      "event_id": 3422090865,
+      "switches": {
+        "602999088": 4275012430,
+        "1967880116": 751793042
+      },
+      "selection": "sequence",
+      "avoid_repeat": 1,
+      "clips": [
+        {
+          "file": "QMaxB_1.wav",
+          "media_id": 50351734,
+          "seconds": 0.44918367346938776,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.3407,
+          "sha256": "88c165cb773109f5e708934acdbfde5f9b2f2c88dfcf5771565fa0ceff59bb64"
+        },
+        {
+          "file": "QMaxB_2.wav",
+          "media_id": 581883147,
+          "seconds": 0.4408390022675737,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.5527,
+          "sha256": "6da15f5bf79ccb4187e4d49fa013e767d874ac07602919899e5a1e1527ca89c8"
+        },
+        {
+          "file": "QMaxB_3.wav",
+          "media_id": 328870569,
+          "seconds": 0.5373922902494331,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.5604,
+          "sha256": "a2ee2e1424cec333e92fb17a3551b36eab58c0c74b833c7411c7b246bf037f82"
+        },
+        {
+          "file": "QMaxB_4.wav",
+          "media_id": 222018318,
+          "seconds": 0.48086167800453516,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6652,
+          "sha256": "ed525359554a5d6a5abd4c47fef3fa762aa7a6f5e25ecc19103b0fd2ba3a10e1"
+        }
+      ]
+    },
+    {
+      "prefix": "QMaxC",
+      "event": "Play_vo_Irelia_IreliaQ_cast3D",
+      "event_id": 3422090865,
+      "switches": {
+        "602999088": 4275012430,
+        "1967880116": 751793043
+      },
+      "selection": "sequence",
+      "avoid_repeat": 1,
+      "clips": [
+        {
+          "file": "QMaxC_1.wav",
+          "media_id": 187080130,
+          "seconds": 0.39140589569161,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.5466,
+          "sha256": "676a5aee9fb5f5a7e26c44948f85055c60849334374927b27fbe4531f2d7156e"
+        },
+        {
+          "file": "QMaxC_2.wav",
+          "media_id": 366081994,
+          "seconds": 0.5027210884353741,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.5789,
+          "sha256": "8884c13876d33629bb2fc8240954fb5a44ce8e720b3c8b3571dc1726b2069049"
+        },
+        {
+          "file": "QMaxC_3.wav",
+          "media_id": 297800088,
+          "seconds": 0.46285714285714286,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6468,
+          "sha256": "a52fa3c15d995e87e6fbcbeb17e02c002c1ec592b19112740f48dad49f992d51"
+        },
+        {
+          "file": "QMaxC_4.wav",
+          "media_id": 80338318,
+          "seconds": 0.513061224489796,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6163,
+          "sha256": "d50ae9511df7d4646ce1f1f486341985af4a29719fa392d14ddc651ce15c2035"
+        }
+      ]
+    },
+    {
+      "prefix": "QMax",
+      "event": "Play_vo_Irelia_IreliaQ_cast3D",
+      "event_id": 3422090865,
+      "switches": {
+        "602999088": 4275012430,
+        "1967880116": 751793041
+      },
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "QMax_1.wav",
+          "media_id": 1041384974,
+          "seconds": 0.4502947845804989,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6631,
+          "sha256": "d16da9a12cbea6883b6b2d35f5536ce58dcd9888c56aeefa6d929c97fed3e124"
+        },
+        {
+          "file": "QMax_2.wav",
+          "media_id": 316268776,
+          "seconds": 0.4426984126984127,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6868,
+          "sha256": "1c3a24fcf81ecaa5c9925611c28c06ec2ed9c2f89fd2a4c29551128f35804d93"
+        },
+        {
+          "file": "QMax_3.wav",
+          "media_id": 71981360,
+          "seconds": 0.3878684807256236,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6461,
+          "sha256": "83801b8450ba26f5c8db3d4a0828c07a40baa7b4dfe74419ba5b30bf67eddde5"
+        },
+        {
+          "file": "QMax_4.wav",
+          "media_id": 301850529,
+          "seconds": 0.43056689342403626,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6077,
+          "sha256": "2d56ce5a16efed8711b2858acb77205d36961422c568306c5247ba4d3bb1ac6c"
+        }
+      ]
+    },
+    {
+      "prefix": "WMax",
+      "event": "Play_vo_Irelia_IreliaW_cast3D",
+      "event_id": 2799008047,
+      "switches": {
+        "602999088": 4275012430
+      },
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "WMax_1.wav",
+          "media_id": 429419055,
+          "seconds": 1.5958956916099774,
+          "source_channels": 1,
+          "path_gain_db": -11.0,
+          "peak": 0.4228,
+          "sha256": "d3b46e41f62366e40fe88f5f251ce4420f23a40e185b7acfeb100a751b53ed31"
+        },
+        {
+          "file": "WMax_2.wav",
+          "media_id": 694512657,
+          "seconds": 1.659954648526077,
+          "source_channels": 1,
+          "path_gain_db": -11.0,
+          "peak": 0.4238,
+          "sha256": "04a66ed1e4d9bfc5ba92ba266954aa1cffde5c3c3492e671f0d7fe9db8779145"
+        },
+        {
+          "file": "WMax_3.wav",
+          "media_id": 79160799,
+          "seconds": 1.5843990929705216,
+          "source_channels": 1,
+          "path_gain_db": -11.0,
+          "peak": 0.2192,
+          "sha256": "d951e9462f2ab6697c1d0c5b35180e77649e36712001a1087be92d2df89147f8"
+        },
+        {
+          "file": "WMax_4.wav",
+          "media_id": 90532827,
+          "seconds": 1.7458049886621316,
+          "source_channels": 1,
+          "path_gain_db": -11.0,
+          "peak": 0.3961,
+          "sha256": "0cd0e78b489e23e8d9f56fc3251abadadcfb0ab3d16a8cbad1f8e79f03a129c6"
+        }
+      ]
+    },
+    {
+      "prefix": "W2Max",
+      "event": "Play_vo_Irelia_IreliaW2_cast3D",
+      "event_id": 3455764637,
+      "switches": {
+        "602999088": 4275012430
+      },
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "W2Max_1.wav",
+          "media_id": 625041859,
+          "seconds": 0.5699092970521542,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.5588,
+          "sha256": "7d3f56a401e97986b13430b7f5232a22149eba3ff4a82e1d8b363af26b01f087"
+        },
+        {
+          "file": "W2Max_2.wav",
+          "media_id": 719346949,
+          "seconds": 0.5940362811791383,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.6148,
+          "sha256": "041b5bfaec02b42a197c78ad44a76cee8b811a9cd4565b72d6963ec789af49f8"
+        },
+        {
+          "file": "W2Max_3.wav",
+          "media_id": 281567321,
+          "seconds": 0.5946485260770975,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.5609,
+          "sha256": "dd44618ba68dce05a21b23a4f6ebc9d3ac73156dad175f1460f46293a77fbc15"
+        },
+        {
+          "file": "W2Max_4.wav",
+          "media_id": 730989855,
+          "seconds": 0.45564625850340135,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.5761,
+          "sha256": "78275d834ced1387d08a971f40a4b5b19f1da65a8a0cc98bfb1730e7f516f033"
+        }
+      ]
+    },
+    {
+      "prefix": "E",
+      "event": "Play_vo_Irelia_IreliaE_cast3D",
+      "event_id": 1028639221,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 3,
+      "clips": [
+        {
+          "file": "E_1.wav",
+          "media_id": 565583047,
+          "seconds": 0.3219954648526077,
+          "source_channels": 1,
+          "path_gain_db": -10.0,
+          "peak": 0.5079,
+          "sha256": "e65a1e121923758fa1489936ab083a176a80572ceea42f96bc7c50d9836c8f83"
+        },
+        {
+          "file": "E_2.wav",
+          "media_id": 600887412,
+          "seconds": 0.37403628117913834,
+          "source_channels": 1,
+          "path_gain_db": -10.0,
+          "peak": 0.5247,
+          "sha256": "1c77be3f6eb9affe43c46cdd9ca0ca1600c5af48088befed05ca6daebee51311"
+        },
+        {
+          "file": "E_3.wav",
+          "media_id": 762246034,
+          "seconds": 0.3824263038548753,
+          "source_channels": 1,
+          "path_gain_db": -10.0,
+          "peak": 0.5076,
+          "sha256": "913d318eb328e3da5793a0fc2e17fcc17575450d0199c905f8fd1aaf8187889c"
+        },
+        {
+          "file": "E_4.wav",
+          "media_id": 467523512,
+          "seconds": 0.3144671201814059,
+          "source_channels": 1,
+          "path_gain_db": -10.0,
+          "peak": 0.5434,
+          "sha256": "45896ccd1ea63f6e7eb877e6578807756cba4f54707bb9e25f3df5190db6a730"
+        },
+        {
+          "file": "E_5.wav",
+          "media_id": 458078692,
+          "seconds": 0.26301587301587304,
+          "source_channels": 1,
+          "path_gain_db": -10.0,
+          "peak": 0.5171,
+          "sha256": "daf90fe1b2acfe66f4963d75e373de48d7ab94f7242fd60d0ba652cb9ac89ad4"
+        }
+      ]
+    },
+    {
+      "prefix": "MoveFirst",
+      "event": "Play_vo_Irelia_Move2DFirst",
+      "event_id": 703539106,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 4,
+      "clips": [
+        {
+          "file": "MoveFirst_1.wav",
+          "media_id": 885726209,
+          "seconds": 4.303265306122449,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5876,
+          "sha256": "6472317a0d0802326534fbcba18e9c577ba739fa5bb84f300839ffb756f54bde"
+        },
+        {
+          "file": "MoveFirst_2.wav",
+          "media_id": 398557589,
+          "seconds": 3.39843537414966,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5747,
+          "sha256": "eb152f8b7405c6c659b575c072bfb5d5eab6bd69066803eab285d354c7e3d377"
+        },
+        {
+          "file": "MoveFirst_3.wav",
+          "media_id": 849417286,
+          "seconds": 4.952675736961451,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6153,
+          "sha256": "189c6890563219b01d05541ad61b01d172321619a9edbfc36c7611ef413a8acd"
+        },
+        {
+          "file": "MoveFirst_4.wav",
+          "media_id": 337225733,
+          "seconds": 5.176780045351474,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5781,
+          "sha256": "aedaf87028182f1fac8bb7557462ab36f9f1fe14cc2a862ee658e6ab5152ef52"
+        },
+        {
+          "file": "MoveFirst_5.wav",
+          "media_id": 243461873,
+          "seconds": 3.7518367346938777,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6008,
+          "sha256": "c10c5b066aadc4d752be49d3579948a1f3afaad59f5f9d2af251eb6703d97b61"
+        }
+      ]
+    },
+    {
+      "prefix": "Move",
+      "event": "Play_vo_Irelia_Move2DStandard",
+      "event_id": 2541103743,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 49,
+      "clips": [
+        {
+          "file": "Move_1.wav",
+          "media_id": 77634251,
+          "seconds": 4.118707482993197,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5924,
+          "sha256": "418fcc17fd90fd050c93b1b41be8974eda934b9dafd4fc027fb5e443e69cd8ce"
+        },
+        {
+          "file": "Move_2.wav",
+          "media_id": 244484259,
+          "seconds": 3.3691609977324264,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6068,
+          "sha256": "6bf5367220fc9abb052852ee48d21ceea9671e5544157da9cc9ba7b3c23d1665"
+        },
+        {
+          "file": "Move_3.wav",
+          "media_id": 744431581,
+          "seconds": 4.0239229024943315,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5836,
+          "sha256": "a8063fcc5bc77d76e309b5885b5aaff1f27f087e0e3c92cd17e4ac434ec4913f"
+        },
+        {
+          "file": "Move_4.wav",
+          "media_id": 409706249,
+          "seconds": 2.5802267573696147,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5819,
+          "sha256": "41dce431043aa6b8af9d152b193299c553fc6e9498e9d098d7cb1d37fed91ab8"
+        },
+        {
+          "file": "Move_5.wav",
+          "media_id": 297527994,
+          "seconds": 2.40015873015873,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6071,
+          "sha256": "d7502c5f749c5aecdb31b0010c521781b6cab43b2eebad467e8b1a42c4432743"
+        },
+        {
+          "file": "Move_6.wav",
+          "media_id": 663055725,
+          "seconds": 2.2559863945578233,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5692,
+          "sha256": "9a305c24bf63015086b2a8a1d2b06fa43d6ba1173597d8dd1d0452a730ec1fad"
+        },
+        {
+          "file": "Move_7.wav",
+          "media_id": 701011081,
+          "seconds": 2.0146485260770977,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.554,
+          "sha256": "b730df910bf5fa90807dcf13da4698c2647e013655a08583347b4fcf34692385"
+        },
+        {
+          "file": "Move_8.wav",
+          "media_id": 114303194,
+          "seconds": 2.221315192743764,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5532,
+          "sha256": "facc24edbb6f04e8451f6ff15f4c8ee4f5c0894504d3e927f24378560702b766"
+        },
+        {
+          "file": "Move_9.wav",
+          "media_id": 961223761,
+          "seconds": 3.243673469387755,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5854,
+          "sha256": "edee7d9a751e6e64b814db2a1e182b5a63002597e317e78366d68151782e6191"
+        },
+        {
+          "file": "Move_10.wav",
+          "media_id": 792236852,
+          "seconds": 2.717981859410431,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6034,
+          "sha256": "b106b35aaedb8cf014bee469eb251586f0c6fa7570f73d4115c653f380e437ef"
+        },
+        {
+          "file": "Move_11.wav",
+          "media_id": 479670948,
+          "seconds": 2.242857142857143,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.599,
+          "sha256": "e44e9374ee0f88d5ea8b645a2083a499a1a0fc7bc537b76388a976936dbda882"
+        },
+        {
+          "file": "Move_12.wav",
+          "media_id": 670920473,
+          "seconds": 2.629387755102041,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5549,
+          "sha256": "385efcf143353f39d9aa6919742bf4284daa0bab42d3a3815bc7e433d3dbda6c"
+        },
+        {
+          "file": "Move_13.wav",
+          "media_id": 132734100,
+          "seconds": 2.7414285714285715,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5618,
+          "sha256": "3a166dd79810dd72089cb1cbeb7f99e865b5dba070da61bec92cf9c514f11dcb"
+        },
+        {
+          "file": "Move_14.wav",
+          "media_id": 890981623,
+          "seconds": 3.663265306122449,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6009,
+          "sha256": "508244ea24cc6a64410a5982d488f4ed28404e87425741f07564b72cdd486e26"
+        },
+        {
+          "file": "Move_15.wav",
+          "media_id": 1020664704,
+          "seconds": 1.9585487528344672,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6195,
+          "sha256": "5a284ecfe20bd5af5772c6ae3c60ee4bb264f9fde01be011049694728841d647"
+        },
+        {
+          "file": "Move_16.wav",
+          "media_id": 124390901,
+          "seconds": 2.6749433106575964,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5462,
+          "sha256": "b5ef9ff55c52d9ab28953c9a6eded9bbb6e95aab5a167b588482bccefe940325"
+        },
+        {
+          "file": "Move_17.wav",
+          "media_id": 20046163,
+          "seconds": 3.0968480725623584,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5588,
+          "sha256": "0128a5210b2383eadf1417b6f00a77c07b15ddc45a143336fc6e131f343b9af2"
+        },
+        {
+          "file": "Move_18.wav",
+          "media_id": 68823552,
+          "seconds": 2.327437641723356,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5779,
+          "sha256": "83fc2686d16ad9f2c81660da6de8f73f1e0545abf9254ae2cab96b505b3184c0"
+        },
+        {
+          "file": "Move_19.wav",
+          "media_id": 934979894,
+          "seconds": 2.0772789115646257,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5717,
+          "sha256": "bda6f7a3cbe87a87f22ef64694320b4c14f1c9d291d62fd7e77c2b3c56ca1e63"
+        },
+        {
+          "file": "Move_20.wav",
+          "media_id": 587336591,
+          "seconds": 1.7045804988662132,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5521,
+          "sha256": "c30364f6e05895846157e1b2e6d374bc7640f6cfabe3d244a052bb2cbdcd0790"
+        },
+        {
+          "file": "Move_21.wav",
+          "media_id": 549646554,
+          "seconds": 2.8009297052154194,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5509,
+          "sha256": "793e6c53bf23ff279f750aca212ce8aa463eae69918ea361f1354789d73fdbde"
+        },
+        {
+          "file": "Move_22.wav",
+          "media_id": 868942632,
+          "seconds": 2.4150566893424035,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5884,
+          "sha256": "7b93ad42be5a3f8a853f3ae39b4f59e2f8c33474878dfe03fa5b3f0855aab581"
+        },
+        {
+          "file": "Move_23.wav",
+          "media_id": 48927235,
+          "seconds": 3.3208843537414965,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5744,
+          "sha256": "2d15b42f7d39d64326c325014e7c376421d243b8326505771818795bdc2e90a0"
+        },
+        {
+          "file": "Move_24.wav",
+          "media_id": 458419685,
+          "seconds": 3.0674149659863947,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6153,
+          "sha256": "4adc221ccc253129d85616cc175683430701f53ce18961dd18731d45e43c2e72"
+        },
+        {
+          "file": "Move_25.wav",
+          "media_id": 440951519,
+          "seconds": 3.67562358276644,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5612,
+          "sha256": "f91de209c7e300160f4e7eb4e7a765223f8e66c273759e8853b92da644d70881"
+        },
+        {
+          "file": "Move_26.wav",
+          "media_id": 952415633,
+          "seconds": 2.4437641723356007,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5831,
+          "sha256": "69c821c9b310f42e8de8af1aef769073a6e69b8d29e6d6f9a57814a9b953efcb"
+        },
+        {
+          "file": "Move_27.wav",
+          "media_id": 615747981,
+          "seconds": 2.6958956916099774,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.4969,
+          "sha256": "44cdec386c23012f7e845f8a662230431f50b7299a89ae9a0e1ec5c4300c3017"
+        },
+        {
+          "file": "Move_28.wav",
+          "media_id": 411882365,
+          "seconds": 3.5189342403628117,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5701,
+          "sha256": "f5090430a1b2beb89737a680d03522484353e5145146f9a9f6e3f2464aa9f199"
+        },
+        {
+          "file": "Move_29.wav",
+          "media_id": 717410410,
+          "seconds": 3.897687074829932,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5953,
+          "sha256": "e18238409ea84d5c502105e71a225b5bece7e5f1b53c1f40c5d84aca8b5c029d"
+        },
+        {
+          "file": "Move_30.wav",
+          "media_id": 757553077,
+          "seconds": 3.047891156462585,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5785,
+          "sha256": "20aff24918f1b72783ce9981253142875ac73d15de68d66d7d224aed299ed1bc"
+        },
+        {
+          "file": "Move_31.wav",
+          "media_id": 721744470,
+          "seconds": 3.2528571428571427,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5245,
+          "sha256": "6afbce39fca9b100b982bedd5a3f79146b57d1bf0f443eb6a49290f0d945355f"
+        },
+        {
+          "file": "Move_32.wav",
+          "media_id": 232083236,
+          "seconds": 4.422562358276644,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5933,
+          "sha256": "8507a94ac7b74c58cdbc99665137bec3839efdc81c4a2cabda2cc66b5c4afed7"
+        },
+        {
+          "file": "Move_33.wav",
+          "media_id": 817655,
+          "seconds": 5.221632653061224,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5565,
+          "sha256": "abcd9c8adfc9a67993c4c2b81c7a5e83a41f87f20c7fc46a523b79084cb33990"
+        },
+        {
+          "file": "Move_34.wav",
+          "media_id": 209582106,
+          "seconds": 3.98578231292517,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5914,
+          "sha256": "e3740e62c808f7215a9a4108b0981d460da99bfc8e4cc1601835af5976ac9eb6"
+        },
+        {
+          "file": "Move_35.wav",
+          "media_id": 572462097,
+          "seconds": 2.7999092970521544,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5827,
+          "sha256": "b5f7fc6a1221117fa598ce35b25d000e43ac08d53d50dd234d91ed7e193b1ceb"
+        },
+        {
+          "file": "Move_36.wav",
+          "media_id": 208668016,
+          "seconds": 3.9984580498866213,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5826,
+          "sha256": "c4af0ecd6f0f079a6face29f992d2d39242460e05324e38be19ba459516ad932"
+        },
+        {
+          "file": "Move_37.wav",
+          "media_id": 702566448,
+          "seconds": 1.2255102040816326,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5887,
+          "sha256": "489e8fd307852eb4b209550ea5f45b71f8e3a3ffff9059689ff72043a7843695"
+        },
+        {
+          "file": "Move_38.wav",
+          "media_id": 993861084,
+          "seconds": 3.3591383219954647,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5984,
+          "sha256": "8042160500bdf784fe72e362c95e2c38c3f37102ae3c92e2e233f1839f574e87"
+        },
+        {
+          "file": "Move_39.wav",
+          "media_id": 681256801,
+          "seconds": 4.675351473922903,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.4825,
+          "sha256": "6026932f7999ac13f7d37c9aaa44c1e677629ef906f4aa3e8b4c451b04816fdc"
+        },
+        {
+          "file": "Move_40.wav",
+          "media_id": 113195368,
+          "seconds": 4.697664399092971,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5733,
+          "sha256": "4afb13bddc160d57ad61965e454f108f42627698bd7ab1edfbc63c20bad19111"
+        },
+        {
+          "file": "Move_41.wav",
+          "media_id": 162087584,
+          "seconds": 3.980294784580499,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5196,
+          "sha256": "5f3a8e72434c1b306fd443bc1d26174a3036f4b143b563d01a32fd028eaed50f"
+        },
+        {
+          "file": "Move_42.wav",
+          "media_id": 376468860,
+          "seconds": 3.823265306122449,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5711,
+          "sha256": "ade15b1bf842554f2e156d30916575253fbea2cad17c7aef9eb38b047cbff09c"
+        },
+        {
+          "file": "Move_43.wav",
+          "media_id": 721226738,
+          "seconds": 1.66984126984127,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5575,
+          "sha256": "32c9b0fabc74a88ef8d70f8615f38405cb53b4811704302ab19f344f32436ed3"
+        },
+        {
+          "file": "Move_44.wav",
+          "media_id": 802541391,
+          "seconds": 5.9550566893424035,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5783,
+          "sha256": "639419548a487b6320b55754ea0106c927ce9ab5db55cbf156dff76c4862f6f4"
+        },
+        {
+          "file": "Move_45.wav",
+          "media_id": 645591624,
+          "seconds": 3.1792970521541952,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.562,
+          "sha256": "5cb1ba92fd519e9d40fb0c62d283d320460d4e6c00ccffe02694098ca4187b80"
+        },
+        {
+          "file": "Move_46.wav",
+          "media_id": 570179846,
+          "seconds": 2.5821315192743763,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6006,
+          "sha256": "e84b99740cc308d2d619916a043ebab7e6298caae08554b221b61caaab461604"
+        },
+        {
+          "file": "Move_47.wav",
+          "media_id": 90643396,
+          "seconds": 2.463061224489796,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5768,
+          "sha256": "aee8e2af8159127d5a00fbec950fc178a706309b9abfb4cb835c2c7aa99ebc3d"
+        },
+        {
+          "file": "Move_48.wav",
+          "media_id": 202071027,
+          "seconds": 3.334172335600907,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.571,
+          "sha256": "3f7565e0756859602ff58384c757f9948b91fddd7e3350712ba00e508fb17475"
+        },
+        {
+          "file": "Move_49.wav",
+          "media_id": 134063914,
+          "seconds": 3.1463492063492065,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5588,
+          "sha256": "84022585d12ad46c5c310219740c7bb525c48818c3dc3d28e9c7ac74ef4c3596"
+        },
+        {
+          "file": "Move_50.wav",
+          "media_id": 903273128,
+          "seconds": 3.0403401360544215,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5979,
+          "sha256": "6840006963cc56d034dad1f4782f70a00b877b82da1bb220dbe3e47d69e09a73"
+        }
+      ]
+    },
+    {
+      "prefix": "MoveLong",
+      "event": "Play_vo_Irelia_Move2DLong",
+      "event_id": 721412034,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "MoveLong_1.wav",
+          "media_id": 799592516,
+          "seconds": 4.721995464852608,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6365,
+          "sha256": "bab14bff4cf046d0d65c0369c59ee725ecd1fd2c85dfa5348938d1e0c5175fe8"
+        },
+        {
+          "file": "MoveLong_2.wav",
+          "media_id": 115062370,
+          "seconds": 5.2778458049886625,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5858,
+          "sha256": "7f43e26598ecb2c59534fba26480c841f2fd396b774c8aa52e7c438a9e0853ac"
+        },
+        {
+          "file": "MoveLong_3.wav",
+          "media_id": 825823752,
+          "seconds": 10.432290249433107,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5529,
+          "sha256": "c19e5a20d53047b6650283a2e11041336a2c746092c125c346fec2e60bb0d994"
+        }
+      ]
+    },
+    {
+      "prefix": "AttackOrder",
+      "event": "Play_vo_Irelia_Attack2DGeneral",
+      "event_id": 4172117357,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 39,
+      "clips": [
+        {
+          "file": "AttackOrder_1.wav",
+          "media_id": 742256267,
+          "seconds": 1.280498866213152,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6032,
+          "sha256": "80ba629691bfc2b506005ebb47bb6477acd0be57f3f6c8c8879f355696033670"
+        },
+        {
+          "file": "AttackOrder_2.wav",
+          "media_id": 5455673,
+          "seconds": 0.9562585034013605,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5819,
+          "sha256": "d9b8822ee1c46091653d9a9a963d2321e49582794640ca6219f72eb7f3fb34e9"
+        },
+        {
+          "file": "AttackOrder_3.wav",
+          "media_id": 762513455,
+          "seconds": 1.1087528344671203,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5562,
+          "sha256": "4bb82ffb39ef6a35f184edfb7945daaecc26ee77c830ecbe85b2154b7436db05"
+        },
+        {
+          "file": "AttackOrder_4.wav",
+          "media_id": 264714412,
+          "seconds": 1.9031519274376418,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5421,
+          "sha256": "65264355bb0af011bbdc31d30385592e764fc4ae136e82d942e2a89ff238407f"
+        },
+        {
+          "file": "AttackOrder_5.wav",
+          "media_id": 802848477,
+          "seconds": 0.7902040816326531,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5566,
+          "sha256": "c6e1b5332ad47ebe94bc2d51d4b2b30fcfcff01b491a7b0c0d54274b4501e38c"
+        },
+        {
+          "file": "AttackOrder_6.wav",
+          "media_id": 778438306,
+          "seconds": 1.7446712018140589,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5867,
+          "sha256": "b04f35ae2e3d04b3ca2526f6c397195320233762d752c5d7e53a9cdb18ac6c13"
+        },
+        {
+          "file": "AttackOrder_7.wav",
+          "media_id": 341726896,
+          "seconds": 1.3315192743764173,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.591,
+          "sha256": "7318dd219d4e73f0c6a8c63c0640126e8766e9c41813794aa547c25f18fa92cb"
+        },
+        {
+          "file": "AttackOrder_8.wav",
+          "media_id": 1070827248,
+          "seconds": 1.6434920634920636,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5867,
+          "sha256": "49e09e2eb21c940a94086de91d0a167c7ef4aba8d3741384690758148086dccd"
+        },
+        {
+          "file": "AttackOrder_9.wav",
+          "media_id": 993539247,
+          "seconds": 1.2184807256235828,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5747,
+          "sha256": "a21b132d9733d4ab376035ac35ee766010f400bc584f8f7b31daf6d1743b2c67"
+        },
+        {
+          "file": "AttackOrder_10.wav",
+          "media_id": 389510729,
+          "seconds": 1.9322902494331067,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5944,
+          "sha256": "0bb25fad3f2e66bfb569448caff11b5d80bda69f20c56ac6523b78225d877589"
+        },
+        {
+          "file": "AttackOrder_11.wav",
+          "media_id": 502051992,
+          "seconds": 0.7140136054421768,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6075,
+          "sha256": "3ed49157fc9613ae724a6886edb251571f359ca2288ec01144b68f8233ceb021"
+        },
+        {
+          "file": "AttackOrder_12.wav",
+          "media_id": 242930929,
+          "seconds": 0.9902721088435374,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5798,
+          "sha256": "32d902a14c89e783473761fcb8c6835f3426933dd1b1ac9f68d925408b9659d9"
+        },
+        {
+          "file": "AttackOrder_13.wav",
+          "media_id": 706256341,
+          "seconds": 1.2219727891156462,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5794,
+          "sha256": "d6cf2536198e5daf93a81ab1d8b04e0055704c5a03df96b2e8af66254753424e"
+        },
+        {
+          "file": "AttackOrder_14.wav",
+          "media_id": 954453622,
+          "seconds": 1.41578231292517,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6127,
+          "sha256": "5fb8337f50d59e7cecf6f563416321b7a91d2e4837a7a8d1be62fb339c4e2c3a"
+        },
+        {
+          "file": "AttackOrder_15.wav",
+          "media_id": 163253379,
+          "seconds": 1.819002267573696,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5493,
+          "sha256": "c202b373065c28b9d638029bbdba87fe1b3c99a73c518dded1af9fcc8477408d"
+        },
+        {
+          "file": "AttackOrder_16.wav",
+          "media_id": 417466243,
+          "seconds": 1.0131519274376417,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5518,
+          "sha256": "642bb364e1b1a35d351f49b0bf7d8adcf0c2bcffe744d7be23ecf55226f778e5"
+        },
+        {
+          "file": "AttackOrder_17.wav",
+          "media_id": 789539819,
+          "seconds": 1.550045351473923,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6105,
+          "sha256": "026fc098d5b48cea7241fc153c661356fe01e44398d46ea7e2612bed21ce0050"
+        },
+        {
+          "file": "AttackOrder_18.wav",
+          "media_id": 970564021,
+          "seconds": 1.2182086167800454,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5549,
+          "sha256": "358488cf1c85b5b1d1bb275c1a748e7b6717b790ba7df0a9357e159bfbbc2c1f"
+        },
+        {
+          "file": "AttackOrder_19.wav",
+          "media_id": 629428369,
+          "seconds": 2.4565759637188207,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5932,
+          "sha256": "0219834a60bcd949086bbee016eb41b9035793b0951a948f27478f5f30fb3475"
+        },
+        {
+          "file": "AttackOrder_20.wav",
+          "media_id": 41056882,
+          "seconds": 1.406281179138322,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5686,
+          "sha256": "c88de574b4af645491366eaeff21bf0b82ff86c18042a50a3c273b7cfe1c4f64"
+        },
+        {
+          "file": "AttackOrder_21.wav",
+          "media_id": 420682326,
+          "seconds": 1.6310657596371883,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.542,
+          "sha256": "13ef32f32b30dff298b0ea5713c91cd4298e6de36f9b1c65ebe1fa81d018c23e"
+        },
+        {
+          "file": "AttackOrder_22.wav",
+          "media_id": 989454392,
+          "seconds": 0.868843537414966,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5618,
+          "sha256": "9278ecaea0f8a04e9376cd1ae5576b0ba75f5d9bf9c9e55cd480bfad2b60a05f"
+        },
+        {
+          "file": "AttackOrder_23.wav",
+          "media_id": 957436981,
+          "seconds": 2.265510204081633,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6063,
+          "sha256": "088ef48b8ff4cbef9cff331a0fb40477d7b69c1c89e8a96e10ade4606459a1be"
+        },
+        {
+          "file": "AttackOrder_24.wav",
+          "media_id": 205221974,
+          "seconds": 1.086893424036281,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5277,
+          "sha256": "a4189b8d5a533e0109d1864eb77cb5276be1f02064e514c2724933cf4698f452"
+        },
+        {
+          "file": "AttackOrder_25.wav",
+          "media_id": 196673367,
+          "seconds": 1.5025396825396826,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5575,
+          "sha256": "be06b41b34cd902c52422ad6a421f5435733ee1fcb3610d3d64c6a67c70caf84"
+        },
+        {
+          "file": "AttackOrder_26.wav",
+          "media_id": 584125969,
+          "seconds": 1.5163492063492063,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.535,
+          "sha256": "219774a1ebb327d9934ce2805c6e2e3543f2f1c1816b93b5ec7565204183ac08"
+        },
+        {
+          "file": "AttackOrder_27.wav",
+          "media_id": 904888005,
+          "seconds": 1.4143537414965985,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5073,
+          "sha256": "35a3fc54d8a29bf0474b3da5fd33bdc0e6cf6a46cd66d7445960b24c9f11cc73"
+        },
+        {
+          "file": "AttackOrder_28.wav",
+          "media_id": 123112086,
+          "seconds": 1.4267120181405897,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5371,
+          "sha256": "c514364c6259594b347fa7e993afb828fd43b05c5aa19d5601a393a196de4758"
+        },
+        {
+          "file": "AttackOrder_29.wav",
+          "media_id": 507897853,
+          "seconds": 1.5496825396825398,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5758,
+          "sha256": "040e3f5923f95b51bd49de25b58cf58acfa5a625e1f8a352ec56bd5b007a5414"
+        },
+        {
+          "file": "AttackOrder_30.wav",
+          "media_id": 1012441305,
+          "seconds": 0.8731519274376417,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5733,
+          "sha256": "f1ba5575a0d50be98bf20af965b6e58b46e9f5adbcd8714dd48d5268c6314731"
+        },
+        {
+          "file": "AttackOrder_31.wav",
+          "media_id": 714509636,
+          "seconds": 2.052244897959184,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.562,
+          "sha256": "d6fcef92a3c0a4e2dba8504b3a5f82a5108114e3d29bde6849d5b56e05c75771"
+        },
+        {
+          "file": "AttackOrder_32.wav",
+          "media_id": 452745361,
+          "seconds": 1.4198639455782314,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6065,
+          "sha256": "eac66059a6d90de4c43d8475fa3c6a28431514153b202c03339ecf2ceb97ffd8"
+        },
+        {
+          "file": "AttackOrder_33.wav",
+          "media_id": 977734358,
+          "seconds": 1.140861678004535,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.597,
+          "sha256": "fa057174b2baeac864b89d7febce8d4cc278bcc762c30fa4b82e6a639298428b"
+        },
+        {
+          "file": "AttackOrder_34.wav",
+          "media_id": 679282072,
+          "seconds": 1.2091383219954648,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5278,
+          "sha256": "59f76afd5de57c12fd13d4c85d35336cf810ac5b11b335022708ff2b1f2b8cc0"
+        },
+        {
+          "file": "AttackOrder_35.wav",
+          "media_id": 313776893,
+          "seconds": 2.3140816326530613,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6457,
+          "sha256": "eb8e1f4c7d4bd9f83b0dcca1edb441a7811c2f2d353bd811dfb5dacb892a126d"
+        },
+        {
+          "file": "AttackOrder_36.wav",
+          "media_id": 1019774777,
+          "seconds": 1.0277777777777777,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5644,
+          "sha256": "8e8a9ced1e56601a7168d07d75f0d205e00f14fd7f65ce1b95f69231aec3d31e"
+        },
+        {
+          "file": "AttackOrder_37.wav",
+          "media_id": 45259051,
+          "seconds": 1.4163038548752835,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5547,
+          "sha256": "98e049bf923926626341e9c9d3658399d40a9e929887e5f275c541d3fb59d923"
+        },
+        {
+          "file": "AttackOrder_38.wav",
+          "media_id": 127872372,
+          "seconds": 1.3805215419501133,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5628,
+          "sha256": "c58236099e2893f56e3ebf68c179ea3d6cd45deac79d1b938af095672a2b2dd8"
+        },
+        {
+          "file": "AttackOrder_39.wav",
+          "media_id": 266761499,
+          "seconds": 1.4930612244897958,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5499,
+          "sha256": "bfeaa80095a1d991c94123c2053ac7e64c6e15ad3ad2ca00f5319a5f28032f11"
+        },
+        {
+          "file": "AttackOrder_40.wav",
+          "media_id": 214599808,
+          "seconds": 1.21859410430839,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5966,
+          "sha256": "60ccbf4fb9fba57040e596dbecfff06987505c50054951d1fd8f80264b625d3a"
+        }
+      ]
+    },
+    {
+      "prefix": "BuyBFSword",
+      "event": "Play_vo_Irelia_BuyItem2DBFSword",
+      "event_id": 3710570755,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "BuyBFSword_1.wav",
+          "media_id": 491119577,
+          "seconds": 2.310249433106576,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6172,
+          "sha256": "efdfef3601811a68ca9a885ec83c4f426106ee3f61665c6e200b26b9d96d7a9d"
+        },
+        {
+          "file": "BuyBFSword_2.wav",
+          "media_id": 694865193,
+          "seconds": 2.5618367346938777,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5976,
+          "sha256": "58b7f4eed24584cdb510bba84cd5cf04f5d139b49d4d50867e20f54c0caf0c72"
+        },
+        {
+          "file": "BuyBFSword_3.wav",
+          "media_id": 117295872,
+          "seconds": 2.0338321995464854,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5609,
+          "sha256": "713ac5b077946f80d7ea66673b2319d17e38418348192c85303a53d1046e50d4"
+        }
+      ]
+    },
+    {
+      "prefix": "BuyRuinedKing",
+      "event": "Play_vo_Irelia_BuyItem2DBladeOfTheRuinedKing",
+      "event_id": 1706645814,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 3,
+      "clips": [
+        {
+          "file": "BuyRuinedKing_1.wav",
+          "media_id": 138856302,
+          "seconds": 3.2772108843537415,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5637,
+          "sha256": "ec9da727480879ab67f0bd8f73294c5849e5b1645a1e8e5c7e875702cbcf8879"
+        },
+        {
+          "file": "BuyRuinedKing_2.wav",
+          "media_id": 615275563,
+          "seconds": 3.6507256235827663,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5669,
+          "sha256": "31a134a42d03cf1ff9212197dff9a2266b0fdb3c5d6c3c2ec866fbaddc8acf85"
+        },
+        {
+          "file": "BuyRuinedKing_3.wav",
+          "media_id": 35195489,
+          "seconds": 4.7259863945578235,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.57,
+          "sha256": "eacda739ab7067a6d0d65d8642f3609a4bb410b060f7fda0cd918b5ba56ef2b9"
+        },
+        {
+          "file": "BuyRuinedKing_4.wav",
+          "media_id": 132917519,
+          "seconds": 3.5648072562358277,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5503,
+          "sha256": "b4069074b6f17c9284e5d89f1488ecda3ff2bd1691a822c062dab9710d6822f6"
+        }
+      ]
+    },
+    {
+      "prefix": "BuyTitanicHydra",
+      "event": "Play_vo_Irelia_BuyItem2DTitanicHydra",
+      "event_id": 1780266502,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 2,
+      "clips": [
+        {
+          "file": "BuyTitanicHydra_1.wav",
+          "media_id": 9005052,
+          "seconds": 2.3082086167800453,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5599,
+          "sha256": "a697d11a2b3c17fb8143b49d3ab713053974870e0597d448681f29acb7029fc6"
+        },
+        {
+          "file": "BuyTitanicHydra_2.wav",
+          "media_id": 331155209,
+          "seconds": 2.474875283446712,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.6072,
+          "sha256": "f45a0fcd5d57adf740fa4e7127a63100753e52444339dfa4ebb84d00ade67f01"
+        },
+        {
+          "file": "BuyTitanicHydra_3.wav",
+          "media_id": 272972246,
+          "seconds": 2.167278911564626,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5952,
+          "sha256": "e9e8ef542f6c15b43fc91f2bbbd0d3975ea7d0c98cc5f3691426582c5947a39d"
+        }
+      ]
+    },
+    {
+      "prefix": "BuyTrinityForce",
+      "event": "Play_vo_Irelia_BuyItem2DTrinityForce",
+      "event_id": 2273606754,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 3,
+      "clips": [
+        {
+          "file": "BuyTrinityForce_1.wav",
+          "media_id": 995918737,
+          "seconds": 3.382517006802721,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5736,
+          "sha256": "da851069ff5db258c212569e37dae146541bfd42444f1a21509231fa4ef5b0b1"
+        },
+        {
+          "file": "BuyTrinityForce_2.wav",
+          "media_id": 316515462,
+          "seconds": 2.4643764172335603,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.586,
+          "sha256": "e9d3c8f72426d63919c2edcacfc2424a56ae9060a3fd238db1ba56900bfc6c41"
+        },
+        {
+          "file": "BuyTrinityForce_3.wav",
+          "media_id": 413484815,
+          "seconds": 3.194172335600907,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5809,
+          "sha256": "e59fd470996a550cd339b18492baaa8e17d9d0c7c3de5e9aca5e407effe09fa3"
+        },
+        {
+          "file": "BuyTrinityForce_4.wav",
+          "media_id": 167135535,
+          "seconds": 2.1789795918367347,
+          "source_channels": 2,
+          "path_gain_db": -9.0,
+          "peak": 0.5815,
+          "sha256": "bfd0a3e6dda24842d3e027ca405752c5d4d2a03d44e7342f8887fd497bcebb18"
+        }
+      ]
+    },
+    {
+      "prefix": "Kill",
+      "event": "Play_vo_Irelia_Kill3DGeneral",
+      "event_id": 1326671912,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 6,
+      "clips": [
+        {
+          "file": "Kill_1.wav",
+          "media_id": 1043745665,
+          "seconds": 1.4918367346938775,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6568,
+          "sha256": "b6c5b157d6eb1d927294b6310bf5ade6aa87faf1903593d333a40f0193478b18"
+        },
+        {
+          "file": "Kill_2.wav",
+          "media_id": 785894731,
+          "seconds": 1.586938775510204,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.5365,
+          "sha256": "f388dbbf2cfac4cc543a97c32db136f5a043aa04278abe71bc3894df4b4a3898"
+        },
+        {
+          "file": "Kill_3.wav",
+          "media_id": 965943264,
+          "seconds": 1.6972562358276644,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6601,
+          "sha256": "e28accad30c0bfee441e73fd1a5d9d956d0a9418a8791ae08c457e28f4707862"
+        },
+        {
+          "file": "Kill_4.wav",
+          "media_id": 98565532,
+          "seconds": 2.874716553287982,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6122,
+          "sha256": "9395200a16ed40a1eccb56651f9ee8305b7a8a9f8b28e020f36a7e35baf30c13"
+        },
+        {
+          "file": "Kill_5.wav",
+          "media_id": 611933777,
+          "seconds": 2.0887528344671202,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6634,
+          "sha256": "265a553701aa6816c01a969468c896c9a4efe2a91aaf2ba92836c33ba21a7aaa"
+        },
+        {
+          "file": "Kill_6.wav",
+          "media_id": 1062592702,
+          "seconds": 2.054739229024943,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6474,
+          "sha256": "29f85d0e7955438504961b2918ddc0a4cb1022c5c504dee459e461fd785d2abb"
+        },
+        {
+          "file": "Kill_7.wav",
+          "media_id": 988082428,
+          "seconds": 1.388185941043084,
+          "source_channels": 1,
+          "path_gain_db": -8.0,
+          "peak": 0.6534,
+          "sha256": "2f3aafb5d322116b7890521e14b0abb6a83eba83f4e1b5ead3975a271c901b7e"
+        }
+      ]
+    },
+    {
+      "prefix": "Death",
+      "event": "Play_vo_Irelia_Death3D",
+      "event_id": 3257501876,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 6,
+      "clips": [
+        {
+          "file": "Death_1.wav",
+          "media_id": 405732058,
+          "seconds": 1.9862585034013605,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.5638,
+          "sha256": "49b44aa6e7bc3db04e2bbeab8c244e7fc3d9e191ddca1184310eb56228597c25"
+        },
+        {
+          "file": "Death_2.wav",
+          "media_id": 691534594,
+          "seconds": 2.507800453514739,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.6093,
+          "sha256": "7db13ab000305851084cb75d4203062b45c189d97500a7b32108103f627840b3"
+        },
+        {
+          "file": "Death_3.wav",
+          "media_id": 393480937,
+          "seconds": 2.4445578231292515,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.4925,
+          "sha256": "6f5295d5dbc89a1abfa0a8fba45597a2bcb6316930e341e700de2d97be8ff435"
+        },
+        {
+          "file": "Death_4.wav",
+          "media_id": 651857303,
+          "seconds": 2.705238095238095,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.5405,
+          "sha256": "aa9c177203e2d4deba4cb59a58cdcead57deba47f538a9f9cee6ba6a1838ef0b"
+        },
+        {
+          "file": "Death_5.wav",
+          "media_id": 234980901,
+          "seconds": 1.9051020408163266,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.555,
+          "sha256": "f21f2e03934b8ec52b8b54134e1b4c285218f3749f1e704591ce7582a66c16f9"
+        },
+        {
+          "file": "Death_6.wav",
+          "media_id": 954937360,
+          "seconds": 2.4451473922902496,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.4719,
+          "sha256": "d1dcaf1327c469942e732e7da51225cbd05394ebd6719128d2527dc6470371bc"
+        },
+        {
+          "file": "Death_7.wav",
+          "media_id": 836902331,
+          "seconds": 2.2232879818594102,
+          "source_channels": 1,
+          "path_gain_db": -9.0,
+          "peak": 0.5397,
+          "sha256": "8714903a7d713ff53842f0da0bcf7fdc6c41647040c1e4d1bff6b590b5868dcc"
+        }
+      ]
+    },
+    {
+      "prefix": "Respawn",
+      "event": "Play_vo_Irelia_Respawn2DGeneral",
+      "event_id": 329487923,
+      "switches": {},
+      "selection": "shuffle",
+      "avoid_repeat": 4,
+      "clips": [
+        {
+          "file": "Respawn_1.wav",
+          "media_id": 909981535,
+          "seconds": 2.7456689342403626,
+          "source_channels": 1,
+          "path_gain_db": -7.0,
+          "peak": 0.6987,
+          "sha256": "9409fe3bc57cdb91394160d77fcb5d6878b7ec66fba076754b58e54f93600040"
+        },
+        {
+          "file": "Respawn_2.wav",
+          "media_id": 380634071,
+          "seconds": 3.4402267573696146,
+          "source_channels": 1,
+          "path_gain_db": -7.0,
+          "peak": 0.7301,
+          "sha256": "02385c2aac45e6bcd381420dcdca9417d6ff84ab246a4c78dc22d856b95a571c"
+        },
+        {
+          "file": "Respawn_3.wav",
+          "media_id": 564730910,
+          "seconds": 2.144240362811791,
+          "source_channels": 1,
+          "path_gain_db": -7.0,
+          "peak": 0.7092,
+          "sha256": "68ffd21be97712b8a8f56ff01f1aa8b2e61a1db104b3c174b0f71b404e22ce4a"
+        },
+        {
+          "file": "Respawn_4.wav",
+          "media_id": 448031373,
+          "seconds": 3.778140589569161,
+          "source_channels": 1,
+          "path_gain_db": -7.0,
+          "peak": 0.6954,
+          "sha256": "dde09bcdb0b02f9822335e6739187dc9db198c39c2b254a3c9b9ed2d0b94912a"
+        },
+        {
+          "file": "Respawn_5.wav",
+          "media_id": 557771049,
+          "seconds": 2.384081632653061,
+          "source_channels": 1,
+          "path_gain_db": -7.0,
+          "peak": 0.7524,
+          "sha256": "776374d58fc34abab0bbecd825a4b4b8582c7577a1e0f9bc88c16ff5738ca91a"
+        }
+      ]
+    }
+  ],
+  "max_output_peak": 0.7524
+}
