@@ -2,6 +2,35 @@
 
 ## Hito 2.3 · R (Filo de la Vanguardia), sonidos y voces
 
+- **Ajustes tras la segunda revisión del cliente** (comparados cuadro a cuadro con
+  `videoRealGameplay_100` y `videoRealGameplay_0`):
+  - Forma detrás de las cuchillas de la R en vuelo: los quads del misil (`R_Mis`: `Glow`,
+    `Glow1`, `Center_light`, `shadow`) se dibujan un cuarto de vuelta respecto de los quads
+    comunes, como ya pasaba con los quads de suelo (`MissileQuadTurn` en
+    `RiotVfxSimulation.cs`). El chevrón violeta ahora queda detrás de las cuchillas con la
+    punta hacia Irelia («<» cuando la R vuela a la derecha), en la dirección de la R; antes se
+    abría de costado y se veía siempre como «^». `Center_light` pasa a ser la barra fina
+    atravesada al vuelo que se ve en el juego.
+  - Salto de la R: `irelia_spell4` mueve la raíz de Irelia unas 230 unidades hacia arriba y
+    270 hacia adelante antes de caer (`spell4_to_idle`). El rig fijaba la raíz en X/Z
+    (necesario en la Q y los ataques, que se desplazan por la simulación); durante la R ahora
+    se respeta todo el movimiento de la raíz (`IreliaRigAnimation.TickR`), así que se ve el
+    salto hacia adelante y la caída rápida.
+  - W → R: una habilidad pedida durante el bloqueo de 0,25 s de la liberación de la W queda en
+    cola y se lanza al terminar (antes, si faltaban más de 0,2 s, se perdía). Así la R
+    inmediatamente después de la W sale con su salto, como en LoL (`BladeDuelist.Command`).
+  - Brillo rojo oscuro y violeta alrededor de Irelia después de la R: en el juego, cuando la
+    R golpea con la pasiva ya en 4 cargas, el efecto de cargas máximas (`P_buf`: aura roja
+    oscura, resplandor violeta y estallido naranja) se vuelve a activar. Ahora cualquier golpe
+    de habilidad que renueva las cargas al máximo lo reactiva (`PassiveRefreshes` en
+    `BladeDuelist`, `ObservePassive` en `IreliaVfx`).
+  - Golpes consecutivos con la Q sobre objetivos marcados: el estallido de la marca
+    (`Q_Proc`) salía pequeño sobre la cabeza; está hecho igual que la marca, así que ahora
+    estalla en el mismo hueso del pecho y con su mismo tamaño, sobre el cuerpo del objetivo,
+    como en el juego.
+  - Prueba nueva: `RRightAfterWIsQueuedAndHops` (la R pedida justo después de la W se lanza y
+    la raíz sube y avanza).
+
 - Herramientas y versiones utilizadas: las mismas del Hito 2.2 (Unity 6000.6.5f1, URP 17.6.0,
   Python 3 + Pillow, wwiser v20260808, vgmstream r2117). Sin paquetes nuevos de Unity.
 

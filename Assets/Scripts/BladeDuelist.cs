@@ -200,11 +200,14 @@ namespace MidLane
             if (!(slot == 2 && WaitingSecondBlade) && self.Resource < AbilityCost(slot)) return false;
             float cooldown = self.Cooldowns.Remaining(slot, Time.time);
             bool soon = (cooldown > 0 && cooldown <= Tuning.inputBufferWindow) ||
-                (self.ActionLockRemaining > 0 && self.ActionLockRemaining <= Tuning.inputBufferWindow);
+                // A spell pressed during W's whole release lock (0.25 s) is queued like LoL does,
+                // so W → R right away still casts the R (and its hop) when the release ends.
+                (self.ActionLockRemaining > 0 && self.ActionLockRemaining <= Mathf.Max(Tuning.inputBufferWindow, Time.time < guardUntil ? Tuning.wReleaseTime : 0));
             if (eligible && (IsDashing || (slot == 2 && WaitingSecondBlade) || soon) && !IsCharging)
             {
                 bufferedSlot = slot; bufferedAim = aim; bufferedTarget = target;
                 bufferExpiresAt = Time.time + Tuning.inputBufferWindow;
+                if (self.ActionLockRemaining > 0) bufferExpiresAt = Mathf.Max(bufferExpiresAt, Time.time + self.ActionLockRemaining + 0.03f);
                 if (IsDashing) bufferExpiresAt = Mathf.Max(bufferExpiresAt, dashStartedAt + 1);
                 if (slot == 2 && WaitingSecondBlade) bufferExpiresAt = Mathf.Max(bufferExpiresAt, ePlacedAt + Tuning.eRecastLock + 0.03f);
                 return true;
@@ -377,7 +380,10 @@ namespace MidLane
             if (nonChampionHit) count++;
             if (count == 0) return;
             Stacks = Mathf.Min(4, Stacks + count); passiveExpiresAt = Time.time + Tuning.passiveDuration;
+            PassiveRefreshes++;
         }
+        // Champion/minion spell hits that granted or refreshed Ionian Fervor (presentation).
+        public int PassiveRefreshes { get; private set; }
         public Combatant Actor { get { return self; } }
         public Vector3 FirstBlade { get { return firstBladePoint; } }
         public Vector3 Placement(Vector3 point)

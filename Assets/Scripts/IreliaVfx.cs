@@ -24,7 +24,7 @@ namespace MidLane
         readonly List<RiotVfxPlayer> swipes = new List<RiotVfxPlayer>();
         RiotVfxPlayer dash, buff;
         int swipeSequence = -1, landedSequence = -1;
-        int observedBasic, observedQ, observedStacks, observedDeaths;
+        int observedBasic, observedQ, observedStacks, observedDeaths, observedRefreshes;
         Combatant lastQVictim;
         float lastQVictimAt = -100;
         SkinnedMeshRenderer bladesRenderer;
@@ -560,6 +560,16 @@ namespace MidLane
         void ObservePassive()
         {
             int stacks = blade.Stacks;
+            // A spell hit at four stacks re-applies the max-stack buff: as in the game footage
+            // (the R hitting with the passive already full), its activation burst plays again,
+            // the dark red and violet glow flaring around Irelia.
+            bool refreshed = stacks == 4 && observedStacks == 4 && blade.PassiveRefreshes != observedRefreshes;
+            observedRefreshes = blade.PassiveRefreshes;
+            if (refreshed)
+            {
+                if (buff != null) buff.Stop();
+                buff = RiotVfxPlayer.Play(world, "Irelia_Base_P_buf", BonePose("BUFFBONE_GLB_GROUND_LOC", true), 1, model != null ? model.gameObject : null, SelfBoundSize());
+            }
             if (stacks == 4 && observedStacks < 4)
             {
                 if (buff != null) buff.Stop();
@@ -614,8 +624,12 @@ namespace MidLane
             lastQVictim = target; lastQVictimAt = Time.time;
             PlayOnTarget("Irelia_Base_Q_tar", target, blade.QDirection);
             RiotVfxPlayer.Play(world, "Irelia_Base_Q_heal", BonePose("C_BUFFBONE_GLB_CENTER_LOC", true));
-            // A marked target or a kill refunds Q: the mark bursts above the target.
-            if (refunded) RiotVfxPlayer.Play(world, "Irelia_Base_Q_Proc", TargetBonePose(target, "C_Buffbone_Glb_Overhead_Loc", blade.QDirection));
+            // A marked target or a kill refunds Q: the mark bursts where it was drawn. Q_Proc is
+            // authored like Q_Mark_SelfOnly (same FlexShape offsets and sizes), so it plays on the
+            // same chest bone with the mark's bound size; in the game footage the dark triangle
+            // bursts over the dummy's body as big as the mark, not small above its head.
+            if (refunded) RiotVfxPlayer.Play(world, "Irelia_Base_Q_Proc", TargetBonePose(target, "C_Buffbone_Glb_Chest_Loc", blade.QDirection),
+                1, null, target.VisualHeight > 0 ? 1.125f * target.VisualHeight / RiotVfxPlayer.UnitScale(world) : 100);
         }
 
         // Attack, passive and Q hits all burst at the target's chest bone (mHitBoneName), as in

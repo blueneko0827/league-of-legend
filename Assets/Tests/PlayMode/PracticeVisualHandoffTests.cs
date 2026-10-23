@@ -182,6 +182,30 @@ namespace MidLane.Tests
             }
             finally { RiotVfxPlayer.Started -= record; }
         }
+        [UnityTest] public IEnumerator RRightAfterWIsQueuedAndHops()
+        {
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            world.Player.transform.position = dummy.Home - Vector3.right * 3; world.Player.Stop();
+            var rig = world.Player.GetComponentInChildren<IreliaRigAnimation>();
+            Transform root = System.Array.Find(rig.GetComponentsInChildren<Transform>(), t => t.name == "Root");
+            Assert.NotNull(root);
+            Assert.IsTrue(world.Player.Cast(1, dummy.Actor.Position));
+            yield return new WaitForSeconds(.3f);
+            world.Player.Blade.RequestWRelease(dummy.Actor.Position);
+            yield return null;
+            // Pressed during W's release lock: queued, then cast when the lock ends (as in LoL).
+            int rBefore = world.Player.Blade.RSequence;
+            Assert.IsTrue(world.Player.Blade.Command(3, dummy.Actor.Position, null));
+            float rest = root.localPosition.y, highest = rest, farthest = 0;
+            for (float t = 0; t < .9f; t += Time.deltaTime)
+            {
+                yield return null;
+                highest = Mathf.Max(highest, root.localPosition.y); farthest = Mathf.Max(farthest, root.localPosition.z);
+            }
+            Assert.AreEqual(rBefore + 1, world.Player.Blade.RSequence);
+            // spell4's hop: the root rises ~230 units over its idle height and lunges forward.
+            Assert.Greater(highest, rest + 150); Assert.Greater(farthest, 100);
+        }
         [UnityTest] public IEnumerator OfficialVoiceLinesPlay()
         {
             var audio = world.Player.Audio; Assert.NotNull(audio);

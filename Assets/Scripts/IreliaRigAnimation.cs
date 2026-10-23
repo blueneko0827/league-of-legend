@@ -124,7 +124,10 @@ namespace MidLane
                 Pose = IreliaPose.RRecovery; clip = walking ? RToRunClip : RToIdleClip; sample = Mathf.Min(recovery, clip.length - .001f);
             }
             CycleTime = sample;
-            Sample(clip, sample, dt, elapsed >= .06f, Pose == IreliaPose.RRecovery ? RHoldClip : null);
+            // spell4 is a hop: the root rises ~230 units and lunges ~270 forward before the slam
+            // (spell4_to_idle's first frames). Irelia does not move in gameplay, so keep the
+            // clip's whole root motion here instead of pinning it like the dash/attack clips.
+            Sample(clip, sample, dt, elapsed >= .06f, Pose == IreliaPose.RRecovery ? RHoldClip : null, true);
             return true;
         }
         public void Tick(IreliaPose desired, float speed, float dt, bool attackStarted, float windup, float interval, int requestedAttackVariant = 0)
@@ -205,7 +208,7 @@ namespace MidLane
             Sample(clip, sample, dt, !charging && releaseElapsed >= releaseDelay);
             return true;
         }
-        void Sample(AnimationClip clip, float sample, float dt, bool exact, AnimationClip basis = null)
+        void Sample(AnimationClip clip, float sample, float dt, bool exact, AnimationClip basis = null, bool rootMotion = false)
         {
             for (int i = 0; i < joints.Length; i++)
             { previousPositions[i] = joints[i].localPosition; previousRotations[i] = joints[i].localRotation; previousScales[i] = joints[i].localScale; }
@@ -216,7 +219,7 @@ namespace MidLane
             for (int i = 0; i < joints.Length; i++)
                 if (joints[i] == transform || joints[i].parent == transform)
                 { joints[i].localPosition = positions[i]; joints[i].localRotation = rotations[i]; joints[i].localScale = scales[i]; }
-            Vector3 p = pelvis.localPosition; p.x = pelvisRest.x; p.z = pelvisRest.z; pelvis.localPosition = p;
+            if (!rootMotion) { Vector3 p = pelvis.localPosition; p.x = pelvisRest.x; p.z = pelvisRest.z; pelvis.localPosition = p; }
             float blend = exact ? 1 : 1 - Mathf.Exp(-dt / BlendSeconds);
             for (int i = 0; i < joints.Length; i++)
             {
