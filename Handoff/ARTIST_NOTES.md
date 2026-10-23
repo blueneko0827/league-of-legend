@@ -27,13 +27,13 @@
     oscura, resplandor violeta y estallido naranja) se vuelve a activar. Ahora cualquier golpe
     de habilidad que renueva las cargas al máximo lo reactiva (`PassiveRefreshes` en
     `BladeDuelist`, `ObservePassive` en `IreliaVfx`).
+    Es el efecto de la pasiva, así que sigue la regla de LoL: aparece al llegar a 4 cargas o
+    cuando la R (u otra habilidad) golpea con la pasiva ya llena. Una R que no golpea a nadie, o
+    con menos cargas, no lo muestra (en la grabación del juego Irelia ya tenía las 4 cargas).
   - Golpes consecutivos con la Q sobre objetivos marcados: el estallido de la marca
     (`Q_Proc`) salía pequeño sobre la cabeza; está hecho igual que la marca, así que ahora
     estalla en el mismo hueso del pecho y con su mismo tamaño, sobre el cuerpo del objetivo,
     como en el juego.
-    Es el efecto de la pasiva, así que sigue la regla de LoL: aparece al llegar a 4 cargas o
-    cuando la R (u otra habilidad) golpea con la pasiva ya llena. Una R que no golpea a nadie, o
-    con menos cargas, no lo muestra (en la grabación del juego Irelia ya tenía las 4 cargas).
   - Pruebas nuevas: `RRightAfterWIsQueuedAndHops` (la R pedida justo después de la W se lanza y
     la raíz sube y avanza) y `RHitAtFourStacksFlaresThePassiveAgain` (con 4 cargas, el golpe de
     la R vuelve a activar `P_buf`).
