@@ -31,8 +31,12 @@
     (`Q_Proc`) salía pequeño sobre la cabeza; está hecho igual que la marca, así que ahora
     estalla en el mismo hueso del pecho y con su mismo tamaño, sobre el cuerpo del objetivo,
     como en el juego.
-  - Prueba nueva: `RRightAfterWIsQueuedAndHops` (la R pedida justo después de la W se lanza y
-    la raíz sube y avanza).
+    Es el efecto de la pasiva, así que sigue la regla de LoL: aparece al llegar a 4 cargas o
+    cuando la R (u otra habilidad) golpea con la pasiva ya llena. Una R que no golpea a nadie, o
+    con menos cargas, no lo muestra (en la grabación del juego Irelia ya tenía las 4 cargas).
+  - Pruebas nuevas: `RRightAfterWIsQueuedAndHops` (la R pedida justo después de la W se lanza y
+    la raíz sube y avanza) y `RHitAtFourStacksFlaresThePassiveAgain` (con 4 cargas, el golpe de
+    la R vuelve a activar `P_buf`).
 
 - Herramientas y versiones utilizadas: las mismas del Hito 2.2 (Unity 6000.6.5f1, URP 17.6.0,
   Python 3 + Pillow, wwiser v20260808, vgmstream r2117). Sin paquetes nuevos de Unity.

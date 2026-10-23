@@ -182,6 +182,27 @@ namespace MidLane.Tests
             }
             finally { RiotVfxPlayer.Started -= record; }
         }
+        [UnityTest] public IEnumerator RHitAtFourStacksFlaresThePassiveAgain()
+        {
+            Assert.IsTrue(RiotVfxLibrary.For(world).Loaded);
+            var dummy = world.PracticeDummies[0]; dummy.enabled = false;
+            world.Player.transform.position = dummy.Home - Vector3.right * 3; world.Player.Stop();
+            int flares = 0;
+            System.Action<RiotVfxPlayer> record = player => { if (player.SystemName == "Irelia_Base_P_buf") flares++; };
+            RiotVfxPlayer.Started += record;
+            try
+            {
+                // Ionian Fervor full: the max-stack aura (deep red Dark, Glow3, Avatar_Burst) flares.
+                for (int i = 0; i < 4; i++) world.Player.Blade.AwardSpellHits(new[] { dummy.Actor });
+                yield return null; yield return null;
+                Assert.AreEqual(4, world.Player.Blade.Stacks); Assert.AreEqual(1, flares);
+                // As in the game footage: the R hitting with the passive already full flares it again.
+                Assert.IsTrue(world.Player.Cast(3, dummy.Actor.Position));
+                yield return new WaitForSeconds(1f);
+                Assert.AreEqual(4, world.Player.Blade.Stacks); Assert.GreaterOrEqual(flares, 2);
+            }
+            finally { RiotVfxPlayer.Started -= record; }
+        }
         [UnityTest] public IEnumerator RRightAfterWIsQueuedAndHops()
         {
             var dummy = world.PracticeDummies[0]; dummy.enabled = false;
