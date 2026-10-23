@@ -60,6 +60,13 @@
     `ARTIST_TWEAKS`: estrella blanca al inicio que pasa a azul y 1,6 veces más grande; halos
     1,5 veces; chispas como trazos (`irelia_base_z_glow_bright` en lugar de la textura de Zoe
     que no viene) y 2,2 veces más grandes.
+  - **Corte de la W al soltar:** la punta de flecha de estelas que vuela hacia el objetivo
+    (`W_Swipe` / `W_Swipe_Empowered`: `Glow` y `Glow1`, tendidos en el suelo) apuntaba a un
+    costado, a 90° del corte. LoL dibuja la textura de los efectos del suelo girada un cuarto de
+    vuelta respecto de los demás (su parte de arriba va a lo largo del primer tamaño,
+    `birthScale` X); comparado con la grabación del juego, ahora la punta apunta al objetivo y
+    se estira a lo largo de su vuelo, como en LoL. Los demás efectos del suelo (anillo de la E,
+    ondas de la Q y de la E) son redondos y se ven igual.
   - **Indicador de la W** (`IreliaWIndicator.cs`, nuevo), como en el juego: círculo alrededor de
     Irelia (brillo verde azulado con borde blanco fino), las dos líneas punteadas del área de
     golpe, el cuerpo de la flecha (ancho parejo), la mira (siempre mirando a la cámara, como en
@@ -154,7 +161,8 @@
   - `ScenePresentationConfig.cs` / `ScenePresentation.json`: ajuste nuevo `w_indicator_scale`
     (solo presentación).
   - `IreliaAudio.cs`: señales `EBladeLand` y `ESparkles` (al final del enum).
-  - `RiotVfxSimulation.cs` / `RiotVfxData.cs`: `shapeFlags` (dirección al azar en esfera).
+  - `RiotVfxSimulation.cs` / `RiotVfxData.cs`: `shapeFlags` (dirección al azar en esfera) y
+    orientación de la textura de los efectos del suelo (punta de la W).
   - `IreliaVfx.cs`: con 4 cargas suma un material de brillo a los `SkinnedMeshRenderer` del
     modelo de Irelia (se quita al perder las cargas, al morir o al reiniciar).
   - `Tests/PlayMode/PracticeVisualHandoffTests.cs`: prueba nueva `OfficialWAndEEffectsPlay`.

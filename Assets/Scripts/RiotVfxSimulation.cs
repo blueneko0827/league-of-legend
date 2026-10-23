@@ -450,8 +450,15 @@ namespace MidLane
             Quaternion rotation = orientation * RiotVfxEval.Rotation(euler);
             if (d.groundLayer)
             {
+                // Ground-layer quads lie flat, turned by their Z angle. LoL draws their texture a
+                // quarter turn from other quads: its top runs along the first size (birthScale X).
+                // Measured on the W release in the game footage: the arrowhead of streaks
+                // (W_Swipe*/Glow, Glow1; Z 90) points at the target and stretches along its
+                // flight; read like other quads it pointed sideways, across the cut. The other
+                // ground quads (E ring, ripples) are round, so they look the same either way.
                 center.y = GroundHeight + .02f;
-                rotation = orientation * Quaternion.Euler(90, 0, 0) * Quaternion.Euler(0, 0, -euler.z);
+                rotation = orientation * Quaternion.Euler(90, 0, 0) * Quaternion.Euler(0, 0, 90 - euler.z);
+                size = new Vector3(size.y, size.x, size.z);
             }
             draw.matrix = Matrix4x4.TRS(center, rotation, new Vector3(size.x, size.y, 1) * UnitScale);
             return draw;
