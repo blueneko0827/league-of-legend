@@ -408,8 +408,10 @@ namespace MidLane
         public int PassiveRefreshes { get; private set; }
         public Combatant Actor { get { return self; } }
         public Vector3 FirstBlade { get { return firstBladePoint; } }
+        // LoL: each blade goes to the target point, clamped to 775 from Irelia; it is not held
+        // inside the lane (the blades can land in the river or the jungle).
         public Vector3 Placement(Vector3 point)
-        { Vector3 delta = point - self.Position; delta.y = 0; return world.Clamp(self.Position + Vector3.ClampMagnitude(delta, Tuning.eRange)); }
+        { Vector3 delta = point - self.Position; delta.y = 0; return self.Position + Vector3.ClampMagnitude(delta, Tuning.eRange); }
         Vector3 Direction(Vector3 point)
         { Vector3 delta = point - self.Position; delta.y = 0; return delta.sqrMagnitude > 0.001f ? delta.normalized : Vector3.right; }
         void OnDestroy() { if (Tuning != null) Destroy(Tuning); }

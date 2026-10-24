@@ -1,5 +1,28 @@
 # Notas para la devolución
 
+## Revisión de la E (alcance, límites y área)
+
+- Datos de la E comparados con los oficiales (wiki de LoL, Flawless Duet): alcance 775, ancho
+  140, cuchillas 3,5 s, aturdimiento 0,75 s: ya coincidían. El área de golpe es la franja de
+  140 entre las dos cuchillas, como en LoL.
+- Corregido: el punto apuntado por el mouse se ajustaba al rectángulo del carril
+  (`PlayerCommands`) y la colocación de cada cuchilla también (`BladeDuelist.Placement`). Cerca
+  del borde, o apuntando hacia el río/jungla, la cuchilla quedaba bastante antes de los 775. Ahora
+  cada cuchilla llega a su punto, limitado solo a 775 desde Irelia, como en LoL. La W y la R
+  también apuntan al cursor real (su dirección ya no se tuerce en el borde). Moverse y Flash
+  siguen limitados al carril.
+- Corregido: la segunda cuchilla se puede lanzar 0,15 s después de la primera (LoL; antes 0,25 s,
+  `eRecastLock`).
+- Por qué se ve más corta: los modelos se dibujan 1,65 veces más grandes que las distancias de
+  juego (`visual_mesh_multiplier`). En LoL Irelia mide unas 228 unidades (la misma medida que usan
+  los efectos), acá 167,5 × 1,65 ≈ 276: junto a ella y a los dummies todos los alcances se ven un
+  20–30 % más cortos (por eso la flecha de la W usa `w_indicator_scale` 1,3). No se cambió por
+  defecto porque afecta a todo lo ya aprobado. Para verlo con la proporción de LoL: F8 →
+  «Tamaño de campeón» 1,30 → «Aplicar escala», y «Distancia (zoom)» ≈ 0,80 para que los modelos
+  conserven su tamaño en pantalla. Si se adopta, hay que pasar `w_indicator_scale` a 1 y revisar
+  los efectos ajustados con la escala anterior.
+- Prueba nueva: `EBladesReachTheirFullRangeOutsideTheLane`.
+
 ## Hito 2.3 · R (Filo de la Vanguardia), sonidos y voces
 
 - **Ajustes tras la tercera revisión del cliente:**

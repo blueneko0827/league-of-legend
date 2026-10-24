@@ -67,7 +67,7 @@ MonoBehaviour:
   eBladeVisualMultiplier: 2
   eMana: 50
   ePlacementTime: 0.25
-  eRecastLock: 0.25
+  eRecastLock: 0.15
   eSecondCastTime: 0.125
   eRecastWindow: 3.5
   eConvergeTime: 0.35

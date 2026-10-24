@@ -158,12 +158,17 @@ namespace MidLane
             HoveredTarget = PracticeHud.BlocksPointer(mouse) ? null : TargetPicker.Resolve(world, new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             Combatant target = HoveredTarget;
             var plane = new Plane(Vector3.up, Vector3.zero);
-            float enter; Vector3 aim = plane.Raycast(ray, out enter) ? world.Clamp(ray.GetPoint(enter)) : world.Player.Position;
+            float enter; Vector3 ground = plane.Raycast(ray, out enter) ? ray.GetPoint(enter) : world.Player.Position;
+            ground.y = 0;
+            // Movement and summoners stay inside the lane. Abilities aim at the cursor itself, as in
+            // LoL: the E's blades can land outside the lane (river, jungle) within their 775 range,
+            // and the W/R directions are not bent by the lane edge.
+            Vector3 aim = world.Clamp(ground), spellAim = ground;
             var blade = world.Player.Blade;
             if (keyboardCharge && blade != null)
             {
-                RequestWAim(aim);
-                if (!Input.GetKey(KeyCode.W)) { RequestWRelease(aim); keyboardCharge = false; }
+                RequestWAim(spellAim);
+                if (!Input.GetKey(KeyCode.W)) { RequestWRelease(spellAim); keyboardCharge = false; }
             }
             if(hud.RunePickerOpen)
             {
@@ -184,7 +189,7 @@ namespace MidLane
             if (cancelledAim) rAim.Cancel();
             if (rAim.IsAiming)
             {
-                rAim.Aim(aim);
+                rAim.Aim(spellAim);
                 if (!Input.GetKey(KeyCode.R))
                 {
                     if (PracticeHud.BlocksPointer(mouse)) rAim.Cancel();
@@ -219,8 +224,8 @@ namespace MidLane
             for (int slot = 0; slot < SkillKeys.Length; slot++)
                 if (Input.GetKeyDown(SkillKeys[slot]))
                 {
-                    bool cast = slot == 3 && blade != null ? !cancelledAim && BeginR(aim) :
-                        RequestAbility(slot, aim, target);
+                    bool cast = slot == 3 && blade != null ? !cancelledAim && BeginR(spellAim) :
+                        RequestAbility(slot, spellAim, target);
                     if (cast && slot == 1 && blade != null) keyboardCharge = true;
                     if (!cast)
                         ShowFeedback(blade != null && blade.Rank(slot) == 0 ? "Aprendé la habilidad con Ctrl + " + SkillKeys[slot] + " o el botón +" :

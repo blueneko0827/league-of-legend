@@ -269,6 +269,23 @@ namespace MidLane.Tests
             // The dash ends 100 LoL units past the target's location.
             Assert.AreEqual(1, Vector3.Distance(world.Player.Position, dummy.Actor.Position), .1f);
         }
+        [UnityTest] public IEnumerator EBladesReachTheirFullRangeOutsideTheLane()
+        {
+            var blade = world.Player.Blade;
+            // Irelia near the lane edge, aiming far across it: each blade lands 775 units away,
+            // past the lane edge, as in LoL (not held inside the lane).
+            world.Player.transform.position = new Vector3(0, 0, world.Settings.halfWidth - 1); world.Player.Stop();
+            Vector3 start = world.Player.Position;
+            Assert.IsTrue(world.Player.Cast(2, start + Vector3.forward * 20));
+            Assert.AreEqual(blade.Tuning.eRange, Vector3.Distance(start, blade.FirstBlade), .01f);
+            Assert.Greater(blade.FirstBlade.z, world.Settings.halfWidth);
+            // The second blade can go out 0.15 s later (LoL), measured from Irelia's position then.
+            yield return new WaitForSeconds(.17f);
+            Assert.IsTrue(blade.Ready(2));
+            Assert.IsTrue(world.Player.Cast(2, start + Vector3.back * 20));
+            yield return null;
+            Assert.IsFalse(blade.WaitingSecondBlade);
+        }
         [UnityTest] public IEnumerator AQPressedEarlyInTheRCastIsQueued()
         {
             var dummy = world.PracticeDummies[0]; dummy.enabled = false;
